@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sesstrace"
+description = "Replay checks for the withdrawal of session authority: synthetic laboratory, driver, evaluator and audit"
+readme = "README.md"
+requires-python = ">=3.7"
+license = { text = "MIT" }
+authors = [
+    { name = "Abdullah Bin Zarshaid" },
+    { name = "Shahbaz Akhtar Siddiqui" },
+]
+keywords = ["session management", "CWE-613", "logout", "token revocation", "replay", "reproducibility"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Security",
+    "Intended Audience :: Science/Research",
+]
+dependencies = []
+dynamic = ["version"]
+
+[project.scripts]
+sesstrace = "sesstrace.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "sesstrace.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"sesstrace.lab" = ["metadata/*.json", "reference/*.json", "reference/traces/*.json"]

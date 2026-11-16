@@ -1,0 +1,796 @@
+{
+  "artifact_inventory": [
+    {
+      "holder": "alice",
+      "id": "A1",
+      "issued_at_step": 1,
+      "note": "",
+      "presented_at_steps": [
+        3
+      ],
+      "type": "idp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "alice",
+      "id": "A2",
+      "issued_at_step": 5,
+      "note": "",
+      "presented_at_steps": [
+        6
+      ],
+      "type": "rp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "RP1 for alice",
+      "id": "A3",
+      "issued_at_step": 6,
+      "note": "",
+      "presented_at_steps": [],
+      "type": "oauth_access_token",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "RP1 for alice",
+      "id": "A4",
+      "issued_at_step": 6,
+      "note": "",
+      "presented_at_steps": [
+        13,
+        19,
+        20
+      ],
+      "type": "oauth_refresh_token",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "bob",
+      "id": "A5",
+      "issued_at_step": 7,
+      "note": "",
+      "presented_at_steps": [
+        9
+      ],
+      "type": "idp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "bob",
+      "id": "A6",
+      "issued_at_step": 11,
+      "note": "",
+      "presented_at_steps": [
+        12
+      ],
+      "type": "rp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "RP1 for bob",
+      "id": "A7",
+      "issued_at_step": 12,
+      "note": "",
+      "presented_at_steps": [],
+      "type": "oauth_access_token",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "RP1 for bob",
+      "id": "A8",
+      "issued_at_step": 12,
+      "note": "",
+      "presented_at_steps": [
+        16,
+        21
+      ],
+      "type": "oauth_refresh_token",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "alice",
+      "id": "A9",
+      "issued_at_step": 13,
+      "note": "refresh-derived resource witness",
+      "presented_at_steps": [
+        14,
+        15
+      ],
+      "type": "oauth_access_token",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "bob",
+      "id": "A10",
+      "issued_at_step": 16,
+      "note": "refresh-derived resource witness",
+      "presented_at_steps": [
+        17,
+        18
+      ],
+      "type": "oauth_access_token",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "bob",
+      "id": "A11",
+      "issued_at_step": 21,
+      "note": "refresh-derived resource witness",
+      "presented_at_steps": [
+        22,
+        23
+      ],
+      "type": "oauth_access_token",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "alice (fresh login)",
+      "id": "A12",
+      "issued_at_step": 24,
+      "note": "",
+      "presented_at_steps": [
+        26
+      ],
+      "type": "idp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "alice (fresh login)",
+      "id": "A13",
+      "issued_at_step": 28,
+      "note": "",
+      "presented_at_steps": [
+        29
+      ],
+      "type": "rp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "RP1 for alice (fresh login)",
+      "id": "A14",
+      "issued_at_step": 29,
+      "note": "",
+      "presented_at_steps": [],
+      "type": "oauth_access_token",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "RP1 for alice (fresh login)",
+      "id": "A15",
+      "issued_at_step": 29,
+      "note": "",
+      "presented_at_steps": [
+        30
+      ],
+      "type": "oauth_refresh_token",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "alice (fresh login)",
+      "id": "A16",
+      "issued_at_step": 30,
+      "note": "refresh-derived resource witness",
+      "presented_at_steps": [
+        31,
+        32
+      ],
+      "type": "oauth_access_token",
+      "value_prefix": "<redacted>"
+    }
+  ],
+  "artifact_under_test": "A4",
+  "cwe_rule_path": {
+    "classification": "no weakness observed",
+    "mechanism_rule_path": [
+      "termination trigger present (RFC 7009 revocation acknowledged with 200)",
+      "artifact presented after the trigger (refresh token)",
+      "protected operation succeeded (new token minted and usable at the expected resource)",
+      "=> explicit-termination failure: revocation acknowledged but not enforced"
+    ],
+    "neighbour_rules": {
+      "CWE-384 session fixation": "not matched",
+      "CWE-613 original sense (time-only expiration)": "not matched: refresh tokens here have no expiry; the failure is on the explicit path",
+      "login-time identifier reuse": "would route to CWE-384 (session fixation)",
+      "time-only (no explicit trigger)": "would route to CWE-613 original sense (insufficient expiration)"
+    },
+    "observed_decision": [
+      "lifecycle event present -> explicit termination branch (paper class A)",
+      "pre-event artifact denied -> no failure observed on this variant"
+    ]
+  },
+  "invariant": {
+    "execution_error": null,
+    "post_termination_status": 400,
+    "pre_termination_status": 200,
+    "result": "PASS",
+    "scenario_valid": true
+  },
+  "invariant_statement": "no protected operation succeeds with a pre-termination artifact after a termination event that reported success",
+  "mechanism": {
+    "component": "IdP (revocation endpoint)",
+    "flag_location": "sesslab/servers.py: IdPState.route, path '/revoke' (M3 flag)",
+    "id": "M3",
+    "title": "Refresh token still mints tokens after RFC 7009 revocation"
+  },
+  "negative_checks": {
+    "a_pre_termination_legit_works": {
+      "definition": "before termination the legitimate artifact works",
+      "expected": 200,
+      "observed": 200,
+      "pass": true
+    },
+    "b_fresh_login_after_termination": {
+      "definition": "after termination a fresh login of the same user works",
+      "expected": 200,
+      "observed": 200,
+      "pass": true
+    },
+    "c_unrelated_user_unaffected": {
+      "definition": "an unrelated user's artifact works before and after another user's termination",
+      "expected": 200,
+      "observed": 200,
+      "pass": true
+    }
+  },
+  "negative_control_failures": 0,
+  "replay": {
+    "artifact": "A4",
+    "completion_step": 20,
+    "operation": "POST IdP /token with the revoked refresh token, followed by successful GET RS /api/data as the expected subject using the minted access token",
+    "residual_capability": false,
+    "semantic_reason": "contract_denial",
+    "status": 400,
+    "step": 20,
+    "witness_request_id": null
+  },
+  "schema": "sesstrace-trace/2.0",
+  "seed": 302,
+  "steps": [
+    {
+      "actor": "alice",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "setup",
+      "response": {
+        "ok": true,
+        "redacted_field_count": 1
+      },
+      "status": 200,
+      "step": 1,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 2,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": "A1",
+      "host": "idp",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/authorize?response_type=<redacted>&client_id=<redacted>&redirect_uri=<redacted>&scope=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 3,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/callback?code=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "logged_in": true,
+        "redacted_field_count": 0,
+        "rp": "RP1"
+      },
+      "status": 200,
+      "step": 4,
+      "transport_error": null
+    },
+    {
+      "actor": "RP1",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "note": "authorization-code exchange",
+      "parent_step": 4,
+      "path": "/token",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 5,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": "A2",
+      "host": "rp1",
+      "method": "GET",
+      "note": "harness helper: read the tokens held by this RP session",
+      "parent_step": null,
+      "path": "/tokens",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 3
+      },
+      "status": 200,
+      "step": 6,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "setup",
+      "response": {
+        "ok": true,
+        "redacted_field_count": 1
+      },
+      "status": 200,
+      "step": 7,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 8,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": "A5",
+      "host": "idp",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/authorize?response_type=<redacted>&client_id=<redacted>&redirect_uri=<redacted>&scope=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 9,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/callback?code=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "logged_in": true,
+        "redacted_field_count": 0,
+        "rp": "RP1"
+      },
+      "status": 200,
+      "step": 10,
+      "transport_error": null
+    },
+    {
+      "actor": "RP1",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "note": "authorization-code exchange",
+      "parent_step": 10,
+      "path": "/token",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 11,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": "A6",
+      "host": "rp1",
+      "method": "GET",
+      "note": "harness helper: read the tokens held by this RP session",
+      "parent_step": null,
+      "path": "/tokens",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 3
+      },
+      "status": 200,
+      "step": 12,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": "A4",
+      "host": "idp",
+      "method": "POST",
+      "parent_step": null,
+      "path": "/token",
+      "phase": "pre_termination",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 13,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": "A9",
+      "host": "rs",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/api/data",
+      "phase": "pre_termination",
+      "response": {
+        "data": "report",
+        "decision_source": "introspection",
+        "redacted_field_count": 0,
+        "sub": "alice"
+      },
+      "status": 200,
+      "step": 14,
+      "transport_error": null
+    },
+    {
+      "actor": "RS",
+      "artifact_presented": "A9",
+      "host": "idp",
+      "method": "POST",
+      "note": "token introspection",
+      "parent_step": 14,
+      "path": "/introspect",
+      "phase": "pre_termination",
+      "response": {
+        "active": true,
+        "redacted_field_count": 1,
+        "sub": "alice"
+      },
+      "status": 200,
+      "step": 15,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": "A8",
+      "host": "idp",
+      "method": "POST",
+      "parent_step": null,
+      "path": "/token",
+      "phase": "pre_termination",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 16,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": "A10",
+      "host": "rs",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/api/data",
+      "phase": "pre_termination",
+      "response": {
+        "data": "report",
+        "decision_source": "introspection",
+        "redacted_field_count": 0,
+        "sub": "bob"
+      },
+      "status": 200,
+      "step": 17,
+      "transport_error": null
+    },
+    {
+      "actor": "RS",
+      "artifact_presented": "A10",
+      "host": "idp",
+      "method": "POST",
+      "note": "token introspection",
+      "parent_step": 17,
+      "path": "/introspect",
+      "phase": "pre_termination",
+      "response": {
+        "active": true,
+        "redacted_field_count": 1,
+        "sub": "bob"
+      },
+      "status": 200,
+      "step": 18,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": "A4",
+      "host": "idp",
+      "method": "POST",
+      "note": "TERMINATION: RFC 7009 revocation of the refresh token",
+      "parent_step": null,
+      "path": "/revoke",
+      "phase": "termination",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 200,
+      "step": 19,
+      "transport_error": null
+    },
+    {
+      "actor": "attacker (replaying A4)",
+      "artifact_presented": "A4",
+      "host": "idp",
+      "method": "POST",
+      "parent_step": null,
+      "path": "/token",
+      "phase": "replay",
+      "response": {
+        "error": "invalid_grant",
+        "redacted_field_count": 1
+      },
+      "status": 400,
+      "step": 20,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": "A8",
+      "host": "idp",
+      "method": "POST",
+      "parent_step": null,
+      "path": "/token",
+      "phase": "negative_c",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 21,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": "A11",
+      "host": "rs",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/api/data",
+      "phase": "negative_c",
+      "response": {
+        "data": "report",
+        "decision_source": "introspection",
+        "redacted_field_count": 0,
+        "sub": "bob"
+      },
+      "status": 200,
+      "step": 22,
+      "transport_error": null
+    },
+    {
+      "actor": "RS",
+      "artifact_presented": "A11",
+      "host": "idp",
+      "method": "POST",
+      "note": "token introspection",
+      "parent_step": 22,
+      "path": "/introspect",
+      "phase": "negative_c",
+      "response": {
+        "active": true,
+        "redacted_field_count": 1,
+        "sub": "bob"
+      },
+      "status": 200,
+      "step": 23,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "negative_b",
+      "response": {
+        "ok": true,
+        "redacted_field_count": 1
+      },
+      "status": 200,
+      "step": 24,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 25,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": "A12",
+      "host": "idp",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/authorize?response_type=<redacted>&client_id=<redacted>&redirect_uri=<redacted>&scope=<redacted>&state=<redacted>",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 26,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/callback?code=<redacted>&state=<redacted>",
+      "phase": "negative_b",
+      "response": {
+        "logged_in": true,
+        "redacted_field_count": 0,
+        "rp": "RP1"
+      },
+      "status": 200,
+      "step": 27,
+      "transport_error": null
+    },
+    {
+      "actor": "RP1",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "note": "authorization-code exchange",
+      "parent_step": 27,
+      "path": "/token",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 28,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": "A13",
+      "host": "rp1",
+      "method": "GET",
+      "note": "harness helper: read the tokens held by this RP session",
+      "parent_step": null,
+      "path": "/tokens",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 3
+      },
+      "status": 200,
+      "step": 29,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": "A15",
+      "host": "idp",
+      "method": "POST",
+      "parent_step": null,
+      "path": "/token",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 30,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": "A16",
+      "host": "rs",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/api/data",
+      "phase": "negative_b",
+      "response": {
+        "data": "report",
+        "decision_source": "introspection",
+        "redacted_field_count": 0,
+        "sub": "alice"
+      },
+      "status": 200,
+      "step": 31,
+      "transport_error": null
+    },
+    {
+      "actor": "RS",
+      "artifact_presented": "A16",
+      "host": "idp",
+      "method": "POST",
+      "note": "token introspection",
+      "parent_step": 31,
+      "path": "/introspect",
+      "phase": "negative_b",
+      "response": {
+        "active": true,
+        "redacted_field_count": 1,
+        "sub": "alice"
+      },
+      "status": 200,
+      "step": 32,
+      "transport_error": null
+    }
+  ],
+  "termination": {
+    "actor": "alice",
+    "completion_step": 19,
+    "declared_expected_scope": [
+      "the revoked refresh token",
+      "access tokens issued from the same grant"
+    ],
+    "normative_basis": "Explicit token-revocation contract for the revoked refresh token in the laboratory.",
+    "reported_status": 200,
+    "reported_success": true,
+    "step": 19,
+    "trigger": "explicit token revocation: POST IdP /revoke token_type_hint=refresh_token (200)"
+  },
+  "uncertainty": {
+    "level": "low",
+    "reason": "revocation response and the subsequent successful grant are both in the trace; no third party involved"
+  },
+  "variant": "fixed"
+}

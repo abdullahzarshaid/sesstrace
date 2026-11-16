@@ -1,0 +1,48 @@
+{
+  "id": "M4",
+  "title": "Second relying party session survives federated logout",
+  "component": "RP2 (back-channel logout receiver)",
+  "flag_location": "sesslab/servers.py: RPState.route, path '/backchannel_logout' (M4 flag)",
+  "vulnerable_behaviour": "RP2 answers 200 to the back-channel logout token delivered by the IdP but does not terminate the local session bound to that sid.",
+  "fixed_behaviour": "RP2 terminates every local session whose sid matches the logout token.",
+  "artifact": {
+    "type": "rp_session_cookie",
+    "holder": "browser (RP2)",
+    "issued_by": "RP2 /callback"
+  },
+  "termination_trigger": "explicit federated logout initiated at RP1: RP1 /logout -> IdP /logout -> IdP POST RP2 /backchannel_logout (Back-Channel Logout 1.0)",
+  "declared_expected_scope": [
+    "RP1 session",
+    "IdP session",
+    "tokens bound to the IdP session",
+    "every RP session bound to the IdP sid, including RP2"
+  ],
+  "protected_operation": "GET RP2 /profile with the pre-logout RP2 rp_sid cookie",
+  "standards": [
+    "OpenID Connect Back-Channel Logout 1.0 s.2.6",
+    "OpenID Connect RP-Initiated Logout 1.0"
+  ],
+  "cwe_rule_path": [
+    "termination trigger present (federated logout; back-channel delivery observed in the trace with status 200)",
+    "artifact presented after the trigger (RP2 cookie)",
+    "protected operation succeeded",
+    "=> explicit-termination failure: propagation accepted but not enforced by the receiving party"
+  ],
+  "neighbour_rules": {
+    "CWE-613 original sense (time-only expiration)": "not matched",
+    "CWE-384 session fixation": "not matched",
+    "propagation failure at the IdP (logout token never sent)": "excluded by the trace: the IdP->rp2 delivery step is present and returned 200"
+  },
+  "uncertainty": {
+    "level": "medium",
+    "reason": "attribution between issuer delivery and receiver handling needs the internal back-channel step; without it the same observation is consistent with an IdP-side propagation failure"
+  },
+  "variants": {
+    "vulnerable": "Flags(vulnerable={'M4'})",
+    "fixed": "Flags(vulnerable=set())"
+  },
+  "paper_class": "A",
+  "lifecycle_family": "explicit_termination",
+  "lifecycle_event": "explicit federated logout initiated at RP1: RP1 /logout -> IdP /logout -> IdP POST RP2 /backchannel_logout (Back-Channel Logout 1.0)",
+  "normative_basis": "Declared federated-logout scope using the cited back-channel logout behavior."
+}

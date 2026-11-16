@@ -1,0 +1,779 @@
+{
+  "artifact_inventory": [
+    {
+      "holder": "alice",
+      "id": "A1",
+      "issued_at_step": 1,
+      "note": "",
+      "presented_at_steps": [
+        3,
+        7
+      ],
+      "type": "idp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "alice (RP1)",
+      "id": "A2",
+      "issued_at_step": 5,
+      "note": "",
+      "presented_at_steps": [
+        21
+      ],
+      "type": "rp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "alice (RP2)",
+      "id": "A3",
+      "issued_at_step": 9,
+      "note": "RP2 session",
+      "presented_at_steps": [
+        19,
+        25
+      ],
+      "type": "rp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "bob",
+      "id": "A4",
+      "issued_at_step": 10,
+      "note": "",
+      "presented_at_steps": [
+        12,
+        16
+      ],
+      "type": "idp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "bob (RP1)",
+      "id": "A5",
+      "issued_at_step": 14,
+      "note": "",
+      "presented_at_steps": [],
+      "type": "rp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "bob (RP2)",
+      "id": "A6",
+      "issued_at_step": 18,
+      "note": "RP2 session",
+      "presented_at_steps": [
+        20,
+        26
+      ],
+      "type": "rp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "alice (fresh login)",
+      "id": "A7",
+      "issued_at_step": 27,
+      "note": "",
+      "presented_at_steps": [
+        29,
+        33
+      ],
+      "type": "idp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "alice (fresh login) (RP1)",
+      "id": "A8",
+      "issued_at_step": 31,
+      "note": "",
+      "presented_at_steps": [],
+      "type": "rp_session_cookie",
+      "value_prefix": "<redacted>"
+    },
+    {
+      "holder": "alice (fresh login) (RP2)",
+      "id": "A9",
+      "issued_at_step": 35,
+      "note": "RP2 session",
+      "presented_at_steps": [
+        36
+      ],
+      "type": "rp_session_cookie",
+      "value_prefix": "<redacted>"
+    }
+  ],
+  "artifact_under_test": "A3",
+  "cwe_rule_path": {
+    "classification": "explicit termination failure (paper class A; explanatory metadata)",
+    "mechanism_rule_path": [
+      "termination trigger present (federated logout; back-channel delivery observed in the trace with status 200)",
+      "artifact presented after the trigger (RP2 cookie)",
+      "protected operation succeeded",
+      "=> explicit-termination failure: propagation accepted but not enforced by the receiving party"
+    ],
+    "neighbour_rules": {
+      "CWE-384 session fixation": "not matched",
+      "CWE-613 original sense (time-only expiration)": "not matched",
+      "login-time identifier reuse": "would route to CWE-384 (session fixation)",
+      "propagation failure at the IdP (logout token never sent)": "excluded by the trace: the IdP->rp2 delivery step is present and returned 200",
+      "time-only (no explicit trigger)": "would route to CWE-613 original sense (insufficient expiration)"
+    },
+    "observed_decision": [
+      "lifecycle event present -> explicit termination branch (paper class A)",
+      "pre-event artifact still yields the protected operation -> lifecycle failure under declared scope"
+    ]
+  },
+  "invariant": {
+    "execution_error": null,
+    "post_termination_status": 200,
+    "pre_termination_status": 200,
+    "result": "FAIL",
+    "scenario_valid": true
+  },
+  "invariant_statement": "no protected operation succeeds with a pre-termination artifact after a termination event that reported success",
+  "mechanism": {
+    "component": "RP2 (back-channel logout receiver)",
+    "flag_location": "sesslab/servers.py: RPState.route, path '/backchannel_logout' (M4 flag)",
+    "id": "M4",
+    "title": "Second relying party session survives federated logout"
+  },
+  "negative_checks": {
+    "a_pre_termination_legit_works": {
+      "definition": "before termination the legitimate artifact works",
+      "expected": 200,
+      "observed": 200,
+      "pass": true
+    },
+    "b_fresh_login_after_termination": {
+      "definition": "after termination a fresh login of the same user works",
+      "expected": 200,
+      "observed": 200,
+      "pass": true
+    },
+    "c_unrelated_user_unaffected": {
+      "definition": "an unrelated user's artifact works before and after another user's termination",
+      "expected": 200,
+      "observed": 200,
+      "pass": true
+    }
+  },
+  "negative_control_failures": 0,
+  "replay": {
+    "artifact": "A3",
+    "completion_step": 25,
+    "operation": "GET RP2 /profile with the pre-logout RP2 rp_sid cookie",
+    "residual_capability": true,
+    "semantic_reason": "semantic_success",
+    "status": 200,
+    "step": 25,
+    "witness_request_id": null
+  },
+  "schema": "sesstrace-trace/2.0",
+  "seed": 401,
+  "steps": [
+    {
+      "actor": "alice",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "setup",
+      "response": {
+        "ok": true,
+        "redacted_field_count": 1
+      },
+      "status": 200,
+      "step": 1,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 2,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": "A1",
+      "host": "idp",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/authorize?response_type=<redacted>&client_id=<redacted>&redirect_uri=<redacted>&scope=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 3,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/callback?code=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "logged_in": true,
+        "redacted_field_count": 0,
+        "rp": "RP1"
+      },
+      "status": 200,
+      "step": 4,
+      "transport_error": null
+    },
+    {
+      "actor": "RP1",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "note": "authorization-code exchange",
+      "parent_step": 4,
+      "path": "/token",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 5,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": null,
+      "host": "rp2",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 6,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": "A1",
+      "host": "idp",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/authorize?response_type=<redacted>&client_id=<redacted>&redirect_uri=<redacted>&scope=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 7,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": null,
+      "host": "rp2",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/callback?code=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "logged_in": true,
+        "redacted_field_count": 0,
+        "rp": "RP2"
+      },
+      "status": 200,
+      "step": 8,
+      "transport_error": null
+    },
+    {
+      "actor": "RP2",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "note": "authorization-code exchange",
+      "parent_step": 8,
+      "path": "/token",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 9,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "setup",
+      "response": {
+        "ok": true,
+        "redacted_field_count": 1
+      },
+      "status": 200,
+      "step": 10,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 11,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": "A4",
+      "host": "idp",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/authorize?response_type=<redacted>&client_id=<redacted>&redirect_uri=<redacted>&scope=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 12,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/callback?code=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "logged_in": true,
+        "redacted_field_count": 0,
+        "rp": "RP1"
+      },
+      "status": 200,
+      "step": 13,
+      "transport_error": null
+    },
+    {
+      "actor": "RP1",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "note": "authorization-code exchange",
+      "parent_step": 13,
+      "path": "/token",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 14,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": null,
+      "host": "rp2",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 15,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": "A4",
+      "host": "idp",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/authorize?response_type=<redacted>&client_id=<redacted>&redirect_uri=<redacted>&scope=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 16,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": null,
+      "host": "rp2",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/callback?code=<redacted>&state=<redacted>",
+      "phase": "setup",
+      "response": {
+        "logged_in": true,
+        "redacted_field_count": 0,
+        "rp": "RP2"
+      },
+      "status": 200,
+      "step": 17,
+      "transport_error": null
+    },
+    {
+      "actor": "RP2",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "note": "authorization-code exchange",
+      "parent_step": 17,
+      "path": "/token",
+      "phase": "setup",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 18,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": "A3",
+      "host": "rp2",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/profile",
+      "phase": "pre_termination",
+      "response": {
+        "redacted_field_count": 0,
+        "rp": "RP2",
+        "sub": "alice"
+      },
+      "status": 200,
+      "step": 19,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": "A6",
+      "host": "rp2",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/profile",
+      "phase": "pre_termination",
+      "response": {
+        "redacted_field_count": 0,
+        "rp": "RP2",
+        "sub": "bob"
+      },
+      "status": 200,
+      "step": 20,
+      "transport_error": null
+    },
+    {
+      "actor": "alice",
+      "artifact_presented": "A2",
+      "host": "rp1",
+      "method": "GET",
+      "note": "TERMINATION: RP1 logout -> IdP logout -> back-channel to RP2",
+      "parent_step": null,
+      "path": "/logout",
+      "phase": "termination",
+      "response": {
+        "logged_out": true,
+        "redacted_field_count": 0
+      },
+      "status": 200,
+      "step": 21,
+      "transport_error": null
+    },
+    {
+      "actor": "RP1",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "GET",
+      "note": "RP-initiated logout at the IdP",
+      "parent_step": 21,
+      "path": "/logout?id_token_hint=<redacted>",
+      "phase": "termination",
+      "response": {
+        "logged_out": true,
+        "redacted_field_count": 0
+      },
+      "status": 200,
+      "step": 22,
+      "transport_error": null
+    },
+    {
+      "actor": "IdP->rp1",
+      "artifact_presented": "logout_token(unregistered)",
+      "host": "rp1",
+      "method": "POST",
+      "note": "back-channel logout delivery",
+      "parent_step": 22,
+      "path": "/backchannel_logout",
+      "phase": "termination",
+      "response": {
+        "ignored": true,
+        "redacted_field_count": 0
+      },
+      "status": 200,
+      "step": 23,
+      "transport_error": null
+    },
+    {
+      "actor": "IdP->rp2",
+      "artifact_presented": "logout_token(unregistered)",
+      "host": "rp2",
+      "method": "POST",
+      "note": "back-channel logout delivery",
+      "parent_step": 22,
+      "path": "/backchannel_logout",
+      "phase": "termination",
+      "response": {
+        "ignored": true,
+        "redacted_field_count": 0
+      },
+      "status": 200,
+      "step": 24,
+      "transport_error": null
+    },
+    {
+      "actor": "attacker (replaying A3)",
+      "artifact_presented": "A3",
+      "host": "rp2",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/profile",
+      "phase": "replay",
+      "response": {
+        "redacted_field_count": 0,
+        "rp": "RP2",
+        "sub": "alice"
+      },
+      "status": 200,
+      "step": 25,
+      "transport_error": null
+    },
+    {
+      "actor": "bob",
+      "artifact_presented": "A6",
+      "host": "rp2",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/profile",
+      "phase": "negative_c",
+      "response": {
+        "redacted_field_count": 0,
+        "rp": "RP2",
+        "sub": "bob"
+      },
+      "status": 200,
+      "step": 26,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "negative_b",
+      "response": {
+        "ok": true,
+        "redacted_field_count": 1
+      },
+      "status": 200,
+      "step": 27,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 28,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": "A7",
+      "host": "idp",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/authorize?response_type=<redacted>&client_id=<redacted>&redirect_uri=<redacted>&scope=<redacted>&state=<redacted>",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 29,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": null,
+      "host": "rp1",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/callback?code=<redacted>&state=<redacted>",
+      "phase": "negative_b",
+      "response": {
+        "logged_in": true,
+        "redacted_field_count": 0,
+        "rp": "RP1"
+      },
+      "status": 200,
+      "step": 30,
+      "transport_error": null
+    },
+    {
+      "actor": "RP1",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "note": "authorization-code exchange",
+      "parent_step": 30,
+      "path": "/token",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 31,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": null,
+      "host": "rp2",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/login",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 32,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": "A7",
+      "host": "idp",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/authorize?response_type=<redacted>&client_id=<redacted>&redirect_uri=<redacted>&scope=<redacted>&state=<redacted>",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 0
+      },
+      "status": 302,
+      "step": 33,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": null,
+      "host": "rp2",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/callback?code=<redacted>&state=<redacted>",
+      "phase": "negative_b",
+      "response": {
+        "logged_in": true,
+        "redacted_field_count": 0,
+        "rp": "RP2"
+      },
+      "status": 200,
+      "step": 34,
+      "transport_error": null
+    },
+    {
+      "actor": "RP2",
+      "artifact_presented": null,
+      "host": "idp",
+      "method": "POST",
+      "note": "authorization-code exchange",
+      "parent_step": 34,
+      "path": "/token",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 4,
+        "token_type": "Bearer"
+      },
+      "status": 200,
+      "step": 35,
+      "transport_error": null
+    },
+    {
+      "actor": "alice (fresh login)",
+      "artifact_presented": "A9",
+      "host": "rp2",
+      "method": "GET",
+      "parent_step": null,
+      "path": "/profile",
+      "phase": "negative_b",
+      "response": {
+        "redacted_field_count": 0,
+        "rp": "RP2",
+        "sub": "alice"
+      },
+      "status": 200,
+      "step": 36,
+      "transport_error": null
+    }
+  ],
+  "termination": {
+    "actor": "alice",
+    "completion_step": 24,
+    "declared_expected_scope": [
+      "RP1 session",
+      "IdP session",
+      "tokens bound to the IdP session",
+      "every RP session bound to the IdP sid, including RP2"
+    ],
+    "normative_basis": "Declared federated-logout scope using the cited back-channel logout behavior.",
+    "reported_status": 200,
+    "reported_success": true,
+    "step": 21,
+    "trigger": "explicit federated logout initiated at RP1: RP1 /logout -> IdP /logout -> IdP POST RP2 /backchannel_logout (Back-Channel Logout 1.0)"
+  },
+  "uncertainty": {
+    "level": "medium",
+    "reason": "attribution between issuer delivery and receiver handling needs the internal back-channel step; without it the same observation is consistent with an IdP-side propagation failure"
+  },
+  "variant": "vulnerable"
+}

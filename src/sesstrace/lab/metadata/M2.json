@@ -1,0 +1,47 @@
+{
+  "id": "M2",
+  "title": "Access token accepted by the resource server after logout",
+  "component": "IdP (token issuer)",
+  "flag_location": "sesslab/servers.py: IdPState.terminate_session (M2 flag)",
+  "vulnerable_behaviour": "RP-initiated logout ends the IdP session but leaves the access and refresh tokens bound to that session valid; introspection still reports active=true.",
+  "fixed_behaviour": "Session termination marks every access and refresh token bound to the session as revoked.",
+  "artifact": {
+    "type": "oauth_access_token",
+    "holder": "RP1 (on behalf of the browser)",
+    "issued_by": "IdP /token (authorization_code)"
+  },
+  "termination_trigger": "explicit federated logout: GET RP1 /logout -> GET IdP /logout?id_token_hint (RP-Initiated Logout 1.0)",
+  "declared_expected_scope": [
+    "RP1 session",
+    "IdP session",
+    "all tokens bound to the IdP session"
+  ],
+  "protected_operation": "GET RS /api/data with the pre-logout Bearer access token (validated by RFC 7662 introspection)",
+  "standards": [
+    "OpenID Connect RP-Initiated Logout 1.0",
+    "RFC 7662",
+    "OAuth 2.0 Security BCP s.4.14"
+  ],
+  "cwe_rule_path": [
+    "termination trigger present (RP-initiated logout at the IdP)",
+    "artifact presented after the trigger (Bearer token)",
+    "protected operation succeeded",
+    "=> explicit-termination failure: token lifetime not bound to the session it was issued under"
+  ],
+  "neighbour_rules": {
+    "CWE-613 original sense (time-only expiration)": "not matched: the token is still within its 600 s lifetime but an explicit trigger occurred",
+    "CWE-384 session fixation": "not matched"
+  },
+  "uncertainty": {
+    "level": "low",
+    "reason": "the introspection step in the trace shows active=true after the IdP reported logged_out=true"
+  },
+  "variants": {
+    "vulnerable": "Flags(vulnerable={'M2'})",
+    "fixed": "Flags(vulnerable=set())"
+  },
+  "paper_class": "A",
+  "lifecycle_family": "explicit_termination",
+  "lifecycle_event": "explicit federated logout: GET RP1 /logout -> GET IdP /logout?id_token_hint (RP-Initiated Logout 1.0)",
+  "normative_basis": "Declared laboratory scope for RP-initiated logout; not a universal claim that every RP logout must revoke every access token."
+}

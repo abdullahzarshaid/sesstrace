@@ -1,0 +1,44 @@
+{
+  "id": "M1",
+  "title": "Server-side session survives application logout",
+  "component": "RP (relying party)",
+  "flag_location": "sesslab/servers.py: RPState.route, path '/logout' (M1 flag)",
+  "vulnerable_behaviour": "Logout responds 200 and expires the browser cookie but the server-side session record is never deleted; a copy of the cookie value keeps working.",
+  "fixed_behaviour": "Logout deletes the server-side session record before expiring the cookie.",
+  "artifact": {
+    "type": "rp_session_cookie",
+    "holder": "browser",
+    "issued_by": "RP1 /callback"
+  },
+  "termination_trigger": "explicit application logout: GET RP1 /logout?federated=0 (200, logged_out=true)",
+  "declared_expected_scope": [
+    "the RP1 server-side session presented by the cookie"
+  ],
+  "protected_operation": "GET RP1 /profile with the pre-logout rp_sid cookie",
+  "standards": [
+    "OWASP ASVS 4.0 V3.3.1",
+    "OWASP WSTG-SESS-06"
+  ],
+  "cwe_rule_path": [
+    "termination trigger present (explicit logout)",
+    "artifact presented after the trigger",
+    "protected operation succeeded",
+    "=> explicit-termination failure (CWE-613 usage-B sense: session not invalidated on logout)"
+  ],
+  "neighbour_rules": {
+    "CWE-613 original sense (time-only expiration)": "not matched: an explicit trigger exists",
+    "CWE-384 session fixation": "not matched: the identifier is not reused across a login boundary"
+  },
+  "uncertainty": {
+    "level": "low",
+    "reason": "single component, single hop; the trace shows the same cookie accepted before and after a 200 logout"
+  },
+  "variants": {
+    "vulnerable": "Flags(vulnerable={'M1'})",
+    "fixed": "Flags(vulnerable=set())"
+  },
+  "paper_class": "A",
+  "lifecycle_family": "explicit_termination",
+  "lifecycle_event": "explicit application logout: GET RP1 /logout?federated=0 (200, logged_out=true)",
+  "normative_basis": "Declared local-logout contract, consistent with the cited session-termination guidance."
+}

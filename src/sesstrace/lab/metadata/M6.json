@@ -1,0 +1,46 @@
+{
+  "id": "M6",
+  "title": "Password change does not terminate the user's other sessions",
+  "component": "IdP (credential change handler)",
+  "flag_location": "sesslab/servers.py: IdPState.route, path '/password' (M6 flag)",
+  "vulnerable_behaviour": "POST /password updates the credential and responds 200 but leaves every other IdP session of the user, and the tokens bound to them, alive.",
+  "fixed_behaviour": "POST /password terminates every other IdP session of the user (revoking their tokens and delivering back-channel logout), keeping only the session that performed the change.",
+  "artifact": {
+    "type": "oauth_access_token",
+    "holder": "RP1 (on behalf of a second browser of the same user)",
+    "issued_by": "IdP /token (authorization_code) under the user's second IdP session"
+  },
+  "termination_trigger": "explicit credential change: POST IdP /password from browser A (200, changed=true)",
+  "declared_expected_scope": [
+    "every session of the user other than the one performing the change",
+    "all tokens bound to those sessions"
+  ],
+  "protected_operation": "GET RS /api/data with the access token obtained by browser B before the password change",
+  "standards": [
+    "OWASP ASVS 5.0 V7.4.3 (option to terminate other sessions; not a universal automatic-termination requirement)",
+    "Explicit synthetic policy: terminate other sessions and their tokens after password change"
+  ],
+  "cwe_rule_path": [
+    "adjacent withdrawal event present (credential change reported successful)",
+    "pre-event artifact from another session presented after the event",
+    "protected operation succeeded",
+    "=> adjacent-authority-withdrawal failure under the declared laboratory policy (paper class B)"
+  ],
+  "neighbour_rules": {
+    "CWE-613 original sense (time-only expiration)": "not matched: an explicit account event exists",
+    "CWE-384 session fixation": "not matched",
+    "CWE-620 unverified password change": "not matched: the current password is verified before the change"
+  },
+  "uncertainty": {
+    "level": "medium",
+    "reason": "Other-session termination is an explicit synthetic policy choice; ASVS V7.4.3's option to terminate other sessions is not interpreted as a universal automatic-termination mandate."
+  },
+  "variants": {
+    "vulnerable": "Flags(vulnerable={'M6'})",
+    "fixed": "Flags(vulnerable=set())"
+  },
+  "paper_class": "B",
+  "lifecycle_family": "adjacent_withdrawal",
+  "lifecycle_event": "explicit credential change: POST IdP /password from browser A (200, changed=true)",
+  "normative_basis": "Explicit synthetic policy to terminate other sessions after password change; not a universal automatic-termination requirement."
+}

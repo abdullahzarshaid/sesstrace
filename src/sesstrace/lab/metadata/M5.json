@@ -1,0 +1,44 @@
+{
+  "id": "M5",
+  "title": "Cached authorization decision served after token revocation",
+  "component": "RS (resource server introspection cache)",
+  "flag_location": "sesslab/servers.py: RSState.__init__ cache_ttl (M5 flag)",
+  "vulnerable_behaviour": "The RS caches an active=true introspection result for 300 s and serves the protected resource from the cache after the token was revoked at the IdP.",
+  "fixed_behaviour": "cache_ttl = 0: every request is introspected, so revocation takes effect on the next request.",
+  "artifact": {
+    "type": "oauth_access_token",
+    "holder": "RP1 (on behalf of the browser)",
+    "issued_by": "IdP /token (authorization_code)"
+  },
+  "termination_trigger": "explicit token revocation: POST IdP /revoke token_type_hint=access_token (200)",
+  "declared_expected_scope": [
+    "the revoked access token at every resource server"
+  ],
+  "protected_operation": "GET RS /api/data with the revoked Bearer access token",
+  "standards": [
+    "RFC 7009",
+    "RFC 7662 s.4 (caching considerations)"
+  ],
+  "cwe_rule_path": [
+    "termination trigger present (revocation)",
+    "artifact presented after the trigger",
+    "protected operation succeeded with decision_source=cache",
+    "=> explicit-termination failure: a downstream verifier retains a pre-termination authorization decision"
+  ],
+  "neighbour_rules": {
+    "CWE-613 original sense (time-only expiration)": "partially overlapping: the residual window is bounded by the cache TTL (300 s), i.e. a time-limited residual after an explicit trigger",
+    "CWE-384 session fixation": "not matched"
+  },
+  "uncertainty": {
+    "level": "medium",
+    "reason": "the residual capability is time-bounded by the cache TTL, so classification depends on whether a bounded stale window counts as an explicit-termination failure; the trace records decision_source to make the cache path explicit"
+  },
+  "variants": {
+    "vulnerable": "Flags(vulnerable={'M5'})",
+    "fixed": "Flags(vulnerable=set())"
+  },
+  "paper_class": "A",
+  "lifecycle_family": "explicit_termination",
+  "lifecycle_event": "explicit token revocation: POST IdP /revoke token_type_hint=access_token (200)",
+  "normative_basis": "Declared laboratory cache-invalidation policy; RFC 7662 permits bounded caching, so the fixture tests its stated post-revocation contract rather than a universal zero-delay rule."
+}

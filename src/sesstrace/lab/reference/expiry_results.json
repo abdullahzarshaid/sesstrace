@@ -1,0 +1,426 @@
+{
+  "provenance": "Added during artifact revision; not part of the original six-withdrawal-witness result.",
+  "scenarios": [
+    {
+      "boundary_s": 19,
+      "clock": "manually_advanced_seconds",
+      "contract_satisfied": true,
+      "controls": {
+        "fresh_login_access": true,
+        "pre_condition_access": true,
+        "unrelated_user_access": true
+      },
+      "expected": "residual_access_at_boundary",
+      "id": "M7",
+      "lifetime_s": 10,
+      "mode": "idle",
+      "n_http_steps": 9,
+      "normative_basis": "synthetic_lab_policy",
+      "paper_class": "T",
+      "replay_status": 200,
+      "scenario_valid": true,
+      "steps": [
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 0,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 1
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 0,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 2
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 9,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 3
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 18,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 4
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 18,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "bob",
+          "status": 200,
+          "step": 5
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 19,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 6
+        },
+        {
+          "artifact_alias": "alice_fresh",
+          "clock_s": 19,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 7
+        },
+        {
+          "artifact_alias": "alice_fresh",
+          "clock_s": 19,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 8
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 19,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "bob",
+          "status": 200,
+          "step": 9
+        }
+      ],
+      "variant": "vulnerable"
+    },
+    {
+      "boundary_s": 19,
+      "clock": "manually_advanced_seconds",
+      "contract_satisfied": true,
+      "controls": {
+        "fresh_login_access": true,
+        "pre_condition_access": true,
+        "unrelated_user_access": true
+      },
+      "expected": "deny_at_boundary",
+      "id": "M7",
+      "lifetime_s": 10,
+      "mode": "idle",
+      "n_http_steps": 9,
+      "normative_basis": "synthetic_lab_policy",
+      "paper_class": "T",
+      "replay_status": 401,
+      "scenario_valid": true,
+      "steps": [
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 0,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 1
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 0,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 2
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 9,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 3
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 18,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 4
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 18,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "bob",
+          "status": 200,
+          "step": 5
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 19,
+          "endpoint": "/protected",
+          "outcome": "idle_expired",
+          "principal": null,
+          "status": 401,
+          "step": 6
+        },
+        {
+          "artifact_alias": "alice_fresh",
+          "clock_s": 19,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 7
+        },
+        {
+          "artifact_alias": "alice_fresh",
+          "clock_s": 19,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 8
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 19,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "bob",
+          "status": 200,
+          "step": 9
+        }
+      ],
+      "variant": "fixed"
+    },
+    {
+      "boundary_s": 10,
+      "clock": "manually_advanced_seconds",
+      "contract_satisfied": true,
+      "controls": {
+        "fresh_login_access": true,
+        "pre_condition_access": true,
+        "unrelated_user_access": true
+      },
+      "expected": "residual_access_at_boundary",
+      "id": "M8",
+      "lifetime_s": 10,
+      "mode": "absolute",
+      "n_http_steps": 9,
+      "normative_basis": "synthetic_lab_policy",
+      "paper_class": "T",
+      "replay_status": 200,
+      "scenario_valid": true,
+      "steps": [
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 0,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 1
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 0,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 2
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 9,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 3
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 9,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 4
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 9,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "bob",
+          "status": 200,
+          "step": 5
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 10,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 6
+        },
+        {
+          "artifact_alias": "alice_fresh",
+          "clock_s": 10,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 7
+        },
+        {
+          "artifact_alias": "alice_fresh",
+          "clock_s": 10,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 8
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 10,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "bob",
+          "status": 200,
+          "step": 9
+        }
+      ],
+      "variant": "vulnerable"
+    },
+    {
+      "boundary_s": 10,
+      "clock": "manually_advanced_seconds",
+      "contract_satisfied": true,
+      "controls": {
+        "fresh_login_access": true,
+        "pre_condition_access": true,
+        "unrelated_user_access": true
+      },
+      "expected": "deny_at_boundary",
+      "id": "M8",
+      "lifetime_s": 10,
+      "mode": "absolute",
+      "n_http_steps": 9,
+      "normative_basis": "synthetic_lab_policy",
+      "paper_class": "T",
+      "replay_status": 401,
+      "scenario_valid": true,
+      "steps": [
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 0,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 1
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 0,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 2
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 9,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 3
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 9,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 4
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 9,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "bob",
+          "status": 200,
+          "step": 5
+        },
+        {
+          "artifact_alias": "alice_initial",
+          "clock_s": 10,
+          "endpoint": "/protected",
+          "outcome": "absolute_expired",
+          "principal": null,
+          "status": 401,
+          "step": 6
+        },
+        {
+          "artifact_alias": "alice_fresh",
+          "clock_s": 10,
+          "endpoint": "/login",
+          "outcome": "token_issued",
+          "principal": null,
+          "status": 200,
+          "step": 7
+        },
+        {
+          "artifact_alias": "alice_fresh",
+          "clock_s": 10,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "alice",
+          "status": 200,
+          "step": 8
+        },
+        {
+          "artifact_alias": "bob_unrelated",
+          "clock_s": 10,
+          "endpoint": "/protected",
+          "outcome": "protected_operation",
+          "principal": "bob",
+          "status": 200,
+          "step": 9
+        }
+      ],
+      "variant": "fixed"
+    }
+  ],
+  "schema": "sesstrace-expiration/1.0",
+  "summary": {
+    "all_clean": true,
+    "controls_passed": 12,
+    "controls_total": 12,
+    "n_http_steps": 36,
+    "n_mechanisms": 2,
+    "n_scenarios": 4
+  }
+}

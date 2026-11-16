@@ -1,0 +1,44 @@
+{
+  "id": "M3",
+  "title": "Refresh token still mints tokens after RFC 7009 revocation",
+  "component": "IdP (revocation endpoint)",
+  "flag_location": "sesslab/servers.py: IdPState.route, path '/revoke' (M3 flag)",
+  "vulnerable_behaviour": "POST /revoke returns 200 (as RFC 7009 requires) but does not mark the refresh token revoked; the refresh_token grant continues to mint new access tokens.",
+  "fixed_behaviour": "POST /revoke marks the refresh token revoked; this laboratory additionally revokes access tokens issued from the same grant under its supported-token policy.",
+  "artifact": {
+    "type": "oauth_refresh_token",
+    "holder": "RP1 (client)",
+    "issued_by": "IdP /token (authorization_code)"
+  },
+  "termination_trigger": "explicit token revocation: POST IdP /revoke token_type_hint=refresh_token (200)",
+  "declared_expected_scope": [
+    "the revoked refresh token",
+    "access tokens issued from the same grant"
+  ],
+  "protected_operation": "POST IdP /token with the revoked refresh token, followed by successful GET RS /api/data as the expected subject using the minted access token",
+  "standards": [
+    "RFC 7009 s.2.1 and s.2.2"
+  ],
+  "cwe_rule_path": [
+    "termination trigger present (RFC 7009 revocation acknowledged with 200)",
+    "artifact presented after the trigger (refresh token)",
+    "protected operation succeeded (new token minted and usable at the expected resource)",
+    "=> explicit-termination failure: revocation acknowledged but not enforced"
+  ],
+  "neighbour_rules": {
+    "CWE-613 original sense (time-only expiration)": "not matched: refresh tokens here have no expiry; the failure is on the explicit path",
+    "CWE-384 session fixation": "not matched"
+  },
+  "uncertainty": {
+    "level": "low",
+    "reason": "revocation response and the subsequent successful grant are both in the trace; no third party involved"
+  },
+  "variants": {
+    "vulnerable": "Flags(vulnerable={'M3'})",
+    "fixed": "Flags(vulnerable=set())"
+  },
+  "paper_class": "A",
+  "lifecycle_family": "explicit_termination",
+  "lifecycle_event": "explicit token revocation: POST IdP /revoke token_type_hint=refresh_token (200)",
+  "normative_basis": "Explicit token-revocation contract for the revoked refresh token in the laboratory."
+}

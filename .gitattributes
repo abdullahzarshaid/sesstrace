@@ -1,0 +1,11 @@
+# Text files are stored and checked out with LF on every system, so that hashes do not depend on the machine.
+* text=auto eol=lf
+
+# Frozen and recorded files are never converted: their SHA-256 values are part of the record.
+checks/external_targets/** -text
+checks/phase2/**           -text
+checks/phase3/**           -text
+checks/phase3b/**          -text
+checks/records/**          -text
+src/sesstrace/lab/reference/** -text
+src/sesstrace/lab/metadata/**  -text
