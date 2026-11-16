@@ -38,6 +38,28 @@ class RecordsAreUnchanged(unittest.TestCase):
             with self.subTest(specification=series["specification"]):
                 self.assertEqual(specification.problems(load(series)), [])
 
+    def test_every_frozen_file_has_the_digest_of_its_freeze_log(self):
+        """Specifications, hosts, adapters, set-up scripts, counting helpers and Dockerfiles are the frozen files."""
+        logs = RECORDS / "freeze_logs"
+        frozen = {"external_targets": {}, "phase2": {}, "phase3": {}, "phase3b": {}}
+        for line in (logs / "libraries_single_run_1.sha256").read_text(encoding="utf-8").splitlines():
+            frozen["external_targets"][line[66:]] = line[:64]
+        for folder, log in (("phase2", "libraries_single_run_2.txt"), ("phase3", "cells_witness_distributions.txt"),
+                            ("phase3b", "application_cells_second.txt")):
+            # A later block replaces an earlier one, so the last digest of a path is the one in force.
+            for block in freeze.read_blocks(logs / log):
+                for digest, relative in block["files"]:
+                    frozen[folder][relative] = digest
+        checked = 0
+        for folder, digests in frozen.items():
+            for path in sorted((CHECKS / folder).rglob("*")):
+                if path.is_file():
+                    relative = path.relative_to(CHECKS / folder).as_posix()
+                    with self.subTest(file=folder + "/" + relative):
+                        self.assertEqual(sha256_file(path), digests.get(relative))
+                    checked += 1
+        self.assertEqual(checked, 36)
+
 
 class EvaluationsAreReproduced(unittest.TestCase):
     def test_evaluator_writes_the_archived_evaluation(self):

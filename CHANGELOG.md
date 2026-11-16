@@ -12,7 +12,7 @@ Added
 - `sesstrace lab verify`: runs the laboratory and compares it with the reference output kept in the package.
 - `checks/`: the frozen specifications, host applications, adapters and set-up scripts of the eight public targets, the
   records of the published runs, and container runners that use the package.
-- A test suite of 110 tests: the 36 tests of the laboratory, stub-server tests of the driver and the evaluator, tamper
+- A test suite of 111 tests: the 36 tests of the laboratory, stub-server tests of the driver and the evaluator, tamper
   tests of the audit, and tests that reproduce the archived evaluations from the archived records.
 
 Changed
