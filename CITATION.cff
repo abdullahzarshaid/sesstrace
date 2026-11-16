@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below. The entry will be replaced by the article once it has a DOI."
+title: "SessTrace: replay checks for the withdrawal of session authority"
+type: software
+version: 3.0.0
+license: MIT
+authors:
+  - family-names: "Bin Zarshaid"
+    given-names: "Abdullah"
+  - family-names: "Siddiqui"
+    given-names: "Shahbaz Akhtar"
+keywords:
+  - session management
+  - CWE-613
+  - token revocation
+  - reproducibility
+references:
+  - type: unpublished
+    title: "Lifecycle Conditions in CWE-613 Disclosures: A Reproducible, Evidence-Linked Characterisation"
+    notes: "Manuscript under review."
