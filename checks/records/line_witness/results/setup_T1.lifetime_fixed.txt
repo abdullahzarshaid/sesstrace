@@ -1,0 +1,7 @@
+head=0495ce5b534c4550f25228821db8098293439f2f
+install_exit=0
+witness_command=NODE_V8_COVERAGE=/out/raw/T1.lifetime_fixed.v8 NODE_OPTIONS='--require /p3/witness/node_preload.js' node /ext/hosts/fastify_session_host.js /tmp/checkout/T1/fixed 19600 3
+host_ready=1
+driver_exit=0
+host_exit=0
+analyze_exit=0

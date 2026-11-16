@@ -1,0 +1,11 @@
+head=sha256:a96c20c0997bae4a445bf717002328524c5449c2b64391032c671ff4e1d8b2fa
+install_exit=0
+run_01_T5.logout_host_ready=1
+run_02_T5.logout_host_ready=1
+run_03_T5.logout_host_ready=1
+run_01_T5.lifetime_host_ready=1
+run_02_T5.lifetime_host_ready=1
+run_03_T5.lifetime_host_ready=1
+run_01_T5.credential_change_host_ready=1
+run_02_T5.credential_change_host_ready=1
+run_03_T5.credential_change_host_ready=1

@@ -1,0 +1,14 @@
+head=sha256:1bc1ed4520ae9c50d62f58a64983a62298185376aafc84ca3472f76bce9835eb
+install_exit=0
+run_01_T8.logout_host_ready=1
+run_02_T8.logout_host_ready=1
+run_03_T8.logout_host_ready=1
+run_01_T8.lifetime_host_ready=1
+run_02_T8.lifetime_host_ready=1
+run_03_T8.lifetime_host_ready=1
+run_01_T8.credential_change_host_ready=1
+run_02_T8.credential_change_host_ready=1
+run_03_T8.credential_change_host_ready=1
+run_01_T8.account_disabled_host_ready=1
+run_02_T8.account_disabled_host_ready=1
+run_03_T8.account_disabled_host_ready=1

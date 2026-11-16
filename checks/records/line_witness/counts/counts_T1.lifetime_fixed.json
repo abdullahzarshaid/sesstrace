@@ -1,0 +1,57 @@
+{
+  "cell": "T1.lifetime",
+  "variant": "fixed",
+  "runtime": "node",
+  "counts": [
+    {
+      "file": "lib/fastifySession.js",
+      "line": 98,
+      "kind": "line",
+      "text": "restoredSession.destroy(err => {",
+      "role": "refusal",
+      "count": 1
+    },
+    {
+      "file": "lib/cookie.js",
+      "line": 14,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 9
+    },
+    {
+      "file": "lib/cookie.js",
+      "line": 15,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 4
+    },
+    {
+      "file": "lib/cookie.js",
+      "line": 16,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 4
+    },
+    {
+      "file": "lib/cookie.js",
+      "line": 63,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 26
+    },
+    {
+      "file": "lib/fastifySession.js",
+      "line": 95,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 4
+    },
+    {
+      "file": "lib/fastifySession.js",
+      "line": 97,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 4
+    }
+  ]
+}

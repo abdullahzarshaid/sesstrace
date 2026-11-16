@@ -1,0 +1,53 @@
+{
+  "target": "T3.lifetime",
+  "cve": "CVE-2018-1000814",
+  "package": "aiohttp-session",
+  "variant": "fixed",
+  "commit_expected": "1b356f01bbab57d041c9a75bacd72fbbf8524728",
+  "lifetime_seconds": 3,
+  "checkpoints": {
+    "pre_alice": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 2,
+      "artifact": "A1"
+    },
+    "replay_after_lifetime": {
+      "outcome": "denied",
+      "status": 401,
+      "reason": "contract_denial",
+      "step": 4,
+      "artifact": "A1"
+    },
+    "control_unexpired_other_user": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 5,
+      "artifact": "A2"
+    },
+    "control_fresh_login": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 7,
+      "artifact": "A3"
+    }
+  },
+  "sesstrace_invariant": {
+    "replay_after_lifetime": "PASS"
+  },
+  "waits": [
+    {
+      "required_seconds": 7.0,
+      "measured_seconds": 7.02,
+      "since_artifact": "A1",
+      "after_step": 2,
+      "note": "TERMINATION: the configured session lifetime has elapsed"
+    }
+  ],
+  "errors": [],
+  "http_steps": 7,
+  "utc_end": "2026-11-15T11:10:37Z"
+}

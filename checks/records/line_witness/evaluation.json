@@ -1,0 +1,457 @@
+{
+  "part": "C",
+  "cells": [
+    {
+      "cell": "T1.lifetime",
+      "runtime": "node",
+      "refusal": {
+        "file": "lib/fastifySession.js",
+        "line": 98,
+        "kind": "line",
+        "text": "restoredSession.destroy(err => {"
+      },
+      "expected_count_fixed": 1,
+      "revisions": {
+        "vulnerable": {
+          "run_valid": true,
+          "problems": [],
+          "replay": "success",
+          "expected_replay": "success",
+          "outcomes_as_specified": true,
+          "counts": [
+            {
+              "file": "lib/fastifySession.js",
+              "line": 96,
+              "kind": "line",
+              "expected_count": 0,
+              "role": "vulnerable_counterpart",
+              "count": 0
+            }
+          ]
+        },
+        "fixed": {
+          "run_valid": true,
+          "problems": [],
+          "replay": "denied",
+          "expected_replay": "denied",
+          "outcomes_as_specified": true,
+          "counts": [
+            {
+              "file": "lib/fastifySession.js",
+              "line": 98,
+              "kind": "line",
+              "text": "restoredSession.destroy(err => {",
+              "role": "refusal",
+              "count": 1
+            },
+            {
+              "file": "lib/cookie.js",
+              "line": 14,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 9
+            },
+            {
+              "file": "lib/cookie.js",
+              "line": 15,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 4
+            },
+            {
+              "file": "lib/cookie.js",
+              "line": 16,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 4
+            },
+            {
+              "file": "lib/cookie.js",
+              "line": 63,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 26
+            },
+            {
+              "file": "lib/fastifySession.js",
+              "line": 95,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 4
+            },
+            {
+              "file": "lib/fastifySession.js",
+              "line": 97,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 4
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "refusal_count_found": 1,
+      "vulnerable_counterpart_count_found": 0,
+      "result": "WITNESSED"
+    },
+    {
+      "cell": "T2.lifetime",
+      "runtime": "node",
+      "refusal": {
+        "file": "index.js",
+        "line": 197,
+        "kind": "line",
+        "text": "return null"
+      },
+      "expected_count_fixed": 1,
+      "revisions": {
+        "vulnerable": {
+          "run_valid": true,
+          "problems": [],
+          "replay": "success",
+          "expected_replay": "success",
+          "outcomes_as_specified": true,
+          "counts": []
+        },
+        "fixed": {
+          "run_valid": true,
+          "problems": [],
+          "replay": "denied",
+          "expected_replay": "denied",
+          "outcomes_as_specified": true,
+          "counts": [
+            {
+              "file": "index.js",
+              "line": 197,
+              "kind": "line",
+              "text": "return null",
+              "role": "refusal",
+              "count": 1
+            },
+            {
+              "file": "index.js",
+              "line": 53,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "index.js",
+              "line": 56,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "index.js",
+              "line": 57,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 0
+            },
+            {
+              "file": "index.js",
+              "line": 58,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 0
+            },
+            {
+              "file": "index.js",
+              "line": 128,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "index.js",
+              "line": 129,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "index.js",
+              "line": 148,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 4
+            },
+            {
+              "file": "index.js",
+              "line": 193,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 4
+            },
+            {
+              "file": "index.js",
+              "line": 194,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 4
+            },
+            {
+              "file": "index.js",
+              "line": 195,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "index.js",
+              "line": 196,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "index.js",
+              "line": 197,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "index.js",
+              "line": 198,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "index.js",
+              "line": 244,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 8
+            },
+            {
+              "file": "index.js",
+              "line": 292,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 8
+            },
+            {
+              "file": "index.js",
+              "line": 293,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 5
+            },
+            {
+              "file": "index.js",
+              "line": 294,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 5
+            },
+            {
+              "file": "index.js",
+              "line": 316,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 0
+            },
+            {
+              "file": "index.js",
+              "line": 317,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 0
+            },
+            {
+              "file": "index.js",
+              "line": 318,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 0
+            },
+            {
+              "file": "index.js",
+              "line": 320,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 0
+            },
+            {
+              "file": "index.js",
+              "line": 321,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 0
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "refusal_count_found": 1,
+      "result": "WITNESSED"
+    },
+    {
+      "cell": "T3.lifetime",
+      "runtime": "python",
+      "refusal": {
+        "file": "aiohttp_session/__init__.py",
+        "line": 30,
+        "kind": "line",
+        "text": "session_data = None"
+      },
+      "expected_count_fixed": 4,
+      "revisions": {
+        "vulnerable": {
+          "run_valid": true,
+          "problems": [],
+          "replay": "success",
+          "expected_replay": "success",
+          "outcomes_as_specified": true,
+          "counts": []
+        },
+        "fixed": {
+          "run_valid": true,
+          "problems": [],
+          "replay": "denied",
+          "expected_replay": "denied",
+          "outcomes_as_specified": true,
+          "counts": [
+            {
+              "file": "aiohttp_session/__init__.py",
+              "line": 30,
+              "kind": "line",
+              "text": "session_data = None",
+              "role": "refusal",
+              "count": 4
+            },
+            {
+              "file": "aiohttp_session/__init__.py",
+              "line": 27,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 7
+            },
+            {
+              "file": "aiohttp_session/__init__.py",
+              "line": 28,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 7
+            },
+            {
+              "file": "aiohttp_session/__init__.py",
+              "line": 29,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 7
+            },
+            {
+              "file": "aiohttp_session/__init__.py",
+              "line": 30,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 4
+            },
+            {
+              "file": "aiohttp_session/__init__.py",
+              "line": 32,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 3
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "refusal_count_found": 4,
+      "result": "WITNESSED"
+    },
+    {
+      "cell": "T4.concurrent_logout",
+      "runtime": "ruby",
+      "refusal": {
+        "file": "lib/rack/session/pool.rb",
+        "line": 56,
+        "kind": "branch_then",
+        "text": "return false unless get_session_with_fallback(session_id)"
+      },
+      "expected_count_fixed": 1,
+      "revisions": {
+        "vulnerable": {
+          "run_valid": true,
+          "problems": [],
+          "replay": "success",
+          "expected_replay": "success",
+          "outcomes_as_specified": true,
+          "counts": []
+        },
+        "fixed": {
+          "run_valid": true,
+          "problems": [],
+          "replay": "denied",
+          "expected_replay": "denied",
+          "outcomes_as_specified": true,
+          "counts": [
+            {
+              "file": "lib/rack/session/pool.rb",
+              "line": 56,
+              "kind": "branch_then",
+              "text": "return false unless get_session_with_fallback(session_id)",
+              "role": "refusal",
+              "count": 1
+            },
+            {
+              "file": "lib/rack/session/pool.rb",
+              "line": 56,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 11
+            },
+            {
+              "file": "lib/rack/session/pool.rb",
+              "line": 67,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "lib/rack/session/pool.rb",
+              "line": 68,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "lib/rack/session/pool.rb",
+              "line": 69,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "lib/rack/session/pool.rb",
+              "line": 70,
+              "kind": "line",
+              "role": "fix_line",
+              "count": 1
+            },
+            {
+              "file": "lib/rack/session/pool.rb",
+              "line": 71,
+              "kind": "line",
+              "role": "fix_line",
+              "count": null
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "refusal_count_found": 1,
+      "result": "WITNESSED"
+    }
+  ],
+  "counts": {
+    "WITNESSED": 4,
+    "NOT_WITNESSED": 0,
+    "NOT_DONE": 0
+  }
+}

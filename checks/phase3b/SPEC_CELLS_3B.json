@@ -1,0 +1,379 @@
+{
+  "study": "Phase 3b: two cells added to phase 3 (the withdrawn link-share grant of Vikunja, and a second attempt of T7.credential_change with a corrected set-up)",
+  "status_when_written": "NOT RUN. Written before any phase 3b request reached the applications.",
+  "repeats_per_revision": 3,
+  "run_order": "As phase 3 part D: for each target and release, for each cell, for run 1 to 3, a private --internal network, a secrets volume, the application container from the pinned image and one container for the set-up, the adapter and the driver; all removed after the run.",
+  "commit_note": "For an application the fields vulnerable_commit and fixed_commit hold the digest of the pinned image; the set-up record of each run states the digest of the image that ran.",
+  "contract_lifecycle_condition": {
+    "logout": "A",
+    "lifetime": "T",
+    "credential_change": "B",
+    "account_disabled": "B",
+    "grant_withdrawn": "B"
+  },
+  "contract_grant_withdrawn": "The credential is the link-share token that the application issues for a share; the event is the deletion of that share by the project owner; the copied share token is replayed. Its lifecycle condition is taken as B (authority that continues after the grant behind it is withdrawn; Supplement/dataset/Codebook.txt line 9).",
+  "class_definitions_source": "Supplement/dataset/Codebook.txt lines 7 (A), 9 (B) and 11 (T)",
+  "reading_rule": "For T5, if grant_withdrawn changes between the two releases, the lifecycle condition that the repair enforces is B, which is compared with the frozen class of the record (B). For T7 the cell is a second attempt of a phase 3 cell; its reading is the one of phase 3. The comparison is reported whichever way it falls.",
+  "not_run": {
+    "T5.permission_downgrade": "The permission downgrade named in the same disclosure is not run: the identity request does not show a permission level."
+  },
+  "adapter_contract": {
+    "login": "GET /login?user=alice|bob: the application's own login for that account; 200 {\"logged_in\": true} and the cookie sid carrying the application's session cookie or token unchanged",
+    "profile": "GET /profile: the application's own identity request with what sid carries; 200 {\"sub\": <alice|bob>, \"rp\": \"RP1\"} only when the application names that account; 401 {\"error\": \"no_session\"} only for the not-logged-in answer stated per target in adapter_denial; otherwise 502 {\"error\": \"unrecognized\"}",
+    "logout": "GET /logout: the application's own logout; 200 {\"logged_out\": true} when the application reports success",
+    "events": "GET /delete_share?user=alice answers {\"terminated\": true} (T5); GET /change_password?user=alice answers {\"changed\": true} (T7); GET /ready"
+  },
+  "adapter_denial": {
+    "T5": "HTTP 500 whose message is 'Could not determine the current user.' (the wrapped ErrLinkShareTokenInvalid of the fixed release), or HTTP 401 whose message is 'missing, malformed, expired or otherwise invalid token provided' (a token the JWT middleware rejects)",
+    "T7": "HTTP 401 whose first error code is INVALID_CREDENTIALS, INVALID_TOKEN or TOKEN_EXPIRED"
+  },
+  "target_setup": {
+    "T5": {
+      "package": "Vikunja",
+      "cve": "CVE-2026-35594",
+      "frozen_v2_class": "B",
+      "project": "vikunja",
+      "image": {
+        "vulnerable": "docker.io/vikunja/vikunja@sha256:a96c20c0997bae4a445bf717002328524c5449c2b64391032c671ff4e1d8b2fa",
+        "fixed": "docker.io/vikunja/vikunja@sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93"
+      },
+      "release": {
+        "vulnerable": "2.2.2",
+        "fixed": "2.3.0"
+      },
+      "app_port": 3456,
+      "app_ready_path": "/api/v1/info",
+      "app_command": null,
+      "app_env": {
+        "VIKUNJA_SERVICE_JWTTTLSHORT": "30",
+        "VIKUNJA_SERVICE_PUBLICURL": "http://app:3456/",
+        "VIKUNJA_FILES_BASEPATH": "/tmp/vikunja-files",
+        "VIKUNJA_DATABASE_PATH": "/tmp/vikunja.db"
+      },
+      "settings_basis": [
+        "VIKUNJA_SERVICE_JWTTTLSHORT=30: config key service.jwtttlshort (pkg/config/config.go line 47 at 2.2.2, 48 at 2.3.0; default 600 seconds, line 339 or 342), set through the environment as the project documents for its container.",
+        "VIKUNJA_SERVICE_PUBLICURL=http://app:3456/: config key service.publicurl (pkg/config/config.go line 51 at 2.2.2, 52 at 2.3.0); both releases refuse to start without it while cors.enable is true (line 649 or 669). Added by boot repair 1 of T5.",
+        "VIKUNJA_FILES_BASEPATH=/tmp/vikunja-files and VIKUNJA_DATABASE_PATH=/tmp/vikunja.db: config keys files.basepath (pkg/config/config.go line 159 or 160) and database.path (line 111 or 112). The image runs as user 1000 and cannot create /app/vikunja/files; the project expects mounted volumes, which the rules of this run exclude, so both paths are placed in /tmp of the throw-away container. Added by boot repair 2 of T5.",
+        "Same image digests and documented settings as the final phase 3 set-up of T5 (phase3/SPEC_CELLS_D.json, after its two boot repairs)."
+      ],
+      "not_run": {},
+      "selection_row": "candidate_screening_153 row 6",
+      "setup_script": "phase3b/setup/vikunja_share_setup.sh",
+      "adapter": "phase3b/adapters/vikunja_share_adapter.py"
+    },
+    "T7": {
+      "package": "Directus",
+      "cve": "CVE-2024-34709",
+      "frozen_v2_class": "A",
+      "project": "directus",
+      "image": {
+        "vulnerable": "docker.io/directus/directus@sha256:9736a768e8fbfcb5e6861574d6e824ddad434df992a3b826c84ae94937ae060c",
+        "fixed": "docker.io/directus/directus@sha256:a91754327ae0fe0020100c524e1a879ca36463ac5fef8e18be382e2e187992ad"
+      },
+      "release": {
+        "vulnerable": "10.10.7",
+        "fixed": "10.11.0"
+      },
+      "app_port": 8055,
+      "app_ready_path": "/server/health",
+      "app_command": [
+        "sh",
+        "-c",
+        "export ADMIN_PASSWORD=\"$(cat /secrets/admin_password)\" KEY=\"$(cat /secrets/app_key)\" SECRET=\"$(cat /secrets/app_secret)\" && exec docker-entrypoint.sh /bin/sh -c 'node cli.js bootstrap && pm2-runtime start ecosystem.config.cjs'"
+      ],
+      "app_env": {
+        "DB_CLIENT": "sqlite3",
+        "DB_FILENAME": "/directus/database/data.db",
+        "ADMIN_EMAIL": "admin@example.com",
+        "SESSION_COOKIE_TTL": "30s",
+        "TELEMETRY": "false"
+      },
+      "settings_basis": [
+        "DB_CLIENT, DB_FILENAME, ADMIN_EMAIL, ADMIN_PASSWORD, KEY, SECRET and SESSION_COOKIE_TTL are the environment settings the project documents for its container image; SESSION_COOKIE_TTL is read in api/src/services/authentication.ts line 227 (both revisions). ADMIN_PASSWORD, KEY and SECRET are read from the run's secrets volume at start; the image's own start command (bootstrap, then pm2-runtime) is kept.",
+        "Boot repair 1 of T7: the addresses use the domain example.com, reserved for documentation, because the bootstrap of Directus refuses admin@example.test as not a valid email address.",
+        "Second attempt: the set-up adds one permission rule for the role of alice and bob through the documented permission API (POST /permissions; docs/reference/system/permissions.md lines 12 to 53 and 241 to 303 at v10.10.7): collection directus_users, action update, fields password, rule id _eq $CURRENT_USER (dynamic variable, docs/reference/filter-rules.md line 206). Without it the minimal app-access permissions give the role only read on its own user (packages/system-data/src/app-access-permissions/app-access-permissions.yaml lines 83 to 89 at both releases), which is why every phase 3 run of this cell got 403 on PATCH /users/me."
+      ],
+      "not_run": {},
+      "selection_row": "candidate_screening_153 row 32",
+      "setup_script": "phase3b/setup/directus_setup.sh",
+      "adapter": "phase3/adapters/directus_adapter.py"
+    }
+  },
+  "targets": [
+    {
+      "id": "T5.grant_withdrawn",
+      "target": "T5",
+      "contract": "grant_withdrawn",
+      "cve": "CVE-2026-35594",
+      "frozen_v2_class": "B",
+      "package": "Vikunja",
+      "repository": null,
+      "vulnerable_commit": "sha256:a96c20c0997bae4a445bf717002328524c5449c2b64391032c671ff4e1d8b2fa",
+      "fixed_commit": "sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (share of her project)",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob (share of his project)",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice (share)",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob (share)",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "event",
+          "path": "/delete_share?user=alice",
+          "field": "terminated",
+          "as": "alice (project owner)",
+          "checkpoint": "termination",
+          "note": "TERMINATION: the project owner deletes the link share"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying the copied share token of alice)",
+          "checkpoint": "replay_after_grant_withdrawn"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob (share)",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "bob",
+          "as": "bob (fresh authentication of his share)",
+          "artifact": "bob2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "bob2",
+          "as": "bob (fresh authentication of his share)",
+          "checkpoint": "control_fresh_login_other_user"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_grant_withdrawn"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login_other_user",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login_other_user": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_grant_withdrawn": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login_other_user": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_grant_withdrawn": "denied"
+        }
+      },
+      "replay_requires": {
+        "replay_after_grant_withdrawn": {
+          "termination": "reported"
+        }
+      },
+      "expected_category": "FLIPS",
+      "identity_request": "GET /api/v1/projects with the share token. The application's own identity request GET /api/v1/user is NOT used, because it does not go through the repaired code: for a link share it calls GetUserOrLinkShareUser (pkg/models/users.go lines 26 to 38, identical at both releases), which reads the share row with GetLinkShareByID and therefore refuses a deleted share at the vulnerable release too. The project list goes through GetAuthFromClaims and, at the vulnerable release, answers from the claims of the token alone; it names the project that the share grants, whose title (set by the set-up) identifies alice's or bob's share.",
+      "source_basis": [
+        "Advisory (GHSA-96q5-xm3p-7m84, NVD description of CVE-2026-35594): 'When a project owner deletes a link share or downgrades its permissions, all previously issued JWTs continue to grant the original permission level for up to 72 hours (the default service.jwtttl).'",
+        "Both releases: a link share is authenticated with POST /api/v1/shares/:share/auth (pkg/routes/routes.go line 392 at 2.2.2, 407 at 2.3.0; pkg/routes/api/v1/link_sharing_auth.go AuthenticateLinkShare line 54), which returns a JWT made by NewLinkShareJWTAuthtoken (pkg/modules/auth/auth.go line 142 onwards) with the claims id, hash, project_id, permission and sharedByID and the lifetime service.jwtttl (line 145; not changed by the settings of this run, default 72 hours).",
+        "Both releases: the owner deletes the share with DELETE /api/v1/projects/:project/shares/:share (routes.go line 485 at 2.2.2, 503 at 2.3.0), which removes the row (pkg/models/link_sharing.go Delete, line 313 at 2.2.2, 318 at 2.3.0).",
+        "Both releases: GET /api/v1/projects (routes.go line 469 at 2.2.2, 487 at 2.3.0) is served by the generic ReadAllWeb handler, which first calls GetAuthFromClaims (pkg/web/handler/read_all.go lines 42 to 44); for a link-share token GetAuthFromClaims calls GetLinkShareFromClaims (pkg/modules/auth/auth.go line 186).",
+        "Vulnerable release, pkg/models/link_sharing.go GetLinkShareFromClaims lines 88 to 119: the share is built from the claims of the token only, with no database read, and getAllRawProjects (pkg/models/project.go line 219 onwards) returns the project of claims project_id. The copied token of a deleted share therefore still lists alice's project: success.",
+        "Fixed release, pkg/models/link_sharing.go GetLinkShareFromClaims lines 94 to 124: the share row is read with GetLinkShareByID; a missing row returns ErrLinkShareTokenInvalid. read_all.go line 44 wraps this as echo.NewHTTPError(500, 'Could not determine the current user.'), and the error handler (pkg/routes/error_handler.go, identical at both releases) answers HTTP 500 with that message, because the wrapped error is not unwrapped. The copy is refused: denied.",
+        "Controls: bob's share is not deleted, so his token and a fresh authentication of his share work at both releases; a value never issued is refused by the JWT middleware with HTTP 401 at both releases (pkg/routes/api_tokens.go, ErrorHandler)."
+      ]
+    },
+    {
+      "id": "T7.credential_change",
+      "target": "T7",
+      "contract": "credential_change",
+      "cve": "CVE-2024-34709",
+      "frozen_v2_class": "A",
+      "package": "Directus",
+      "repository": null,
+      "vulnerable_commit": "sha256:9736a768e8fbfcb5e6861574d6e824ddad434df992a3b826c84ae94937ae060c",
+      "fixed_commit": "sha256:a91754327ae0fe0020100c524e1a879ca36463ac5fef8e18be382e2e187992ad",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "event",
+          "path": "/change_password?user=alice",
+          "field": "changed",
+          "as": "alice (second, separate login)",
+          "checkpoint": "termination",
+          "note": "TERMINATION: the user changes the password in a second login"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_credential_change"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login with the new password)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login with the new password)",
+          "checkpoint": "control_fresh_login"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_credential_change"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_credential_change": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_credential_change": "success"
+        }
+      },
+      "source_basis": [
+        "Both revisions, api/src/services/authentication.ts lines 204 to 241: a login in session mode signs a JWT with the session id in the claim session and with expiresIn SESSION_COOKIE_TTL, and stores the session row with the refresh lifetime.",
+        "Vulnerable revision, api/src/utils/get-accountability-for-token.ts line 25: the session JWT is checked by verifyAccessJWT only (signature and exp). Fixed revision lines 24 to 28: verifySessionJWT (api/src/utils/verify-session-jwt.ts lines 10 to 25) also requires the session row for that token and user, unexpired, and otherwise throws InvalidTokenError (401 INVALID_TOKEN).",
+        "Both revisions, api/src/services/users.ts updateMany (lines 263 to 320 at 10.10.7, 264 to 321 at 10.11.0): a change of password or status deletes no session row.",
+        "Both revisions: the password change deletes no session row and the JWT stays valid, so the copy is accepted at both revisions."
+      ],
+      "expectation_origin": "frozen in phase 3 (phase3/SPEC_CELLS_D.json, cell T7.credential_change, freeze blocks D-T7); plan, checkpoints, expectations and source basis copied unchanged. Second attempt with a corrected set-up; the first attempt (results_phase3_20261115T095747Z) had no valid run.",
+      "replay_requires": {
+        "replay_after_credential_change": {
+          "termination": "reported"
+        }
+      },
+      "expected_category": "ACCEPTED_AT_BOTH"
+    }
+  ],
+  "categories": {
+    "FLIPS": "accepted at the vulnerable release, refused at the fixed one",
+    "REFUSED_AT_BOTH": "refused at both",
+    "ACCEPTED_AT_BOTH": "accepted at both"
+  },
+  "verdict_rule": {
+    "run_valid": "As in part B: correct set-up (image digest, set-up exit 0, adapter ready), every control as expected, no transport or order error, every wait long enough.",
+    "per_cell": [
+      "CONFIRMED: all 6 runs valid and every replay as expected.",
+      "NOT_CONFIRMED: at least one valid run has a replay that differs.",
+      "INCONCLUSIVE: no valid run differs but at least one run is invalid."
+    ]
+  },
+  "scope": "Two cells on two complete applications at two releases each, behind adapters written for this check. It is not a benchmark and not a detection rate."
+}

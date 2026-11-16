@@ -1,0 +1,169 @@
+{
+  "cell": "T2.lifetime",
+  "variant": "fixed",
+  "runtime": "node",
+  "counts": [
+    {
+      "file": "index.js",
+      "line": 197,
+      "kind": "line",
+      "text": "return null",
+      "role": "refusal",
+      "count": 1
+    },
+    {
+      "file": "index.js",
+      "line": 53,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "index.js",
+      "line": 56,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "index.js",
+      "line": 57,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 0
+    },
+    {
+      "file": "index.js",
+      "line": 58,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 0
+    },
+    {
+      "file": "index.js",
+      "line": 128,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "index.js",
+      "line": 129,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "index.js",
+      "line": 148,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 4
+    },
+    {
+      "file": "index.js",
+      "line": 193,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 4
+    },
+    {
+      "file": "index.js",
+      "line": 194,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 4
+    },
+    {
+      "file": "index.js",
+      "line": 195,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "index.js",
+      "line": 196,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "index.js",
+      "line": 197,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "index.js",
+      "line": 198,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "index.js",
+      "line": 244,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 8
+    },
+    {
+      "file": "index.js",
+      "line": 292,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 8
+    },
+    {
+      "file": "index.js",
+      "line": 293,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 5
+    },
+    {
+      "file": "index.js",
+      "line": 294,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 5
+    },
+    {
+      "file": "index.js",
+      "line": 316,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 0
+    },
+    {
+      "file": "index.js",
+      "line": 317,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 0
+    },
+    {
+      "file": "index.js",
+      "line": 318,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 0
+    },
+    {
+      "file": "index.js",
+      "line": 320,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 0
+    },
+    {
+      "file": "index.js",
+      "line": 321,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 0
+    }
+  ]
+}

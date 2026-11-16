@@ -1,0 +1,244 @@
+=== FREEZE A utc=2026-11-15T10:32:30Z
+reason: part A: matrix plan, expected results and runner, written before the laboratory was run in any image of the plan
+4dda9872a7aa593c09b4996e89116a9b2f0732af28189c92f5c1fd8defdaa8bd  MATRIX_PLAN.json
+325f997b01fb7ccad2054e6f85dac6b531ed4411928d12ff6f9b3ade4bd3712d  run_A.sh
+0d084358c9cb8246bedab6a6d2f78afa0f7c05bd687f1b22f5ae0eafe267958c  in_container_A.sh
+86f04f4f001df7a25c843fb49915f635f9152aef97b1cfed547ff756f91fe4a5  evaluate_A.py
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+a8631e0211b8971c72644d80e6f4f66b16aa1563872c7a5f2c8847e5598eacd4  A_dockerfiles/A01_debian12.Dockerfile
+6c8abe87d660204707797bf2c00b7a8dc171b05ca26de308b535469d11a70d05  A_dockerfiles/A02_debian13.Dockerfile
+af83764d8df5e4b83289303055618d2dcdafbe3908749cc3925c8d6a84e84230  A_dockerfiles/A03_ubuntu2204.Dockerfile
+97df45cbfd0411543f26bb92ed2e503cc00145bbe8be8ff0797c4d70964f459c  A_dockerfiles/A04_ubuntu2404.Dockerfile
+0bf11057bbaf639812d97ac372e230189e4b6be22ac9bff99ea9fd17daaa45d3  A_dockerfiles/A05_fedora45.Dockerfile
+3a81768b1f00d28034fdc8cca551be25a5931a46d3aa97ce68e61db26b57d8bd  A_dockerfiles/A06_almalinux9.Dockerfile
+1224bd4ba74cd074dc2a8f65dfab7ee9badd423c413f34c593e40c80d0747457  A_dockerfiles/A07_opensuse_leap16.Dockerfile
+f9fafad72988b55fff84219d6f02906e432a0ad9f33828b5c2be49cd59ed486a  A_dockerfiles/A08_archlinux.Dockerfile
+ef5945c4961ecb45908dcad1ff03f2c8c393a709873f9e6e0d3ad872874ac05b  A_dockerfiles/A09_alpine324.Dockerfile
+a5ef0206b668b703fcb0de7956863e23f4aa503179f80f331b88fdc5dabfbffa  A_dockerfiles/A10_amazonlinux2023.Dockerfile
+=== END
+
+=== FREEZE B utc=2026-11-15T10:49:31Z
+reason: part B: cell specification (frozen expectations of phases 1 and 2 copied, new cells written from source), driver, evaluator, self-test and run scripts, written before the first part B request
+f32908bddaba16cb305ff10a8e9c87f490a12ffd77294b3ce5712c7e95b2ec6f  SPEC_CELLS.json
+a8e66cc76a7d1f30fa152558d580a101ef595163e3dc0d121edde8d3f73906fc  external_driver_phase3.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+debabf22b3a97827a91836103970f81dabfaa24f41f7855614c2941805e7902b  selftest_phase3.py
+593ba13c6fc8be7b5abebcbb6acd234d3efee4804348d66d40191c692a64a68b  in_container_B.sh
+0138d6d33d317514e2b9d24a20f7fdec48197d4aeb97a8242812a687ab654c2b  run_B.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+708a0f2a543df7b38c716a9714c5ffc76ed117553e2a93d245f52111509ad722  reference/EXTERNAL_SPEC.json
+38bc3322cd39590210b4bb8fa3bdaa7642fa85f496d89eb04579e6c7082ff711  reference/EXTERNAL_SPEC_PHASE2.json
+=== END
+
+=== FREEZE C utc=2026-11-15T11:14:28Z
+reason: part C: witness specification (lines from the diff of the pinned commits, refusal point, argument and expected count), counting helpers, run scripts and evaluator, written before the first witness run
+7f2185db002a17b6cc9f4a723d960d49d41a9862ee74b9b4f0798384415317ac  SPEC_WITNESS.json
+f32908bddaba16cb305ff10a8e9c87f490a12ffd77294b3ce5712c7e95b2ec6f  SPEC_CELLS.json
+8c9c0416e741c01d69854a3cba5695f2e2df4145104700734c86fc162a3f5273  in_container_C.sh
+45f212c2fc0e5d34220eba0fdde05b7d0f00c4fa20fce559e4aaf2f9ca0ee2c6  run_C.sh
+8de564d4ecf0aa88035c0c2f06c31ff7c9d26f4250be557d48ec57a7067886d1  evaluate_C.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+a8e66cc76a7d1f30fa152558d580a101ef595163e3dc0d121edde8d3f73906fc  external_driver_phase3.py
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+3b11859561d524236c28c80341611dd32c056f542e431270b53f6d24a25c5935  witness/node_preload.js
+d0fdf67fab16c69f1a1bc3633a07249bda56c92e40cb4cccc9835526f104ef14  witness/ruby_coverage.rb
+648cfdbf80c2ae4ce8aec3e43a8d5c64f82f4d84b44aebf0c352a899ad37f313  witness/python_trace_run.py
+a3e2c4f443b41abbeaf1bbfbbd9ba7a5194fe3f6f4516ff050b1a9122ac40a17  witness/analyze_witness.py
+=== END
+
+=== FREEZE D-T5 utc=2026-11-15T11:24:23Z
+reason: part D, target T5 (vikunja): specification, set-up script, adapter, driver, evaluator, self-test and run scripts, written before any request reached the application
+dd8757baa9ac7b4717b864324763a34ca53b86fef80581112d6161d0fc7f13c7  SPEC_CELLS_D.json
+1ada874870f236a70ae548de7e23f58af3919b7c00988e561c06dea281d4f074  setup/vikunja_setup.sh
+2c52bda08785a5a6e4b5662555b84eb1787bf7e3735c6724d9f6f7ed2b95d8d9  adapters/vikunja_adapter.py
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+=== END
+
+=== FREEZE D-T6 utc=2026-11-15T11:24:24Z
+reason: part D, target T6 (fuxa): specification, set-up script, adapter, driver, evaluator, self-test and run scripts, written before any request reached the application
+dd8757baa9ac7b4717b864324763a34ca53b86fef80581112d6161d0fc7f13c7  SPEC_CELLS_D.json
+c7325c6086628b250a9602fbb11b6ca8038ca85aaed6e5090c0edc8ef818d73f  setup/fuxa_setup.sh
+2cd11703bac5534b62de42fa199f2eb24f68f2dc480dbe693b99b9278ab35685  adapters/fuxa_adapter.py
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+=== END
+
+=== FREEZE D-T7 utc=2026-11-15T11:24:24Z
+reason: part D, target T7 (directus): specification, set-up script, adapter, driver, evaluator, self-test and run scripts, written before any request reached the application
+dd8757baa9ac7b4717b864324763a34ca53b86fef80581112d6161d0fc7f13c7  SPEC_CELLS_D.json
+3afba3e88daf90f2af5e8db4beb1acc10d8dccc65fd7d41f5dd70a90bec3ce1a  setup/directus_setup.sh
+e7054e1031f41d72a036e4c2a982f26387a6d158ef0b8e784a890c5518570075  adapters/directus_adapter.py
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+=== END
+
+=== FREEZE D-T8 utc=2026-11-15T11:24:24Z
+reason: part D, target T8 (kanboard): specification, set-up script, adapter, driver, evaluator, self-test and run scripts, written before any request reached the application
+dd8757baa9ac7b4717b864324763a34ca53b86fef80581112d6161d0fc7f13c7  SPEC_CELLS_D.json
+8aad686c2e0744e269120b1e4a11778c141fd42977a2ec5b76a5c374fbb73ec6  setup/kanboard_setup.sh
+2ea94b5f63e62567cbc5c37f0a8c92d0b42d78f62a129a712b269de0d86ee522  adapters/kanboard_adapter.py
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+=== END
+
+=== FREEZE D-T5 utc=2026-11-15T11:46:47Z
+reason: boot repair 1 of T5 (vikunja): boot check 1 found that both releases refuse to start without service.publicurl while cors.enable is true (D_boot_1, app log); the documented setting VIKUNJA_SERVICE_PUBLICURL was added to target_setup.T5.app_env, and the set-up script uses example.com addresses because the Directus bootstrap refused example.test. No plan, checkpoint, expectation or source basis changed. Boot attempt 2 (D_boot_2) stopped at the freeze check in every container, before any set-up or request, because these blocks had not yet been written (a shell error of the operator of the run).
+fa8ba1bf51c1d9ef25899ec17caf572a0c7c7c276f64099c8b1e18f12ea59188  SPEC_CELLS_D.json
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+e8587d1f04777b051ea8eb09ce19641ef489bf9cbf280e8541143bea07a98624  setup/vikunja_setup.sh
+2c52bda08785a5a6e4b5662555b84eb1787bf7e3735c6724d9f6f7ed2b95d8d9  adapters/vikunja_adapter.py
+=== END
+
+=== FREEZE D-T6 utc=2026-11-15T11:46:47Z
+reason: re-frozen, not a repair of T6: the shared specification file changed for the boot repairs of T5 and T7; no field of T6 changed. Boot check 1 of T6 passed at both releases.
+fa8ba1bf51c1d9ef25899ec17caf572a0c7c7c276f64099c8b1e18f12ea59188  SPEC_CELLS_D.json
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+c7325c6086628b250a9602fbb11b6ca8038ca85aaed6e5090c0edc8ef818d73f  setup/fuxa_setup.sh
+2cd11703bac5534b62de42fa199f2eb24f68f2dc480dbe693b99b9278ab35685  adapters/fuxa_adapter.py
+=== END
+
+=== FREEZE D-T7 utc=2026-11-15T11:46:47Z
+reason: boot repair 1 of T7 (directus): boot check 1 found that the bootstrap stops with Validation failed for field email for admin@example.test (D_boot_diag, a start that asked /server/ping and /server/health only); ADMIN_EMAIL and the addresses in the set-up script and the adapter now use example.com, reserved for documentation. No plan, checkpoint, expectation or source basis changed. Boot attempt 2 (D_boot_2) stopped at the freeze check in every container, before any set-up or request, because these blocks had not yet been written (a shell error of the operator of the run).
+fa8ba1bf51c1d9ef25899ec17caf572a0c7c7c276f64099c8b1e18f12ea59188  SPEC_CELLS_D.json
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+7037a0a07e477f71742e593295bfd2375d5728fdc4508f5ea5c013bce2899ae5  setup/directus_setup.sh
+1fbe6b7e346715e0294d1a8a20ab85eeb96df8b4d9bfa9b1db62dcd46341a4c9  adapters/directus_adapter.py
+=== END
+
+=== FREEZE D-T8 utc=2026-11-15T11:46:48Z
+reason: re-frozen, not a repair of T8: the shared specification file changed for the boot repairs of T5 and T7; no field of T8 changed. Boot check 1 of T8 passed at both releases.
+fa8ba1bf51c1d9ef25899ec17caf572a0c7c7c276f64099c8b1e18f12ea59188  SPEC_CELLS_D.json
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+8aad686c2e0744e269120b1e4a11778c141fd42977a2ec5b76a5c374fbb73ec6  setup/kanboard_setup.sh
+2ea94b5f63e62567cbc5c37f0a8c92d0b42d78f62a129a712b269de0d86ee522  adapters/kanboard_adapter.py
+=== END
+
+=== FREEZE D-T5 utc=2026-11-15T11:58:34Z
+reason: boot repair 2 of T5 (vikunja): boot check 3 (D_boot_3) found that the image, which runs as user 1000, cannot create /app/vikunja/files; the documented settings VIKUNJA_FILES_BASEPATH and VIKUNJA_DATABASE_PATH now place both in /tmp of the throw-away container, because the project expects mounted volumes and this run mounts no host folder. No plan, checkpoint, expectation or source basis changed.
+d2da77c0fbdc8c5ca555230e4d898a1384d0103812a56709239e91dd688c0ad6  SPEC_CELLS_D.json
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+e8587d1f04777b051ea8eb09ce19641ef489bf9cbf280e8541143bea07a98624  setup/vikunja_setup.sh
+2c52bda08785a5a6e4b5662555b84eb1787bf7e3735c6724d9f6f7ed2b95d8d9  adapters/vikunja_adapter.py
+=== END
+
+=== FREEZE D-T6 utc=2026-11-15T11:58:34Z
+reason: re-frozen, not a repair of T6: the shared specification file changed for boot repair 2 of T5; no field of T6 changed.
+d2da77c0fbdc8c5ca555230e4d898a1384d0103812a56709239e91dd688c0ad6  SPEC_CELLS_D.json
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+c7325c6086628b250a9602fbb11b6ca8038ca85aaed6e5090c0edc8ef818d73f  setup/fuxa_setup.sh
+2cd11703bac5534b62de42fa199f2eb24f68f2dc480dbe693b99b9278ab35685  adapters/fuxa_adapter.py
+=== END
+
+=== FREEZE D-T7 utc=2026-11-15T11:58:35Z
+reason: re-frozen, not a repair of T7: the shared specification file changed for boot repair 2 of T5; no field of T7 changed.
+d2da77c0fbdc8c5ca555230e4d898a1384d0103812a56709239e91dd688c0ad6  SPEC_CELLS_D.json
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+7037a0a07e477f71742e593295bfd2375d5728fdc4508f5ea5c013bce2899ae5  setup/directus_setup.sh
+1fbe6b7e346715e0294d1a8a20ab85eeb96df8b4d9bfa9b1db62dcd46341a4c9  adapters/directus_adapter.py
+=== END
+
+=== FREEZE D-T8 utc=2026-11-15T11:58:35Z
+reason: re-frozen, not a repair of T8: the shared specification file changed for boot repair 2 of T5; no field of T8 changed.
+d2da77c0fbdc8c5ca555230e4d898a1384d0103812a56709239e91dd688c0ad6  SPEC_CELLS_D.json
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+8aad686c2e0744e269120b1e4a11778c141fd42977a2ec5b76a5c374fbb73ec6  setup/kanboard_setup.sh
+2ea94b5f63e62567cbc5c37f0a8c92d0b42d78f62a129a712b269de0d86ee522  adapters/kanboard_adapter.py
+=== END
+
+=== FREEZE D-T7 utc=2026-11-15T12:33:18Z
+reason: second run of T7 at the vulnerable release only: in the first run (D_run) the pull of the pinned image docker.io/directus/directus@sha256:9736a768 timed out at the registry (container_pull_T7_vulnerable.txt: context deadline exceeded), the runner skipped that release and no checkpoint was reached. run_D_second.sh is a copy of run_D.sh with the variable ONLY_VARIANT added; every other file is unchanged. The first run of the fixed release stands and is not repeated.
+d2da77c0fbdc8c5ca555230e4d898a1384d0103812a56709239e91dd688c0ad6  SPEC_CELLS_D.json
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  setup/make_secrets.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  evaluate_external_phase3.py
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  selftest_D.py
+12e92e4f1203458776b355c0557767710b3c1dbb82a53335cc8b4c479878b356  in_container_D.sh
+54cf3b956888be72164d6a6edeec6eb3c730573a953168a5ab74a82a1197fa6f  run_D.sh
+f891090e08785d8dfcd90866b314f4fe228574697ca667a2b8bbdfab69e17a95  run_D_second.sh
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  freeze_check.py
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  reference/FROZEN_SESSTRACE.sha256
+7037a0a07e477f71742e593295bfd2375d5728fdc4508f5ea5c013bce2899ae5  setup/directus_setup.sh
+1fbe6b7e346715e0294d1a8a20ab85eeb96df8b4d9bfa9b1db62dcd46341a4c9  adapters/directus_adapter.py
+=== END
+

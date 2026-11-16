@@ -1,0 +1,7 @@
+head=c28c4a8c1861d814e09f2ae48264ac4c40be2d3b
+install_exit=0
+witness_command=WITNESS_OUT=/out/raw/T4.concurrent_logout_fixed.coverage.json RUBYOPT=-r/p3/witness/ruby_coverage.rb ruby /p2/hosts/rack_session_host.rb /tmp/checkout/T4/fixed 19900 3
+host_ready=1
+driver_exit=0
+host_exit=143
+analyze_exit=0

@@ -1,0 +1,11 @@
+head=sha256:4ca618956fb094d5213bba11da025df3292b9736adbb4c17b97b9243c7bca3bf
+install_exit=0
+run_01_T6.logout_host_ready=1
+run_02_T6.logout_host_ready=1
+run_03_T6.logout_host_ready=1
+run_01_T6.lifetime_host_ready=1
+run_02_T6.lifetime_host_ready=1
+run_03_T6.lifetime_host_ready=1
+run_01_T6.account_disabled_host_ready=1
+run_02_T6.account_disabled_host_ready=1
+run_03_T6.account_disabled_host_ready=1

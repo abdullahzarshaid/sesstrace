@@ -1,0 +1,45 @@
+{
+  "note": "The series of checks on public software, in the order they were run. Each series has one frozen specification and its run records in records/<name>/. A cell that appears in two series was attempted twice; the later series is the one reported.",
+  "series": [
+    {
+      "name": "libraries_single_run_1",
+      "specification": "external_targets/EXTERNAL_SPEC.json",
+      "specification_sha256": "708a0f2a543df7b38c716a9714c5ffc76ed117553e2a93d245f52111509ad722",
+      "layout": "targets",
+      "run_date": "2026-11-14",
+      "content": "T1 and T2, one run per revision"
+    },
+    {
+      "name": "libraries_single_run_2",
+      "specification": "phase2/EXTERNAL_SPEC_PHASE2.json",
+      "specification_sha256": "38bc3322cd39590210b4bb8fa3bdaa7642fa85f496d89eb04579e6c7082ff711",
+      "layout": "targets",
+      "run_date": "2026-11-15",
+      "content": "T3 and T4, one run per revision"
+    },
+    {
+      "name": "library_cells",
+      "specification": "phase3/SPEC_CELLS.json",
+      "specification_sha256": "f32908bddaba16cb305ff10a8e9c87f490a12ffd77294b3ce5712c7e95b2ec6f",
+      "layout": "cells",
+      "run_date": "2026-11-15",
+      "content": "eight cells of the four libraries, ten runs per revision"
+    },
+    {
+      "name": "application_cells",
+      "specification": "phase3/SPEC_CELLS_D.json",
+      "specification_sha256": "d2da77c0fbdc8c5ca555230e4d898a1384d0103812a56709239e91dd688c0ad6",
+      "layout": "cells",
+      "run_date": "2026-11-15",
+      "content": "fourteen cells of the four applications, three runs per revision"
+    },
+    {
+      "name": "application_cells_second",
+      "specification": "phase3b/SPEC_CELLS_3B.json",
+      "specification_sha256": "715b54a119b9952ca248aa7200929eae3c8cc75bcc7bb863ae736ece522a4cea",
+      "layout": "cells",
+      "run_date": "2026-11-15",
+      "content": "T5.grant_withdrawn (new) and the second attempt of T7.credential_change, three runs per revision"
+    }
+  ]
+}

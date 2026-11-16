@@ -1,0 +1,216 @@
+{
+  "specification": "SPEC_CELLS_3B.json",
+  "repeats_per_revision": 3,
+  "reading_rule": "For T5, if grant_withdrawn changes between the two releases, the lifecycle condition that the repair enforces is B, which is compared with the frozen class of the record (B). For T7 the cell is a second attempt of a phase 3 cell; its reading is the one of phase 3. The comparison is reported whichever way it falls.",
+  "cells": [
+    {
+      "cell": "T5.grant_withdrawn",
+      "target": "T5",
+      "contract": "grant_withdrawn",
+      "cve": "CVE-2026-35594",
+      "package": "Vikunja",
+      "frozen_v2_class": "B",
+      "expected_category": "FLIPS",
+      "replay_checkpoint": "replay_after_grant_withdrawn",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "denied"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 0,
+          "valid_replay_counts": {},
+          "count_text": "vulnerable 0 of 3 accepted, 0 of 3 refused (0 of 3 runs valid)",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": false,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": [
+                "1 step(s) with an error",
+                "control control_fresh_login_other_user was other, expected success"
+              ]
+            },
+            {
+              "run": 2,
+              "valid": false,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": [
+                "1 step(s) with an error",
+                "control control_fresh_login_other_user was other, expected success"
+              ]
+            },
+            {
+              "run": 3,
+              "valid": false,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": [
+                "1 step(s) with an error",
+                "control control_fresh_login_other_user was other, expected success"
+              ]
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 0,
+          "valid_replay_counts": {},
+          "count_text": "fixed 0 of 3 accepted, 0 of 3 refused (0 of 3 runs valid)",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": false,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": [
+                "1 step(s) with an error",
+                "control control_fresh_login_other_user was other, expected success"
+              ]
+            },
+            {
+              "run": 2,
+              "valid": false,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": [
+                "1 step(s) with an error",
+                "control control_fresh_login_other_user was other, expected success"
+              ]
+            },
+            {
+              "run": 3,
+              "valid": false,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": [
+                "1 step(s) with an error",
+                "control control_fresh_login_other_user was other, expected success"
+              ]
+            }
+          ]
+        }
+      },
+      "reasons": [
+        "vulnerable run_01: invalid: 1 step(s) with an error; control control_fresh_login_other_user was other, expected success",
+        "vulnerable run_02: invalid: 1 step(s) with an error; control control_fresh_login_other_user was other, expected success",
+        "vulnerable run_03: invalid: 1 step(s) with an error; control control_fresh_login_other_user was other, expected success",
+        "fixed run_01: invalid: 1 step(s) with an error; control control_fresh_login_other_user was other, expected success",
+        "fixed run_02: invalid: 1 step(s) with an error; control control_fresh_login_other_user was other, expected success",
+        "fixed run_03: invalid: 1 step(s) with an error; control control_fresh_login_other_user was other, expected success"
+      ],
+      "observed_category": "NO_VALID_RUN",
+      "count_text": "vulnerable 0 of 3 accepted, 0 of 3 refused (0 of 3 runs valid), fixed 0 of 3 accepted, 0 of 3 refused (0 of 3 runs valid)",
+      "verdict": "INCONCLUSIVE"
+    },
+    {
+      "cell": "T7.credential_change",
+      "target": "T7",
+      "contract": "credential_change",
+      "cve": "CVE-2024-34709",
+      "package": "Directus",
+      "frozen_v2_class": "A",
+      "expected_category": "ACCEPTED_AT_BOTH",
+      "replay_checkpoint": "replay_after_credential_change",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "success"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "fixed 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "ACCEPTED_AT_BOTH",
+      "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused, fixed 3 of 3 accepted, 0 of 3 refused",
+      "verdict": "CONFIRMED"
+    }
+  ],
+  "reading": [
+    {
+      "target": "T5",
+      "package": "Vikunja",
+      "frozen_v2_class": "B",
+      "contracts_whose_outcome_changes": [],
+      "lifecycle_condition_of_those_contracts": [],
+      "agrees_with_frozen_class": null
+    },
+    {
+      "target": "T7",
+      "package": "Directus",
+      "frozen_v2_class": "A",
+      "contracts_whose_outcome_changes": [],
+      "lifecycle_condition_of_those_contracts": [],
+      "agrees_with_frozen_class": null
+    }
+  ],
+  "counts": {
+    "CONFIRMED": 1,
+    "NOT_CONFIRMED": 0,
+    "INCONCLUSIVE": 1
+  },
+  "scope": "Two cells on two complete applications at two releases each, behind adapters written for this check. It is not a benchmark and not a detection rate."
+}

@@ -1,0 +1,1877 @@
+{
+  "study": "Phase 3, part D: every contract that each selected complete application supports, at the last affected and the first fixed release, with planned repeats",
+  "status_when_written": "NOT RUN. Written from the source of both releases before any request reached the applications.",
+  "repeats_per_revision": 3,
+  "run_order": "For each target and revision, for each cell in the order of this file, for run 1 to 3: a private network created with --internal, a secrets volume, the application container from the pinned image, and one container for the set-up, the adapter and the driver. Everything is removed after the run, so each run starts from an empty application.",
+  "commit_note": "For an application the fields vulnerable_commit and fixed_commit hold the digest of the pinned image; the set-up record of each run states the digest of the image that ran.",
+  "contract_lifecycle_condition": {
+    "logout": "A",
+    "lifetime": "T",
+    "credential_change": "B",
+    "account_disabled": "B"
+  },
+  "class_definitions_source": "Supplement/dataset/Codebook.txt lines 7 (A), 9 (B) and 11 (T)",
+  "reading_rule": "For each application, the contracts whose outcome changes between the two releases are the lifecycle conditions that the repair enforces; they are compared with the class frozen for the record (T5: B, T6: B, T7: A, T8: T), whichever way the comparison falls.",
+  "adapter_contract": {
+    "login": "GET /login?user=alice|bob: the application's own login for that account; 200 {\"logged_in\": true} and the cookie sid carrying the application's session cookie or token unchanged",
+    "profile": "GET /profile: the application's own identity request with what sid carries; 200 {\"sub\": <alice|bob>, \"rp\": \"RP1\"} only when the application names that account; 401 {\"error\": \"no_session\"} only for the not-logged-in answer stated per target in adapter_denial; otherwise 502 {\"error\": \"unrecognized\"}",
+    "logout": "GET /logout: the application's own logout; 200 {\"logged_out\": true} when the application reports success",
+    "events": "GET /change_password?user=alice answers {\"changed\": true}; GET /disable_user?user=alice answers {\"ok\": true}; GET /ready"
+  },
+  "adapter_denial": {
+    "T5": "HTTP 401 whose message is 'missing, malformed, expired or otherwise invalid token provided'",
+    "T6": "HTTP 401 with status 'error' and message 'Invalid refresh token' or 'Refresh token missing'",
+    "T7": "HTTP 401 whose first error code is INVALID_CREDENTIALS, INVALID_TOKEN or TOKEN_EXPIRED",
+    "T8": "HTTP 302 whose Location leads to the login page (action=login or /login)"
+  },
+  "target_setup": {
+    "T5": {
+      "package": "Vikunja",
+      "cve": "CVE-2026-35594",
+      "frozen_v2_class": "B",
+      "project": "vikunja",
+      "image": {
+        "vulnerable": "docker.io/vikunja/vikunja@sha256:a96c20c0997bae4a445bf717002328524c5449c2b64391032c671ff4e1d8b2fa",
+        "fixed": "docker.io/vikunja/vikunja@sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93"
+      },
+      "release": {
+        "vulnerable": "2.2.2",
+        "fixed": "2.3.0"
+      },
+      "app_port": 3456,
+      "app_ready_path": "/api/v1/info",
+      "app_command": null,
+      "app_env": {
+        "VIKUNJA_SERVICE_JWTTTLSHORT": "30",
+        "VIKUNJA_SERVICE_PUBLICURL": "http://app:3456/",
+        "VIKUNJA_FILES_BASEPATH": "/tmp/vikunja-files",
+        "VIKUNJA_DATABASE_PATH": "/tmp/vikunja.db"
+      },
+      "settings_basis": [
+        "VIKUNJA_SERVICE_JWTTTLSHORT=30: config key service.jwtttlshort (pkg/config/config.go line 47 at 2.2.2, 48 at 2.3.0; default 600 seconds, line 339 or 342), set through the environment as the project documents for its container.",
+        "VIKUNJA_SERVICE_PUBLICURL=http://app:3456/: config key service.publicurl (pkg/config/config.go line 51 at 2.2.2, 52 at 2.3.0); both releases refuse to start without it while cors.enable is true (line 649 or 669). Added by boot repair 1 of T5.",
+        "VIKUNJA_FILES_BASEPATH=/tmp/vikunja-files and VIKUNJA_DATABASE_PATH=/tmp/vikunja.db: config keys files.basepath (pkg/config/config.go line 159 or 160) and database.path (line 111 or 112). The image runs as user 1000 and cannot create /app/vikunja/files; the project expects mounted volumes, which the rules of this run exclude, so both paths are placed in /tmp of the throw-away container. Added by boot repair 2 of T5."
+      ],
+      "not_run": {
+        "account_disabled": "The application has no HTTP request that disables or deletes another account; the user status is changed only on the command line."
+      },
+      "selection_row": "candidate_screening_153 row 6",
+      "setup_script": "setup/vikunja_setup.sh",
+      "adapter": "adapters/vikunja_adapter.py"
+    },
+    "T6": {
+      "package": "FUXA",
+      "cve": "CVE-2026-65984",
+      "frozen_v2_class": "B",
+      "project": "fuxa",
+      "image": {
+        "vulnerable": "docker.io/frangoteam/fuxa@sha256:d1cca1936fb4209a3c6246da33a9a78cd7261c00ec500a3096a21cdfccf142b8",
+        "fixed": "docker.io/frangoteam/fuxa@sha256:4ca618956fb094d5213bba11da025df3292b9736adbb4c17b97b9243c7bca3bf"
+      },
+      "release": {
+        "vulnerable": "1.3.2",
+        "fixed": "1.3.3"
+      },
+      "app_port": 1881,
+      "app_ready_path": "/",
+      "app_command": [
+        "sh",
+        "-c",
+        "mkdir -p _appdata && cp settings.default.js _appdata/settings.js && printf '\\nmodule.exports.secureEnabled = true;\\nmodule.exports.enableRefreshCookieAuth = true;\\nmodule.exports.refreshTokenExpiresIn = 30;\\n' >> _appdata/settings.js && exec docker-entrypoint.sh node main.js"
+      ],
+      "app_env": {},
+      "settings_basis": [
+        "secureEnabled, enableRefreshCookieAuth and refreshTokenExpiresIn are the settings documented in server/settings.default.js lines 102, 105 and 106; the default file is copied to _appdata/settings.js, the place server/main.js (lines 78 to 95) reads, and the three values are appended to it."
+      ],
+      "not_run": {
+        "credential_change": "Every route of the user API requires the administrator permission (server/api/users/index.js, haveAdminPermission at lines 35, 66, 91 and following, at both revisions); a user cannot change the own password through the application's interface."
+      },
+      "selection_row": "candidate_screening_153 row 11",
+      "setup_script": "setup/fuxa_setup.sh",
+      "adapter": "adapters/fuxa_adapter.py"
+    },
+    "T7": {
+      "package": "Directus",
+      "cve": "CVE-2024-34709",
+      "frozen_v2_class": "A",
+      "project": "directus",
+      "image": {
+        "vulnerable": "docker.io/directus/directus@sha256:9736a768e8fbfcb5e6861574d6e824ddad434df992a3b826c84ae94937ae060c",
+        "fixed": "docker.io/directus/directus@sha256:a91754327ae0fe0020100c524e1a879ca36463ac5fef8e18be382e2e187992ad"
+      },
+      "release": {
+        "vulnerable": "10.10.7",
+        "fixed": "10.11.0"
+      },
+      "app_port": 8055,
+      "app_ready_path": "/server/health",
+      "app_command": [
+        "sh",
+        "-c",
+        "export ADMIN_PASSWORD=\"$(cat /secrets/admin_password)\" KEY=\"$(cat /secrets/app_key)\" SECRET=\"$(cat /secrets/app_secret)\" && exec docker-entrypoint.sh /bin/sh -c 'node cli.js bootstrap && pm2-runtime start ecosystem.config.cjs'"
+      ],
+      "app_env": {
+        "DB_CLIENT": "sqlite3",
+        "DB_FILENAME": "/directus/database/data.db",
+        "ADMIN_EMAIL": "admin@example.com",
+        "SESSION_COOKIE_TTL": "30s",
+        "TELEMETRY": "false"
+      },
+      "settings_basis": [
+        "DB_CLIENT, DB_FILENAME, ADMIN_EMAIL, ADMIN_PASSWORD, KEY, SECRET and SESSION_COOKIE_TTL are the environment settings the project documents for its container image; SESSION_COOKIE_TTL is read in api/src/services/authentication.ts line 227 (both revisions). ADMIN_PASSWORD, KEY and SECRET are read from the run's secrets volume at start; the image's own start command (bootstrap, then pm2-runtime) is kept.",
+        "Boot repair 1 of T7: the addresses use the domain example.com, reserved for documentation, because the bootstrap of Directus refuses admin@example.test as not a valid email address."
+      ],
+      "not_run": {},
+      "selection_row": "candidate_screening_153 row 32",
+      "setup_script": "setup/directus_setup.sh",
+      "adapter": "adapters/directus_adapter.py"
+    },
+    "T8": {
+      "package": "Kanboard",
+      "cve": "CVE-2024-55603",
+      "frozen_v2_class": "T",
+      "project": "kanboard",
+      "image": {
+        "vulnerable": "docker.io/kanboard/kanboard@sha256:1bc1ed4520ae9c50d62f58a64983a62298185376aafc84ca3472f76bce9835eb",
+        "fixed": "docker.io/kanboard/kanboard@sha256:28ea8445b3ba79956a77b90b6844d8ee2fbcb978882985cb77d23254f717032e"
+      },
+      "release": {
+        "vulnerable": "1.2.42",
+        "fixed": "1.2.43"
+      },
+      "app_port": 80,
+      "app_ready_path": "/?controller=AuthController&action=login",
+      "app_command": null,
+      "app_env": {
+        "SESSION_DURATION": "30"
+      },
+      "settings_basis": [
+        "SESSION_DURATION=30: documented in config.default.php line 261 ('Session duration in second'), read from the environment by app/constants.php line 152 of the image."
+      ],
+      "not_run": {},
+      "selection_row": "candidate_screening_153 row 34",
+      "setup_script": "setup/kanboard_setup.sh",
+      "adapter": "adapters/kanboard_adapter.py"
+    }
+  },
+  "targets": [
+    {
+      "id": "T5.logout",
+      "target": "T5",
+      "contract": "logout",
+      "cve": "CVE-2026-35594",
+      "frozen_v2_class": "B",
+      "package": "Vikunja",
+      "repository": null,
+      "vulnerable_commit": "sha256:a96c20c0997bae4a445bf717002328524c5449c2b64391032c671ff4e1d8b2fa",
+      "fixed_commit": "sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "logout",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "termination",
+          "note": "TERMINATION: application logout"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_logout"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_logout"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_logout": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_logout": "success"
+        }
+      },
+      "source_basis": [
+        "Both revisions: the user access token is a JWT signed by NewUserJWTAuthtoken (pkg/modules/auth/auth.go line 124 onwards) with exp set from service.jwtttlshort and the session id in the claim sid.",
+        "Both revisions: the JWT middleware (pkg/routes/api_tokens.go, SetupTokenMiddleware, line 40 at 2.2.2 and 38 at 2.3.0) checks only the signature and exp; its ErrorHandler (line 62 or 60) answers 401 'missing, malformed, expired or otherwise invalid token provided'. No request checks the session row or the user status for a user JWT.",
+        "The repair of 2.3.0 changes the link-share path (pkg/modules/auth/auth.go GetAuthFromClaims, the link-share branch with a database session) and the API token path; the user JWT path is unchanged. The files of the user, the logout and the password change are identical at both revisions.",
+        "Both revisions, pkg/routes/api/v1/login.go Logout (line 285 at 2.2.2, 221 at 2.3.0) deletes only the session row; the copied access JWT keeps its signature and exp, so it is accepted at both revisions while it is younger than 30 seconds."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "expected_category": "ACCEPTED_AT_BOTH"
+    },
+    {
+      "id": "T5.lifetime",
+      "target": "T5",
+      "contract": "lifetime",
+      "cve": "CVE-2026-35594",
+      "frozen_v2_class": "B",
+      "package": "Vikunja",
+      "repository": null,
+      "vulnerable_commit": "sha256:a96c20c0997bae4a445bf717002328524c5449c2b64391032c671ff4e1d8b2fa",
+      "fixed_commit": "sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "termination",
+          "do": "wait_since",
+          "artifact": "alice1",
+          "seconds": "boundary_wait_seconds",
+          "note": "TERMINATION: the configured lifetime has elapsed"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_lifetime"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_unexpired_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login_after_lifetime"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_lifetime"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "control_unexpired_other_user",
+        "control_fresh_login_after_lifetime",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login_after_lifetime": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_lifetime": "denied"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login_after_lifetime": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_lifetime": "denied"
+        }
+      },
+      "source_basis": [
+        "Both revisions: the user access token is a JWT signed by NewUserJWTAuthtoken (pkg/modules/auth/auth.go line 124 onwards) with exp set from service.jwtttlshort and the session id in the claim sid.",
+        "Both revisions: the JWT middleware (pkg/routes/api_tokens.go, SetupTokenMiddleware, line 40 at 2.2.2 and 38 at 2.3.0) checks only the signature and exp; its ErrorHandler (line 62 or 60) answers 401 'missing, malformed, expired or otherwise invalid token provided'. No request checks the session row or the user status for a user JWT.",
+        "The repair of 2.3.0 changes the link-share path (pkg/modules/auth/auth.go GetAuthFromClaims, the link-share branch with a database session) and the API token path; the user JWT path is unchanged. The files of the user, the logout and the password change are identical at both revisions.",
+        "Both revisions: after 30 seconds the exp of the copied JWT has passed and the middleware answers 401, so the copy is refused at both revisions."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "lifetime_seconds": 30,
+      "boundary_wait_seconds": 50,
+      "replay_requires": {},
+      "expected_category": "REFUSED_AT_BOTH"
+    },
+    {
+      "id": "T5.credential_change",
+      "target": "T5",
+      "contract": "credential_change",
+      "cve": "CVE-2026-35594",
+      "frozen_v2_class": "B",
+      "package": "Vikunja",
+      "repository": null,
+      "vulnerable_commit": "sha256:a96c20c0997bae4a445bf717002328524c5449c2b64391032c671ff4e1d8b2fa",
+      "fixed_commit": "sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "event",
+          "path": "/change_password?user=alice",
+          "field": "changed",
+          "as": "alice (second, separate login)",
+          "checkpoint": "termination",
+          "note": "TERMINATION: the user changes the password in a second login"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_credential_change"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login with the new password)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login with the new password)",
+          "checkpoint": "control_fresh_login"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_credential_change"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_credential_change": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_credential_change": "success"
+        }
+      },
+      "source_basis": [
+        "Both revisions: the user access token is a JWT signed by NewUserJWTAuthtoken (pkg/modules/auth/auth.go line 124 onwards) with exp set from service.jwtttlshort and the session id in the claim sid.",
+        "Both revisions: the JWT middleware (pkg/routes/api_tokens.go, SetupTokenMiddleware, line 40 at 2.2.2 and 38 at 2.3.0) checks only the signature and exp; its ErrorHandler (line 62 or 60) answers 401 'missing, malformed, expired or otherwise invalid token provided'. No request checks the session row or the user status for a user JWT.",
+        "The repair of 2.3.0 changes the link-share path (pkg/modules/auth/auth.go GetAuthFromClaims, the link-share branch with a database session) and the API token path; the user JWT path is unchanged. The files of the user, the logout and the password change are identical at both revisions.",
+        "Both revisions, pkg/routes/api/v1/user_update_password.go lines 80 to 85: the password is changed and DeleteAllUserSessions removes the session rows, but the copied JWT is not checked against them and is accepted at both revisions."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "replay_requires": {
+        "replay_after_credential_change": {
+          "termination": "reported"
+        }
+      },
+      "expected_category": "ACCEPTED_AT_BOTH"
+    },
+    {
+      "id": "T6.logout",
+      "target": "T6",
+      "contract": "logout",
+      "cve": "CVE-2026-65984",
+      "frozen_v2_class": "B",
+      "package": "FUXA",
+      "repository": null,
+      "vulnerable_commit": "sha256:d1cca1936fb4209a3c6246da33a9a78cd7261c00ec500a3096a21cdfccf142b8",
+      "fixed_commit": "sha256:4ca618956fb094d5213bba11da025df3292b9736adbb4c17b97b9243c7bca3bf",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "logout",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "termination",
+          "note": "TERMINATION: application logout"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_logout"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_logout"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_logout": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_logout": "success"
+        }
+      },
+      "source_basis": [
+        "Both revisions: the adapter's sid carries the HttpOnly refresh cookie fuxa_refresh set at sign-in (server/api/auth/index.js line 15 and line 69), and /profile is the application's POST /api/refresh (line 143), which verifies the JWT (line 152) and answers with the username, or 401 'Invalid refresh token' or 'Refresh token missing'.",
+        "Both revisions, server/api/auth/index.js /api/signout (line 200 at 1.3.2, 198 at 1.3.3, identical): it only clears the cookie in the reply; the refresh JWT is not revoked, so the copy is accepted at both revisions."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "expected_category": "ACCEPTED_AT_BOTH"
+    },
+    {
+      "id": "T6.lifetime",
+      "target": "T6",
+      "contract": "lifetime",
+      "cve": "CVE-2026-65984",
+      "frozen_v2_class": "B",
+      "package": "FUXA",
+      "repository": null,
+      "vulnerable_commit": "sha256:d1cca1936fb4209a3c6246da33a9a78cd7261c00ec500a3096a21cdfccf142b8",
+      "fixed_commit": "sha256:4ca618956fb094d5213bba11da025df3292b9736adbb4c17b97b9243c7bca3bf",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "termination",
+          "do": "wait_since",
+          "artifact": "alice1",
+          "seconds": "boundary_wait_seconds",
+          "note": "TERMINATION: the configured lifetime has elapsed"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_lifetime"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_unexpired_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login_after_lifetime"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_lifetime"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "control_unexpired_other_user",
+        "control_fresh_login_after_lifetime",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login_after_lifetime": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_lifetime": "denied"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login_after_lifetime": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_lifetime": "denied"
+        }
+      },
+      "source_basis": [
+        "Both revisions: the adapter's sid carries the HttpOnly refresh cookie fuxa_refresh set at sign-in (server/api/auth/index.js line 15 and line 69), and /profile is the application's POST /api/refresh (line 143), which verifies the JWT (line 152) and answers with the username, or 401 'Invalid refresh token' or 'Refresh token missing'.",
+        "Both revisions: the refresh JWT is signed with refreshTokenExpiresIn (30 seconds); after it, jwt.verify (line 152) fails and the answer is 401 'Invalid refresh token' at both revisions."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "lifetime_seconds": 30,
+      "boundary_wait_seconds": 50,
+      "replay_requires": {},
+      "expected_category": "REFUSED_AT_BOTH"
+    },
+    {
+      "id": "T6.account_disabled",
+      "target": "T6",
+      "contract": "account_disabled",
+      "cve": "CVE-2026-65984",
+      "frozen_v2_class": "B",
+      "package": "FUXA",
+      "repository": null,
+      "vulnerable_commit": "sha256:d1cca1936fb4209a3c6246da33a9a78cd7261c00ec500a3096a21cdfccf142b8",
+      "fixed_commit": "sha256:4ca618956fb094d5213bba11da025df3292b9736adbb4c17b97b9243c7bca3bf",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "event",
+          "path": "/disable_user?user=alice",
+          "field": "ok",
+          "as": "administrator",
+          "checkpoint": "termination",
+          "note": "TERMINATION: an administrator disables or deletes the account"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_account_disabled"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "bob",
+          "as": "bob (fresh login)",
+          "artifact": "bob2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "bob2",
+          "as": "bob (fresh login)",
+          "checkpoint": "control_fresh_login_other_user"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_account_disabled"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login_other_user",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login_other_user": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_account_disabled": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login_other_user": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_account_disabled": "denied"
+        }
+      },
+      "source_basis": [
+        "Both revisions: the adapter's sid carries the HttpOnly refresh cookie fuxa_refresh set at sign-in (server/api/auth/index.js line 15 and line 69), and /profile is the application's POST /api/refresh (line 143), which verifies the JWT (line 152) and answers with the username, or 401 'Invalid refresh token' or 'Refresh token missing'.",
+        "Vulnerable revision, server/api/auth/index.js lines 160 to 171: when the user lookup for decoded.id finds nothing, the refresh falls back to the claims of the token and answers 200 with the username, so the copy is accepted after the account is deleted. Fixed revision lines 158 to 161: when no user is found the cookie is cleared and the answer is 401 'Invalid refresh token', so the copy is refused."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "replay_requires": {
+        "replay_after_account_disabled": {
+          "termination": "reported"
+        }
+      },
+      "expected_category": "FLIPS"
+    },
+    {
+      "id": "T7.logout",
+      "target": "T7",
+      "contract": "logout",
+      "cve": "CVE-2024-34709",
+      "frozen_v2_class": "A",
+      "package": "Directus",
+      "repository": null,
+      "vulnerable_commit": "sha256:9736a768e8fbfcb5e6861574d6e824ddad434df992a3b826c84ae94937ae060c",
+      "fixed_commit": "sha256:a91754327ae0fe0020100c524e1a879ca36463ac5fef8e18be382e2e187992ad",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "logout",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "termination",
+          "note": "TERMINATION: application logout"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_logout"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_logout"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_logout": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_logout": "denied"
+        }
+      },
+      "source_basis": [
+        "Both revisions, api/src/services/authentication.ts lines 204 to 241: a login in session mode signs a JWT with the session id in the claim session and with expiresIn SESSION_COOKIE_TTL, and stores the session row with the refresh lifetime.",
+        "Vulnerable revision, api/src/utils/get-accountability-for-token.ts line 25: the session JWT is checked by verifyAccessJWT only (signature and exp). Fixed revision lines 24 to 28: verifySessionJWT (api/src/utils/verify-session-jwt.ts lines 10 to 25) also requires the session row for that token and user, unexpired, and otherwise throws InvalidTokenError (401 INVALID_TOKEN).",
+        "Both revisions, api/src/services/users.ts updateMany (lines 263 to 320 at 10.10.7, 264 to 321 at 10.11.0): a change of password or status deletes no session row.",
+        "Both revisions, authentication.ts logout (line 430 onwards) deletes the session row. Vulnerable: the copied JWT is still valid and accepted. Fixed: verifySessionJWT finds no row and refuses it. FLIPS."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "expected_category": "FLIPS"
+    },
+    {
+      "id": "T7.lifetime",
+      "target": "T7",
+      "contract": "lifetime",
+      "cve": "CVE-2024-34709",
+      "frozen_v2_class": "A",
+      "package": "Directus",
+      "repository": null,
+      "vulnerable_commit": "sha256:9736a768e8fbfcb5e6861574d6e824ddad434df992a3b826c84ae94937ae060c",
+      "fixed_commit": "sha256:a91754327ae0fe0020100c524e1a879ca36463ac5fef8e18be382e2e187992ad",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "termination",
+          "do": "wait_since",
+          "artifact": "alice1",
+          "seconds": "boundary_wait_seconds",
+          "note": "TERMINATION: the configured lifetime has elapsed"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_lifetime"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_unexpired_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login_after_lifetime"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_lifetime"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "control_unexpired_other_user",
+        "control_fresh_login_after_lifetime",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login_after_lifetime": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_lifetime": "denied"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login_after_lifetime": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_lifetime": "denied"
+        }
+      },
+      "source_basis": [
+        "Both revisions, api/src/services/authentication.ts lines 204 to 241: a login in session mode signs a JWT with the session id in the claim session and with expiresIn SESSION_COOKIE_TTL, and stores the session row with the refresh lifetime.",
+        "Vulnerable revision, api/src/utils/get-accountability-for-token.ts line 25: the session JWT is checked by verifyAccessJWT only (signature and exp). Fixed revision lines 24 to 28: verifySessionJWT (api/src/utils/verify-session-jwt.ts lines 10 to 25) also requires the session row for that token and user, unexpired, and otherwise throws InvalidTokenError (401 INVALID_TOKEN).",
+        "Both revisions, api/src/services/users.ts updateMany (lines 263 to 320 at 10.10.7, 264 to 321 at 10.11.0): a change of password or status deletes no session row.",
+        "Both revisions: after 30 seconds the JWT exp has passed and verifyAccessJWT refuses it (401 TOKEN_EXPIRED) at both revisions."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "lifetime_seconds": 30,
+      "boundary_wait_seconds": 50,
+      "replay_requires": {},
+      "expected_category": "REFUSED_AT_BOTH"
+    },
+    {
+      "id": "T7.credential_change",
+      "target": "T7",
+      "contract": "credential_change",
+      "cve": "CVE-2024-34709",
+      "frozen_v2_class": "A",
+      "package": "Directus",
+      "repository": null,
+      "vulnerable_commit": "sha256:9736a768e8fbfcb5e6861574d6e824ddad434df992a3b826c84ae94937ae060c",
+      "fixed_commit": "sha256:a91754327ae0fe0020100c524e1a879ca36463ac5fef8e18be382e2e187992ad",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "event",
+          "path": "/change_password?user=alice",
+          "field": "changed",
+          "as": "alice (second, separate login)",
+          "checkpoint": "termination",
+          "note": "TERMINATION: the user changes the password in a second login"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_credential_change"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login with the new password)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login with the new password)",
+          "checkpoint": "control_fresh_login"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_credential_change"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_credential_change": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_credential_change": "success"
+        }
+      },
+      "source_basis": [
+        "Both revisions, api/src/services/authentication.ts lines 204 to 241: a login in session mode signs a JWT with the session id in the claim session and with expiresIn SESSION_COOKIE_TTL, and stores the session row with the refresh lifetime.",
+        "Vulnerable revision, api/src/utils/get-accountability-for-token.ts line 25: the session JWT is checked by verifyAccessJWT only (signature and exp). Fixed revision lines 24 to 28: verifySessionJWT (api/src/utils/verify-session-jwt.ts lines 10 to 25) also requires the session row for that token and user, unexpired, and otherwise throws InvalidTokenError (401 INVALID_TOKEN).",
+        "Both revisions, api/src/services/users.ts updateMany (lines 263 to 320 at 10.10.7, 264 to 321 at 10.11.0): a change of password or status deletes no session row.",
+        "Both revisions: the password change deletes no session row and the JWT stays valid, so the copy is accepted at both revisions."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "replay_requires": {
+        "replay_after_credential_change": {
+          "termination": "reported"
+        }
+      },
+      "expected_category": "ACCEPTED_AT_BOTH"
+    },
+    {
+      "id": "T7.account_disabled",
+      "target": "T7",
+      "contract": "account_disabled",
+      "cve": "CVE-2024-34709",
+      "frozen_v2_class": "A",
+      "package": "Directus",
+      "repository": null,
+      "vulnerable_commit": "sha256:9736a768e8fbfcb5e6861574d6e824ddad434df992a3b826c84ae94937ae060c",
+      "fixed_commit": "sha256:a91754327ae0fe0020100c524e1a879ca36463ac5fef8e18be382e2e187992ad",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "event",
+          "path": "/disable_user?user=alice",
+          "field": "ok",
+          "as": "administrator",
+          "checkpoint": "termination",
+          "note": "TERMINATION: an administrator disables or deletes the account"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_account_disabled"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "bob",
+          "as": "bob (fresh login)",
+          "artifact": "bob2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "bob2",
+          "as": "bob (fresh login)",
+          "checkpoint": "control_fresh_login_other_user"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_account_disabled"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login_other_user",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login_other_user": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_account_disabled": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login_other_user": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_account_disabled": "success"
+        }
+      },
+      "source_basis": [
+        "Both revisions, api/src/services/authentication.ts lines 204 to 241: a login in session mode signs a JWT with the session id in the claim session and with expiresIn SESSION_COOKIE_TTL, and stores the session row with the refresh lifetime.",
+        "Vulnerable revision, api/src/utils/get-accountability-for-token.ts line 25: the session JWT is checked by verifyAccessJWT only (signature and exp). Fixed revision lines 24 to 28: verifySessionJWT (api/src/utils/verify-session-jwt.ts lines 10 to 25) also requires the session row for that token and user, unexpired, and otherwise throws InvalidTokenError (401 INVALID_TOKEN).",
+        "Both revisions, api/src/services/users.ts updateMany (lines 263 to 320 at 10.10.7, 264 to 321 at 10.11.0): a change of password or status deletes no session row.",
+        "Both revisions: suspending the account deletes no session row, and neither getAccountabilityForToken nor verifySessionJWT reads the user status, so the copy is accepted at both revisions."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "replay_requires": {
+        "replay_after_account_disabled": {
+          "termination": "reported"
+        }
+      },
+      "expected_category": "ACCEPTED_AT_BOTH"
+    },
+    {
+      "id": "T8.logout",
+      "target": "T8",
+      "contract": "logout",
+      "cve": "CVE-2024-55603",
+      "frozen_v2_class": "T",
+      "package": "Kanboard",
+      "repository": null,
+      "vulnerable_commit": "sha256:1bc1ed4520ae9c50d62f58a64983a62298185376aafc84ca3472f76bce9835eb",
+      "fixed_commit": "sha256:28ea8445b3ba79956a77b90b6844d8ee2fbcb978882985cb77d23254f717032e",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "logout",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "termination",
+          "note": "TERMINATION: application logout"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_logout"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_logout"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_logout": "denied"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_logout": "denied"
+        }
+      },
+      "source_basis": [
+        "Only app/Core/Session/SessionHandler.php and the image's PHP settings (docker/etc/php83/conf.d/local.ini) differ between the two releases; the controllers and models below are identical.",
+        "Both revisions: the session row is kept in the database by SessionHandler; write (line 59 at 1.2.42, 62 at 1.2.43) sets expire_at to now plus SESSION_DURATION; every page runs AuthenticationMiddleware line 22, which calls checkCurrentSession (app/Core/Security/AuthenticationManager.php lines 74 to 87) and UserModel::isValidSession (app/Model/UserModel.php lines 32 to 38: the user must exist, be active and keep the role).",
+        "Both revisions, app/Controller/AuthController.php lines 58 to 63: logout checks the CSRF parameter and closes the session, which destroys the row (SessionHandler destroy, line 34); the copied id then has no data and the page redirects to the login, so the copy is refused at both revisions."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "expected_category": "REFUSED_AT_BOTH"
+    },
+    {
+      "id": "T8.lifetime",
+      "target": "T8",
+      "contract": "lifetime",
+      "cve": "CVE-2024-55603",
+      "frozen_v2_class": "T",
+      "package": "Kanboard",
+      "repository": null,
+      "vulnerable_commit": "sha256:1bc1ed4520ae9c50d62f58a64983a62298185376aafc84ca3472f76bce9835eb",
+      "fixed_commit": "sha256:28ea8445b3ba79956a77b90b6844d8ee2fbcb978882985cb77d23254f717032e",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "termination",
+          "do": "wait_since",
+          "artifact": "alice1",
+          "seconds": "boundary_wait_seconds",
+          "note": "TERMINATION: the configured lifetime has elapsed"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_lifetime"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_unexpired_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login_after_lifetime"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_lifetime"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "control_unexpired_other_user",
+        "control_fresh_login_after_lifetime",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login_after_lifetime": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_lifetime": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login_after_lifetime": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_lifetime": "denied"
+        }
+      },
+      "source_basis": [
+        "Only app/Core/Session/SessionHandler.php and the image's PHP settings (docker/etc/php83/conf.d/local.ini) differ between the two releases; the controllers and models below are identical.",
+        "Both revisions: the session row is kept in the database by SessionHandler; write (line 59 at 1.2.42, 62 at 1.2.43) sets expire_at to now plus SESSION_DURATION; every page runs AuthenticationMiddleware line 22, which calls checkCurrentSession (app/Core/Security/AuthenticationManager.php lines 74 to 87) and UserModel::isValidSession (app/Model/UserModel.php lines 32 to 38: the user must exist, be active and keep the role).",
+        "Vulnerable revision, SessionHandler::read lines 52 to 56: the row is returned whatever its expire_at, so the copied id stays logged in after 30 seconds (unless the garbage collector of PHP removed the expired row first; the vulnerable image keeps PHP's default probability). Fixed revision line 54: read requires expire_at in the future, so the copy has no data and is refused. FLIPS."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "lifetime_seconds": 30,
+      "boundary_wait_seconds": 75,
+      "replay_requires": {},
+      "expected_category": "FLIPS"
+    },
+    {
+      "id": "T8.credential_change",
+      "target": "T8",
+      "contract": "credential_change",
+      "cve": "CVE-2024-55603",
+      "frozen_v2_class": "T",
+      "package": "Kanboard",
+      "repository": null,
+      "vulnerable_commit": "sha256:1bc1ed4520ae9c50d62f58a64983a62298185376aafc84ca3472f76bce9835eb",
+      "fixed_commit": "sha256:28ea8445b3ba79956a77b90b6844d8ee2fbcb978882985cb77d23254f717032e",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "event",
+          "path": "/change_password?user=alice",
+          "field": "changed",
+          "as": "alice (second, separate login)",
+          "checkpoint": "termination",
+          "note": "TERMINATION: the user changes the password in a second login"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_credential_change"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login with the new password)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login with the new password)",
+          "checkpoint": "control_fresh_login"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_credential_change"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_credential_change": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_credential_change": "success"
+        }
+      },
+      "source_basis": [
+        "Only app/Core/Session/SessionHandler.php and the image's PHP settings (docker/etc/php83/conf.d/local.ini) differ between the two releases; the controllers and models below are identical.",
+        "Both revisions: the session row is kept in the database by SessionHandler; write (line 59 at 1.2.42, 62 at 1.2.43) sets expire_at to now plus SESSION_DURATION; every page runs AuthenticationMiddleware line 22, which calls checkCurrentSession (app/Core/Security/AuthenticationManager.php lines 74 to 87) and UserModel::isValidSession (app/Model/UserModel.php lines 32 to 38: the user must exist, be active and keep the role).",
+        "Both revisions, app/Controller/UserCredentialController.php savePassword (line 39 onwards): the password is updated and no session row is touched; isValidSession does not depend on the password, so the copy is accepted at both revisions."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "replay_requires": {
+        "replay_after_credential_change": {
+          "termination": "reported"
+        }
+      },
+      "expected_category": "ACCEPTED_AT_BOTH"
+    },
+    {
+      "id": "T8.account_disabled",
+      "target": "T8",
+      "contract": "account_disabled",
+      "cve": "CVE-2024-55603",
+      "frozen_v2_class": "T",
+      "package": "Kanboard",
+      "repository": null,
+      "vulnerable_commit": "sha256:1bc1ed4520ae9c50d62f58a64983a62298185376aafc84ca3472f76bce9835eb",
+      "fixed_commit": "sha256:28ea8445b3ba79956a77b90b6844d8ee2fbcb978882985cb77d23254f717032e",
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "event",
+          "path": "/disable_user?user=alice",
+          "field": "ok",
+          "as": "administrator",
+          "checkpoint": "termination",
+          "note": "TERMINATION: an administrator disables or deletes the account"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_account_disabled"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "bob",
+          "as": "bob (fresh login)",
+          "artifact": "bob2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "bob2",
+          "as": "bob (fresh login)",
+          "checkpoint": "control_fresh_login_other_user"
+        },
+        {
+          "phase": "negative_d",
+          "do": "profile_unknown",
+          "user": "alice",
+          "as": "attacker (value never issued)",
+          "checkpoint": "control_unknown_credential"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_account_disabled"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login_other_user",
+        "control_unknown_credential"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login_other_user": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_account_disabled": "denied"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login_other_user": "success",
+          "control_unknown_credential": "denied",
+          "replay_after_account_disabled": "denied"
+        }
+      },
+      "source_basis": [
+        "Only app/Core/Session/SessionHandler.php and the image's PHP settings (docker/etc/php83/conf.d/local.ini) differ between the two releases; the controllers and models below are identical.",
+        "Both revisions: the session row is kept in the database by SessionHandler; write (line 59 at 1.2.42, 62 at 1.2.43) sets expire_at to now plus SESSION_DURATION; every page runs AuthenticationMiddleware line 22, which calls checkCurrentSession (app/Core/Security/AuthenticationManager.php lines 74 to 87) and UserModel::isValidSession (app/Model/UserModel.php lines 32 to 38: the user must exist, be active and keep the role).",
+        "Both revisions, app/Model/UserModel.php disable (line 311): is_active is set to 0; isValidSession then fails for the copied session and checkCurrentSession flushes it, so the copy is refused at both revisions."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both releases",
+      "replay_requires": {
+        "replay_after_account_disabled": {
+          "termination": "reported"
+        }
+      },
+      "expected_category": "REFUSED_AT_BOTH"
+    }
+  ],
+  "categories": {
+    "FLIPS": "accepted at the vulnerable release, refused at the fixed one",
+    "REFUSED_AT_BOTH": "refused at both",
+    "ACCEPTED_AT_BOTH": "accepted at both"
+  },
+  "verdict_rule": {
+    "run_valid": "As in part B: correct set-up (image digest, set-up exit 0, adapter ready), every control as expected, no transport or order error, every wait long enough.",
+    "per_cell": [
+      "CONFIRMED: all 6 runs valid and every replay as expected.",
+      "NOT_CONFIRMED: at least one valid run has a replay that differs.",
+      "INCONCLUSIVE: no valid run differs but at least one run is invalid."
+    ]
+  },
+  "scope": "Four complete applications at two releases each, behind adapters written for this check. It is not a benchmark and not a detection rate."
+}

@@ -1,0 +1,32 @@
+=== FREEZE 3B-T5.grant_withdrawn utc=2026-11-15T14:12:39Z
+reason: phase 3b cell T5.grant_withdrawn: specification (expectations and source basis written from both releases), set-up script, adapter, reused frozen phase 3 driver and evaluator, self-tests and run scripts, written before any request reached the application
+715b54a119b9952ca248aa7200929eae3c8cc75bcc7bb863ae736ece522a4cea  SPEC_CELLS_3B.json
+3787a0da0cac94216706c6b23ed8e670347f5b81af3c6a5bf8351a62309a78d5  selftest_3B.py
+34698b2b1fce6e3c3ff6151dd703c2a6feb23a13aa5558d094050e73ee232fb9  in_container_3B.sh
+5668edc405cb8eaf327ca461e5874778aa25becc06bf316e1caf1eb58d445bb2  run_3B.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  ../phase3/external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  ../phase3/evaluate_external_phase3.py
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  ../phase3/freeze_check.py
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  ../phase3/setup/make_secrets.sh
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  ../phase3/reference/FROZEN_SESSTRACE.sha256
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  ../phase3/selftest_D.py
+bba92b55008971822947574fe454c2e49a150d6c43e1a6c63e064f49ed601b13  setup/vikunja_share_setup.sh
+311899d08fcb8b3bb5ab58c7d80bd039ef563b49a996360b9b2ed158fd3a8ee6  adapters/vikunja_share_adapter.py
+=== END
+
+=== FREEZE 3B-T7.credential_change utc=2026-11-15T14:12:39Z
+reason: phase 3b cell T7.credential_change, second attempt: plan, checkpoints and expectation copied unchanged from phase 3; set-up script with one added permission rule; phase 3 adapter unchanged; reused frozen driver and evaluator, self-tests and run scripts; written before any request reached the application
+715b54a119b9952ca248aa7200929eae3c8cc75bcc7bb863ae736ece522a4cea  SPEC_CELLS_3B.json
+3787a0da0cac94216706c6b23ed8e670347f5b81af3c6a5bf8351a62309a78d5  selftest_3B.py
+34698b2b1fce6e3c3ff6151dd703c2a6feb23a13aa5558d094050e73ee232fb9  in_container_3B.sh
+5668edc405cb8eaf327ca461e5874778aa25becc06bf316e1caf1eb58d445bb2  run_3B.sh
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  ../phase3/external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  ../phase3/evaluate_external_phase3.py
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  ../phase3/freeze_check.py
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  ../phase3/setup/make_secrets.sh
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  ../phase3/reference/FROZEN_SESSTRACE.sha256
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  ../phase3/selftest_D.py
+a571db775a670403506a2ca6e0e145fc426409ae69dfeebddd439c595312c254  setup/directus_setup.sh
+1fbe6b7e346715e0294d1a8a20ab85eeb96df8b4d9bfa9b1db62dcd46341a4c9  ../phase3/adapters/directus_adapter.py
+=== END
+

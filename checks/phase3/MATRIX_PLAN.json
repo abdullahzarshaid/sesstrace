@@ -1,0 +1,165 @@
+{
+  "part": "A, the frozen laboratory on several Linux distributions",
+  "status_when_written": "NOT RUN. Written before the laboratory was run in any of these images.",
+  "rule_for_python": "Python 3.10 or newer is either already in the image or installed from the distribution's own package repository in a derived image built from the two-line Dockerfile named in the entry. No other source of Python. A distribution that offers no Python 3.10 or newer in its own repositories is recorded as NOT_APPLICABLE with the version found; it is not replaced by another image.",
+  "not_included": "python:3.15-slim is published (the tag 3 points to 3.15) but is not in the list of the prompt and is not run.",
+  "run_conditions": "Each image is run once, in a container with --network none, with the unpacked supplement mounted read-only at /supp and one output folder at /out. Derived images are built beforehand with network access to the distribution's own package mirrors only.",
+  "expected_for_every_image": [
+    "in Supplement/sesstrace: <python> -B -m unittest discover -s tests -v exits 0 and runs 36 tests",
+    "in Supplement/sesstrace: <python> -B run_benchmark.py --out-dir <temp> exits 0, and each of the 12 files in <temp>/traces/ is byte-identical to the file of the same name in Supplement/sesstrace/results/traces/",
+    "in Supplement: <python> -B sesstrace/expiry_witness.py --out-dir <temp2> exits 0, and <temp2>/expiry_results.json, read as JSON, equals Supplement/reference/expiration/expiry_results.json"
+  ],
+  "result_words": {
+    "IDENTICAL": "all three commands exit 0, 36 tests run, 12 of 12 trace files byte-identical, the expiration result equal",
+    "DIFFERENT": "the three commands ran in the image but at least one expected item differs; the difference is stated exactly",
+    "FAILED": "the image could not be built or started, or a command produced no output to compare; the reason is stated",
+    "NOT_APPLICABLE": "no Python 3.10 or newer is offered by the distribution's own repositories; the version found is stated"
+  },
+  "recorded_per_image": [
+    "image digest",
+    "distribution name and version from /etc/os-release",
+    "C library and version",
+    "Python version",
+    "the three exit codes",
+    "the number of tests",
+    "how many of the 12 trace files are identical",
+    "whether the expiration result is equal"
+  ],
+  "entries": [
+    {
+      "order": 1,
+      "id": "A01_debian12",
+      "base_image": "docker.io/library/debian:12",
+      "image_used": "derived image phase3-a/a01_debian12",
+      "dockerfile": "A_dockerfiles/A01_debian12.Dockerfile",
+      "python_command": "python3",
+      "python_source": "apt package python3 from the Debian 12 repositories (not in the image)"
+    },
+    {
+      "order": 2,
+      "id": "A02_debian13",
+      "base_image": "docker.io/library/debian:13",
+      "image_used": "derived image phase3-a/a02_debian13",
+      "dockerfile": "A_dockerfiles/A02_debian13.Dockerfile",
+      "python_command": "python3",
+      "python_source": "apt package python3 from the Debian 13 repositories (not in the image); Debian 13 is the current stable (the tag latest has the digest of 13 on Docker Hub)"
+    },
+    {
+      "order": 3,
+      "id": "A03_ubuntu2204",
+      "base_image": "docker.io/library/ubuntu:22.04",
+      "image_used": "derived image phase3-a/a03_ubuntu2204",
+      "dockerfile": "A_dockerfiles/A03_ubuntu2204.Dockerfile",
+      "python_command": "python3",
+      "python_source": "apt package python3 from the Ubuntu 22.04 repositories (not in the image)"
+    },
+    {
+      "order": 4,
+      "id": "A04_ubuntu2404",
+      "base_image": "docker.io/library/ubuntu:24.04",
+      "image_used": "derived image phase3-a/a04_ubuntu2404",
+      "dockerfile": "A_dockerfiles/A04_ubuntu2404.Dockerfile",
+      "python_command": "python3",
+      "python_source": "apt package python3 from the Ubuntu 24.04 repositories (not in the image)"
+    },
+    {
+      "order": 5,
+      "id": "A05_fedora45",
+      "base_image": "docker.io/library/fedora:45",
+      "image_used": "derived image phase3-a/a05_fedora45",
+      "dockerfile": "A_dockerfiles/A05_fedora45.Dockerfile",
+      "python_command": "python3",
+      "python_source": "dnf package python3 from the Fedora 45 repositories (installed or confirmed present); Fedora 45 is the current stable (the tag latest has the digest of 45)"
+    },
+    {
+      "order": 6,
+      "id": "A06_almalinux9",
+      "base_image": "docker.io/library/almalinux:9",
+      "image_used": "derived image phase3-a/a06_almalinux9",
+      "dockerfile": "A_dockerfiles/A06_almalinux9.Dockerfile",
+      "python_command": "python3.12",
+      "python_source": "dnf package python3.12 from the AlmaLinux 9 AppStream repository; the default python3 of AlmaLinux 9 is 3.9. AlmaLinux 9 is used rather than Rocky Linux 9 because it is published as an official Docker Hub image"
+    },
+    {
+      "order": 7,
+      "id": "A07_opensuse_leap16",
+      "base_image": "docker.io/opensuse/leap:16.0",
+      "image_used": "derived image phase3-a/a07_opensuse_leap16",
+      "dockerfile": "A_dockerfiles/A07_opensuse_leap16.Dockerfile",
+      "python_command": "python3",
+      "python_source": "zypper package python3 from the openSUSE Leap 16.0 repositories; Leap 16.0 is the current Leap (the tag latest has the digest of 16.0)"
+    },
+    {
+      "order": 8,
+      "id": "A08_archlinux",
+      "base_image": "docker.io/library/archlinux:base-20261108.0.623074",
+      "image_used": "derived image phase3-a/a08_archlinux",
+      "dockerfile": "A_dockerfiles/A08_archlinux.Dockerfile",
+      "python_command": "python3",
+      "python_source": "pacman package python from the Arch Linux repositories; the dated tag is the one with the digest of base"
+    },
+    {
+      "order": 9,
+      "id": "A09_alpine324",
+      "base_image": "docker.io/library/alpine:3.24",
+      "image_used": "derived image phase3-a/a09_alpine324",
+      "dockerfile": "A_dockerfiles/A09_alpine324.Dockerfile",
+      "python_command": "python3",
+      "python_source": "apk package python3 from the Alpine 3.24 repositories (musl libc); Alpine 3.24 is the current stable (the tag latest has the digest of 3.24)"
+    },
+    {
+      "order": 10,
+      "id": "A10_amazonlinux2023",
+      "base_image": "docker.io/library/amazonlinux:2023",
+      "image_used": "derived image phase3-a/a10_amazonlinux2023",
+      "dockerfile": "A_dockerfiles/A10_amazonlinux2023.Dockerfile",
+      "python_command": "python3.12",
+      "python_source": "dnf package python3.12 from the Amazon Linux 2023 repositories; the default python3 of Amazon Linux 2023 is 3.9"
+    },
+    {
+      "order": 11,
+      "id": "A11_python310_slim",
+      "base_image": "docker.io/library/python:3.10-slim",
+      "image_used": "docker.io/library/python:3.10-slim",
+      "dockerfile": null,
+      "python_command": "python3",
+      "python_source": "already in the image (official Python image, Debian based)"
+    },
+    {
+      "order": 12,
+      "id": "A12_python311_slim",
+      "base_image": "docker.io/library/python:3.11-slim",
+      "image_used": "docker.io/library/python:3.11-slim",
+      "dockerfile": null,
+      "python_command": "python3",
+      "python_source": "already in the image (official Python image, Debian based)"
+    },
+    {
+      "order": 13,
+      "id": "A13_python312_slim",
+      "base_image": "docker.io/library/python:3.12-slim",
+      "image_used": "docker.io/library/python:3.12-slim",
+      "dockerfile": null,
+      "python_command": "python3",
+      "python_source": "already in the image (official Python image, Debian based)"
+    },
+    {
+      "order": 14,
+      "id": "A14_python313_slim",
+      "base_image": "docker.io/library/python:3.13-slim",
+      "image_used": "docker.io/library/python:3.13-slim",
+      "dockerfile": null,
+      "python_command": "python3",
+      "python_source": "already in the image (official Python image, Debian based)"
+    },
+    {
+      "order": 15,
+      "id": "A15_python314_slim",
+      "base_image": "docker.io/library/python:3.14-slim",
+      "image_used": "docker.io/library/python:3.14-slim",
+      "dockerfile": null,
+      "python_command": "python3",
+      "python_source": "already in the image (official Python image, Debian based)"
+    }
+  ]
+}

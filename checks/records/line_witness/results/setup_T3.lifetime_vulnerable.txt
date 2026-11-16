@@ -1,0 +1,7 @@
+head=faadf107ff156deacd408873fc33b936e7c1d79b
+install_exit=0
+witness_command=python3 /p3/witness/python_trace_run.py /out/raw/T3.lifetime_vulnerable.trace.json /p2/hosts/aiohttp_session_host.py /tmp/checkout/T3/vulnerable 19800 3
+host_ready=1
+driver_exit=0
+host_exit=0
+analyze_exit=0

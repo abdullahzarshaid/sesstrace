@@ -1,0 +1,106 @@
+{
+  "study": "The SessTrace replay contract applied to two public libraries that SessTrace was not written for",
+  "status_when_written": "NOT RUN. Written from the pinned source of both revisions of each library before any execution.",
+  "what_is_reused_unchanged_from_the_frozen_archive": [
+    "Supplement/sesstrace/sesslab/trace.py: the trace recorder (class Trace)",
+    "Supplement/sesstrace/sesslab/mechanisms.py: OperationOutcome and operation_outcome with the 'profile' contract",
+    "Supplement/sesstrace/sesslab/runner.py: replay_verdict"
+  ],
+  "endpoint_contract": {
+    "login": "GET /login?user=<alice|bob> answers 200 {\"logged_in\": true} and sets the cookie 'sid'",
+    "profile": "GET /profile answers 200 {\"sub\": <user>, \"rp\": \"RP1\"} for a session that carries a user, otherwise 401 {\"error\": \"no_session\"}",
+    "logout": "GET /logout answers 200 {\"logged_out\": true}"
+  },
+  "outcome_words": {
+    "success": "operation_outcome(...,'profile').success is true: status 200, the expected user and RP1",
+    "denied": "operation_outcome(...,'profile').denied is true: status 401 and error no_session"
+  },
+  "targets": [
+    {
+      "id": "T1",
+      "cve": "CVE-2024-35220",
+      "frozen_v2_class": "T",
+      "package": "@fastify/session",
+      "repository": "https://github.com/fastify/session.git",
+      "vulnerable_commit": "8b6241c1b81a99dac8ad636aa2b237b31628e82e",
+      "fixed_commit": "0495ce5b534c4550f25228821db8098293439f2f",
+      "host": "hosts/fastify_session_host.js",
+      "lifetime_seconds": 3,
+      "boundary_wait_seconds": 7,
+      "contract": "expiry",
+      "plan": [
+        {"phase": "setup", "do": "login", "user": "alice", "as": "alice", "artifact": "alice1"},
+        {"phase": "pre_termination", "do": "profile", "artifact": "alice1", "as": "alice", "checkpoint": "pre_alice"},
+        {"phase": "termination", "do": "wait_since", "artifact": "alice1", "seconds": "boundary_wait_seconds", "note": "TERMINATION: the configured session lifetime has elapsed"},
+        {"phase": "setup", "do": "login", "user": "bob", "as": "bob", "artifact": "bob1"},
+        {"phase": "replay", "do": "profile", "artifact": "alice1", "as": "attacker (replaying alice1)", "checkpoint": "replay_after_lifetime"},
+        {"phase": "negative_c", "do": "profile", "artifact": "bob1", "as": "bob", "checkpoint": "control_unexpired_other_user"},
+        {"phase": "negative_b", "do": "login", "user": "alice", "as": "alice (fresh login)", "artifact": "alice2"},
+        {"phase": "negative_b", "do": "profile", "artifact": "alice2", "as": "alice (fresh login)", "checkpoint": "control_fresh_login"}
+      ],
+      "replay_checkpoints": ["replay_after_lifetime"],
+      "control_checkpoints": ["pre_alice", "control_unexpired_other_user", "control_fresh_login"],
+      "expected": {
+        "vulnerable": {"pre_alice": "success", "replay_after_lifetime": "success", "control_unexpired_other_user": "success", "control_fresh_login": "success"},
+        "fixed": {"pre_alice": "success", "replay_after_lifetime": "denied", "control_unexpired_other_user": "success", "control_fresh_login": "success"}
+      },
+      "source_basis": [
+        "Vulnerable revision, lib/cookie.js lines 14 to 15: when originalMaxAge is present the constructor assigns maxAge again, and the maxAge setter recomputes the expiry as now plus maxAge. A session restored from the store therefore always carries a future expiry.",
+        "Vulnerable revision, lib/fastifySession.js line 95: the expiry test uses restoredSession.cookie.expires, which is the recomputed value, so the test is never true and the stored session is accepted after its lifetime.",
+        "Fixed revision, lib/cookie.js: the stored expiry is kept as originalExpires; lib/fastifySession.js lines 95 to 97 test originalExpires, destroy the session and regenerate an empty one. The host then finds no user and answers 401 no_session."
+      ]
+    },
+    {
+      "id": "T2",
+      "cve": "CVE-2024-31999",
+      "frozen_v2_class": "A",
+      "package": "@fastify/secure-session",
+      "repository": "https://github.com/fastify/fastify-secure-session.git",
+      "vulnerable_commit": "7b6eebea04aa8b231004ee2b579bd16891ac83ef",
+      "fixed_commit": "56d66642ecc633cff0606927601e81cdac361370",
+      "host": "hosts/fastify_secure_session_host.js",
+      "lifetime_seconds": 5,
+      "boundary_wait_seconds": 10,
+      "contract": "logout, then lifetime",
+      "plan": [
+        {"phase": "setup", "do": "login", "user": "alice", "as": "alice", "artifact": "alice1"},
+        {"phase": "setup", "do": "login", "user": "bob", "as": "bob", "artifact": "bob1"},
+        {"phase": "pre_termination", "do": "profile", "artifact": "alice1", "as": "alice", "checkpoint": "pre_alice"},
+        {"phase": "pre_termination", "do": "profile", "artifact": "bob1", "as": "bob", "checkpoint": "pre_bob"},
+        {"phase": "termination", "do": "logout", "artifact": "alice1", "as": "alice", "checkpoint": "termination", "note": "TERMINATION: application logout"},
+        {"phase": "replay", "do": "profile", "artifact": "alice1", "as": "attacker (replaying alice1)", "checkpoint": "replay_after_logout"},
+        {"phase": "negative_c", "do": "profile", "artifact": "bob1", "as": "bob", "checkpoint": "control_other_user_after_logout"},
+        {"phase": "negative_b", "do": "login", "user": "alice", "as": "alice (fresh login)", "artifact": "alice2"},
+        {"phase": "negative_b", "do": "profile", "artifact": "alice2", "as": "alice (fresh login)", "checkpoint": "control_fresh_login"},
+        {"phase": "termination", "do": "wait_since", "artifact": "alice1", "seconds": "boundary_wait_seconds", "note": "TERMINATION: the configured session lifetime has elapsed"},
+        {"phase": "replay", "do": "profile", "artifact": "alice1", "as": "attacker (replaying alice1)", "checkpoint": "replay_after_lifetime"},
+        {"phase": "negative_b", "do": "login", "user": "alice", "as": "alice (fresh login)", "artifact": "alice3"},
+        {"phase": "negative_b", "do": "profile", "artifact": "alice3", "as": "alice (fresh login)", "checkpoint": "control_fresh_login_after_lifetime"}
+      ],
+      "replay_checkpoints": ["replay_after_logout", "replay_after_lifetime"],
+      "control_checkpoints": ["pre_alice", "pre_bob", "termination", "control_other_user_after_logout", "control_fresh_login", "control_fresh_login_after_lifetime"],
+      "expected": {
+        "vulnerable": {"pre_alice": "success", "pre_bob": "success", "termination": "reported", "replay_after_logout": "success", "control_other_user_after_logout": "success",
+                       "control_fresh_login": "success", "replay_after_lifetime": "success", "control_fresh_login_after_lifetime": "success"},
+        "fixed": {"pre_alice": "success", "pre_bob": "success", "termination": "reported", "replay_after_logout": "success", "control_other_user_after_logout": "success",
+                  "control_fresh_login": "success", "replay_after_lifetime": "denied", "control_fresh_login_after_lifetime": "success"}
+      },
+      "source_basis": [
+        "Both revisions keep the whole session in an encrypted cookie and hold no state on the server. Session.delete() only clears the cookie in the reply. A copy of the cookie taken before logout therefore still decrypts, in both revisions, so the replay directly after logout is expected to succeed in both.",
+        "Vulnerable revision, index.js: decodeSecureSession returns the decrypted session without any age test, so the copy is accepted for ever.",
+        "Fixed revision, index.js: the Session constructor stamps __ts in whole seconds when it is absent, and decodeSecureSession returns null when (__ts + expiry) * 1000 is not later than the current time. The option expiry is new in this revision (default 86401 seconds). With expiry set to the lifetime above, the copy is refused once the lifetime has elapsed and the host answers 401 no_session.",
+        "Consequence stated in advance: the repair bounds the lifetime of a copied cookie. It does not make logout revoke it. The frozen class of the disclosure is A; the control that the repair adds is a lifetime bound."
+      ]
+    }
+  ],
+  "verdict_rule": {
+    "per_target": [
+      "INCONCLUSIVE if, for either revision, the checkout is not at the pinned commit, the installation or the host application fails, any step has a transport error, any control checkpoint is not as expected, or the measured wait is shorter than boundary_wait_seconds.",
+      "Otherwise CONFIRMED if every replay checkpoint of both revisions equals the expected outcome.",
+      "Otherwise NOT_CONFIRMED. The observed outcomes are reported as they are; the expectation is not changed after the run."
+    ],
+    "sesstrace_invariant_per_replay": "replay_verdict of the frozen runner: FAIL when the replay succeeds, PASS when it is denied, INCONCLUSIVE otherwise",
+    "runs": "One run. A second run is allowed only if the first stopped before any checkpoint was reached, for a set-up reason; both folders are then kept."
+  },
+  "scope": "Two libraries, two revisions each, one host application per library written for this check. The result is about these four builds under this host application. It is not a detection rate and not a field validation."
+}

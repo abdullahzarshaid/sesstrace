@@ -1,0 +1,137 @@
+{
+  "study": "Phase 2 of the SessTrace replay contract applied to public libraries that SessTrace was not written for",
+  "status_when_written": "NOT RUN. Written from the pinned source of both revisions of each library before any execution of library code.",
+  "what_is_reused_unchanged_from_the_frozen_archive": [
+    "Supplement/sesstrace/sesslab/trace.py: the trace recorder (class Trace)",
+    "Supplement/sesstrace/sesslab/mechanisms.py: OperationOutcome and operation_outcome with the 'profile' contract",
+    "Supplement/sesstrace/sesslab/runner.py: replay_verdict"
+  ],
+  "endpoint_contract": {
+    "login": "GET /login?user=<alice|bob> answers 200 {\"logged_in\": true} and sets the cookie 'sid'",
+    "profile": "GET /profile answers 200 {\"sub\": <user>, \"rp\": \"RP1\"} for a session that carries a user, otherwise 401 {\"error\": \"no_session\"}",
+    "logout": "GET /logout answers 200 {\"logged_out\": true}",
+    "slow_profile": "T4 only. GET /slow_profile reads the user from the session at once, waits slow_seconds, then answers exactly as /profile would have answered for the user it read"
+  },
+  "outcome_words": {
+    "success": "operation_outcome(...,'profile').success is true: status 200, the expected user and RP1",
+    "denied": "operation_outcome(...,'profile').denied is true: status 401 and error no_session",
+    "reported": "the logout answer is status 200 with logged_out true"
+  },
+  "driver_steps_added_in_phase_2": {
+    "profile_background": "sends one profile request (path from the step) on a separate thread and returns at once",
+    "pause": "sleeps for the number of seconds named in the target entry and records the measured time",
+    "join": "waits for the background request, judges its answer with the frozen profile contract, and records whether it was sent before and answered after the checkpoint named in spans_checkpoint; if not, the order is recorded as an error"
+  },
+  "targets": [
+    {
+      "id": "T3",
+      "cve": "CVE-2018-1000814",
+      "frozen_v2_class": "T",
+      "package": "aiohttp-session",
+      "repository": "https://github.com/aio-libs/aiohttp-session.git",
+      "vulnerable_commit": "faadf107ff156deacd408873fc33b936e7c1d79b",
+      "fixed_commit": "1b356f01bbab57d041c9a75bacd72fbbf8524728",
+      "fetch_by_hash": false,
+      "image": "docker.io/library/python:3.7-bookworm",
+      "install_command": "pip install --no-cache-dir . aiohttp==3.4.4 multidict==4.4.2 yarl==1.2.6 chardet==3.0.4 attrs==18.2.0 pynacl==1.2.1",
+      "install_basis": "The library is installed from the checkout. The versions of aiohttp, multidict, yarl, chardet, attrs and pynacl are those pinned in requirements-dev.txt at the vulnerable commit (lines 1, 9, 15, 16, 17 and 18); the file is identical at the fixed commit. Python 3.7 is the newest version named in the setup.py classifiers, and aiohttp_session/__init__.py line 4 imports collections.MutableMapping, which Python 3.10 removed.",
+      "host": "hosts/aiohttp_session_host.py",
+      "host_command": "python3 /p2/hosts/aiohttp_session_host.py {checkout} {port} {lifetime_seconds}",
+      "package_list_command": "pip freeze --all",
+      "ports": {"vulnerable": 18101, "fixed": 18102},
+      "lifetime_seconds": 3,
+      "boundary_wait_seconds": 7,
+      "contract": "expiry",
+      "plan": [
+        {"phase": "setup", "do": "login", "user": "alice", "as": "alice", "artifact": "alice1"},
+        {"phase": "pre_termination", "do": "profile", "artifact": "alice1", "as": "alice", "checkpoint": "pre_alice"},
+        {"phase": "termination", "do": "wait_since", "artifact": "alice1", "seconds": "boundary_wait_seconds", "note": "TERMINATION: the configured session lifetime has elapsed"},
+        {"phase": "setup", "do": "login", "user": "bob", "as": "bob", "artifact": "bob1"},
+        {"phase": "replay", "do": "profile", "artifact": "alice1", "as": "attacker (replaying alice1)", "checkpoint": "replay_after_lifetime"},
+        {"phase": "negative_c", "do": "profile", "artifact": "bob1", "as": "bob", "checkpoint": "control_unexpired_other_user"},
+        {"phase": "negative_b", "do": "login", "user": "alice", "as": "alice (fresh login)", "artifact": "alice2"},
+        {"phase": "negative_b", "do": "profile", "artifact": "alice2", "as": "alice (fresh login)", "checkpoint": "control_fresh_login"}
+      ],
+      "replay_checkpoints": ["replay_after_lifetime"],
+      "control_checkpoints": ["pre_alice", "control_unexpired_other_user", "control_fresh_login"],
+      "expected": {
+        "vulnerable": {"pre_alice": "success", "replay_after_lifetime": "success", "control_unexpired_other_user": "success", "control_fresh_login": "success"},
+        "fixed": {"pre_alice": "success", "replay_after_lifetime": "denied", "control_unexpired_other_user": "success", "control_fresh_login": "success"}
+      },
+      "source_basis": [
+        "Both revisions, aiohttp_session/nacl_storage.py lines 31 to 47 (the file is identical in both): load_session decrypts the cookie with SecretBox and builds Session(None, data=data, new=False, max_age=self.max_age) without any test of age.",
+        "Vulnerable revision, aiohttp_session/__init__.py lines 18 to 34: Session.__init__ keeps 'created' but never compares it with max_age and copies the stored 'session' mapping whenever it is present, so a copy of alice's cookie still carries the user after max_age and the host answers 200 with sub alice.",
+        "Fixed revision, aiohttp_session/__init__.py lines 27 to 30: now = int(time.time()), age = now - created, and when max_age is set and age > max_age the stored mapping is dropped. The host then finds no user and answers 401 no_session.",
+        "Vulnerable revision, aiohttp_session/__init__.py lines 232 to 246 (fixed revision lines 235 to 249): max_age reaches the client only as the Max-Age and Expires attributes of the cookie, which a client that copies the value does not have to honour.",
+        "Both revisions, aiohttp_session/cookie_storage.py lines 35 to 41: EncryptedCookieStorage passes ttl=max_age to Fernet and therefore already refuses an old cookie; the host uses NaClCookieStorage, the storage exercised by the maintainer regression tests/test_nacl_storage.py.",
+        "Timing: 'created' is stored in whole seconds at login. With max_age 3 and a wait of at least 7 seconds after the login answer, age is at least 6 at the replay, so age > max_age holds. The controls are taken less than one second after their own login, so age is 0 or 1 and the stored mapping is kept in both revisions."
+      ]
+    },
+    {
+      "id": "T4",
+      "cve": "CVE-2025-46336",
+      "frozen_v2_class": "A",
+      "package": "rack-session",
+      "repository": "https://github.com/rack/rack-session.git",
+      "vulnerable_commit": "c837afff21a5b27ccef5f949750d28c4a75fe069",
+      "fixed_commit": "c28c4a8c1861d814e09f2ae48264ac4c40be2d3b",
+      "fetch_by_hash": true,
+      "fetch_by_hash_reason": "Both pinned commits exist on github.com and can be fetched by their hash, but no branch or tag of the repository contains them, so a plain clone does not hold them.",
+      "image": "docker.io/library/ruby:3.4-bookworm",
+      "install_command": "gem build rack-session.gemspec && gem install --no-document ./rack-session-*.gem rackup webrick",
+      "install_basis": "The gem is built from the checkout and installed with the dependencies its gemspec declares (rack >= 3.0.0, base64 >= 0.1.0), resolved from RubyGems at run time. rackup and webrick provide the threaded HTTP server for the host. The host puts the checkout's lib folder first on the load path and logs the file that defines Rack::Session::Pool#write_session. Ruby 3.4 was the current stable Ruby at the commit date (6 May 2025); the gemspec requires Ruby >= 2.5.",
+      "host": "hosts/rack_session_host.rb",
+      "host_command": "ruby /p2/hosts/rack_session_host.rb {checkout} {port} {slow_seconds}",
+      "package_list_command": "gem list",
+      "ports": {"vulnerable": 18201, "fixed": 18202},
+      "slow_seconds": 3,
+      "head_start_seconds": 1,
+      "join_timeout_seconds": 30,
+      "contract": "logout while a request that loaded the session is still running",
+      "plan": [
+        {"phase": "setup", "do": "login", "user": "alice", "as": "alice", "artifact": "alice1"},
+        {"phase": "setup", "do": "login", "user": "bob", "as": "bob", "artifact": "bob1"},
+        {"phase": "pre_termination", "do": "profile", "artifact": "alice1", "as": "alice", "checkpoint": "pre_alice"},
+        {"phase": "pre_termination", "do": "profile", "artifact": "bob1", "as": "bob", "checkpoint": "pre_bob"},
+        {"phase": "concurrent", "do": "profile_background", "artifact": "alice1", "as": "alice (slow request)", "path": "/slow_profile", "handle": "slow1", "note": "a request that loads alice's session and is still running when she logs out"},
+        {"phase": "concurrent", "do": "pause", "seconds": "head_start_seconds", "note": "the slow request has loaded the session before the logout is sent"},
+        {"phase": "termination", "do": "logout", "artifact": "alice1", "as": "alice", "checkpoint": "termination", "note": "TERMINATION: application logout while the slow request is running"},
+        {"phase": "negative_a", "do": "profile", "artifact": "alice1", "as": "attacker (replaying alice1)", "checkpoint": "control_logout_effective", "note": "replay directly after logout, before the slow request has finished"},
+        {"phase": "concurrent", "do": "join", "handle": "slow1", "checkpoint": "slow_request_completed", "spans_checkpoint": "termination"},
+        {"phase": "replay", "do": "profile", "artifact": "alice1", "as": "attacker (replaying alice1)", "checkpoint": "replay_after_concurrent_request"},
+        {"phase": "negative_c", "do": "profile", "artifact": "bob1", "as": "bob", "checkpoint": "control_other_user"},
+        {"phase": "negative_b", "do": "login", "user": "alice", "as": "alice (fresh login)", "artifact": "alice2"},
+        {"phase": "negative_b", "do": "profile", "artifact": "alice2", "as": "alice (fresh login)", "checkpoint": "control_fresh_login"}
+      ],
+      "replay_checkpoints": ["replay_after_concurrent_request"],
+      "replay_requires": {"replay_after_concurrent_request": {"termination": "reported", "control_logout_effective": "denied", "slow_request_completed": "success"}},
+      "control_checkpoints": ["pre_alice", "pre_bob", "termination", "control_logout_effective", "slow_request_completed", "control_other_user", "control_fresh_login"],
+      "expected": {
+        "vulnerable": {"pre_alice": "success", "pre_bob": "success", "termination": "reported", "control_logout_effective": "denied", "slow_request_completed": "success",
+                       "replay_after_concurrent_request": "success", "control_other_user": "success", "control_fresh_login": "success"},
+        "fixed": {"pre_alice": "success", "pre_bob": "success", "termination": "reported", "control_logout_effective": "denied", "slow_request_completed": "success",
+                  "replay_after_concurrent_request": "denied", "control_other_user": "success", "control_fresh_login": "success"}
+      },
+      "source_basis": [
+        "Both revisions, lib/rack/session/abstract/id.rb lines 271 to 277 and 381 to 396 (the file is identical in both): the session is committed after the application has returned, and a request that has loaded the session calls write_session with the data it loaded, even when another request has deleted that session in the meantime.",
+        "Both revisions, lib/rack/session/pool.rb lines 44 to 51 (find_session): an unknown session id yields a new empty session, so the host finds no user and answers 401 no_session.",
+        "Host, following the maintainer regression test/spec_session_pool.rb lines 298 to 304 of the fixed revision: logout deletes the user and sets session.options[:renew]; id.rb lines 385 to 388 then call delete_session for the old id. Directly after logout the copied cookie is therefore refused in both revisions (control_logout_effective: denied).",
+        "Vulnerable revision, lib/rack/session/pool.rb lines 54 to 58: write_session stores the data under the old id without any test. The slow request, which loaded alice's session before the logout, writes it back when it ends, so the copied cookie works again afterwards (replay_after_concurrent_request: success).",
+        "Fixed revision, lib/rack/session/pool.rb line 56: write_session returns false when the id is no longer in the pool, and id.rb lines 396 to 397 then log 'failed to save session' and set no cookie. The deleted session is not restored and the replay is refused (replay_after_concurrent_request: denied).",
+        "Fixed revision, lib/rack/session/pool.rb lines 62 to 73: delete_session stores an empty session under the new id, so the write of the logout request itself still succeeds and the logout answer is 200 in both revisions (termination: reported).",
+        "The slow request reads the user before it waits, so its own answer is success in both revisions (slow_request_completed). Its answer is computed before the commit, so the refused write in the fixed revision does not change it."
+      ]
+    }
+  ],
+  "verdict_rule": {
+    "per_target": [
+      "INCONCLUSIVE if, for either revision, the checkout is not at the pinned commit, the installation or the host application fails, any step has a transport error or an order error, any control checkpoint is not as expected, a measured wait is shorter than boundary_wait_seconds when the plan has a wait, or a measured pause is shorter than required when the plan has a pause.",
+      "Otherwise CONFIRMED if every replay checkpoint of both revisions equals the expected outcome.",
+      "Otherwise NOT_CONFIRMED. The observed outcomes are reported as they are; the expectation is not changed after the run."
+    ],
+    "difference_from_phase_1": "Phase 1 required a recorded wait for every target because both of its targets had one. Here the wait rule applies only to a plan that contains a wait_since step, and the same rule is added for pause steps. Everything else is the phase 1 rule.",
+    "sesstrace_invariant_per_replay": "replay_verdict of the frozen runner: FAIL when the replay succeeds, PASS when it is denied, INCONCLUSIVE otherwise or when a checkpoint named in replay_requires is not as stated",
+    "runs": "One run per target and revision. A second run is allowed only if the first stopped before any checkpoint was reached, for a set-up reason; both folders are then kept."
+  },
+  "scope": "Two further libraries, two revisions each, one host application per library written for this check. The result is about these four builds under these host applications. It is not a detection rate and not a field validation."
+}

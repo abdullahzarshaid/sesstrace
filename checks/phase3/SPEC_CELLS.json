@@ -1,0 +1,1055 @@
+{
+  "study": "Phase 3, part B: every contract on the four libraries of phases 1 and 2, at both revisions, with planned repeats",
+  "status_when_written": "NOT RUN in phase 3. Written before any part B request; frozen plans of phases 1 and 2 are copied unchanged.",
+  "what_is_reused_unchanged_from_the_frozen_archive": [
+    "Supplement/sesstrace/sesslab/trace.py (Trace)",
+    "Supplement/sesstrace/sesslab/mechanisms.py (OperationOutcome, operation_outcome, 'profile')",
+    "Supplement/sesstrace/sesslab/runner.py (replay_verdict)"
+  ],
+  "contracts": {
+    "logout": "the user logs out; the copy taken before is replayed",
+    "lifetime": "the configured lifetime passes; the copy is replayed",
+    "concurrent_logout": "the phase 2 plan of rack-session: a slow request that loaded the session spans the logout; the copy is replayed after it"
+  },
+  "contract_lifecycle_condition": {
+    "logout": "A",
+    "concurrent_logout": "A",
+    "lifetime": "T"
+  },
+  "class_definitions_source": "Supplement/dataset/Codebook.txt lines 7 (A: authority continuing after explicit logout or revocation), 9 (B: after password, factor, account or role change) and 11 (T: missing, excessive or unenforced lifetime or inactivity expiry)",
+  "not_run": {
+    "T4.lifetime": "the phase 2 host of rack-session sets no lifetime and the host files are not changed"
+  },
+  "reading_rule": "For each library, the contract whose outcome changes between the two revisions is the lifecycle condition that the repair enforces; it is compared with the class frozen for the record (T1: T, T2: A, T3: T, T4: A), whichever way the comparison falls.",
+  "repeats_per_revision": 10,
+  "run_order": "One container per target and revision. The library is installed once. For run 1 to 10, every cell of the target is run in the order of this file; the host application is started fresh before each cell run and stopped after it, on a port not used before in that container (port_base + 10 x run number + position of the cell within the target).",
+  "target_setup": {
+    "T1": {
+      "package": "@fastify/session",
+      "repository": "https://github.com/fastify/session.git",
+      "image": "docker.io/library/node@sha256:8f693eaa7e0a8e71560c9a82b55fd54c2ae920a2ba5d2cde28bac7d1c01c9ba5",
+      "image_basis": "the digest recorded by the phase 1 run (results_20261114T232903Z/external_targets/container_image.txt) for node:20-bookworm",
+      "install_command": "npm install --no-audit --no-fund",
+      "install_basis": "the install command of phase 1 (external_targets/in_container_external.sh line 53)",
+      "host": "external_targets/hosts/fastify_session_host.js",
+      "host_command": "node /ext/hosts/fastify_session_host.js {checkout} {port} {lifetime_seconds}",
+      "host_hash_source": "external_targets/EXTERNAL_FREEZE.sha256",
+      "package_list_command": "npm ls --all --parseable",
+      "fetch_by_hash": false,
+      "host_values": {
+        "lifetime_seconds": 3
+      },
+      "port_base": 19100,
+      "cve": "CVE-2024-35220",
+      "frozen_v2_class": "T",
+      "vulnerable_commit": "8b6241c1b81a99dac8ad636aa2b237b31628e82e",
+      "fixed_commit": "0495ce5b534c4550f25228821db8098293439f2f"
+    },
+    "T2": {
+      "package": "@fastify/secure-session",
+      "repository": "https://github.com/fastify/fastify-secure-session.git",
+      "image": "docker.io/library/node@sha256:8f693eaa7e0a8e71560c9a82b55fd54c2ae920a2ba5d2cde28bac7d1c01c9ba5",
+      "image_basis": "the digest recorded by the phase 1 run for node:20-bookworm",
+      "install_command": "npm install --no-audit --no-fund",
+      "install_basis": "the install command of phase 1 (external_targets/in_container_external.sh line 53)",
+      "host": "external_targets/hosts/fastify_secure_session_host.js",
+      "host_command": "node /ext/hosts/fastify_secure_session_host.js {checkout} {port} {lifetime_seconds}",
+      "host_hash_source": "external_targets/EXTERNAL_FREEZE.sha256",
+      "package_list_command": "npm ls --all --parseable",
+      "fetch_by_hash": false,
+      "host_values": {
+        "lifetime_seconds": 5
+      },
+      "port_base": 19200,
+      "cve": "CVE-2024-31999",
+      "frozen_v2_class": "A",
+      "vulnerable_commit": "7b6eebea04aa8b231004ee2b579bd16891ac83ef",
+      "fixed_commit": "56d66642ecc633cff0606927601e81cdac361370"
+    },
+    "T3": {
+      "package": "aiohttp-session",
+      "repository": "https://github.com/aio-libs/aiohttp-session.git",
+      "image": "docker.io/library/python@sha256:eedf63967cdb57d8214db38ce21f105003ed4e4d0358f02bedc057341bcf92a0",
+      "image_basis": "the digest recorded by the phase 2 run (results_phase2_20261115T010731Z/run_records/container_images.txt) for python:3.7-bookworm",
+      "install_command": "pip install --no-cache-dir . aiohttp==3.4.4 multidict==4.4.2 yarl==1.2.6 chardet==3.0.4 attrs==18.2.0 pynacl==1.2.1",
+      "install_basis": "the install command frozen in phase2/EXTERNAL_SPEC_PHASE2.json",
+      "host": "phase2/hosts/aiohttp_session_host.py",
+      "host_command": "python3 /p2/hosts/aiohttp_session_host.py {checkout} {port} {lifetime_seconds}",
+      "host_hash_source": "phase2/FREEZE_LOG.txt, block T3",
+      "package_list_command": "pip freeze --all",
+      "fetch_by_hash": false,
+      "host_values": {
+        "lifetime_seconds": 3
+      },
+      "port_base": 19300,
+      "cve": "CVE-2018-1000814",
+      "frozen_v2_class": "T",
+      "vulnerable_commit": "faadf107ff156deacd408873fc33b936e7c1d79b",
+      "fixed_commit": "1b356f01bbab57d041c9a75bacd72fbbf8524728"
+    },
+    "T4": {
+      "package": "rack-session",
+      "repository": "https://github.com/rack/rack-session.git",
+      "image": "docker.io/library/ruby@sha256:d7c312a48736dd291d7ce043c847f04dfde9bdf7334491ca6a545a4a184395be",
+      "image_basis": "the digest recorded by the phase 2 run for ruby:3.4-bookworm",
+      "install_command": "gem build rack-session.gemspec && gem install --no-document ./rack-session-*.gem rackup webrick",
+      "install_basis": "the install command frozen in phase2/EXTERNAL_SPEC_PHASE2.json",
+      "host": "phase2/hosts/rack_session_host.rb",
+      "host_command": "ruby /p2/hosts/rack_session_host.rb {checkout} {port} {slow_seconds}",
+      "host_hash_source": "phase2/FREEZE_LOG.txt, block T4",
+      "package_list_command": "gem list",
+      "fetch_by_hash": true,
+      "host_values": {
+        "slow_seconds": 3
+      },
+      "port_base": 19400,
+      "cve": "CVE-2025-46336",
+      "frozen_v2_class": "A",
+      "vulnerable_commit": "c837afff21a5b27ccef5f949750d28c4a75fe069",
+      "fixed_commit": "c28c4a8c1861d814e09f2ae48264ac4c40be2d3b"
+    }
+  },
+  "targets": [
+    {
+      "id": "T1.logout",
+      "target": "T1",
+      "contract": "logout",
+      "cve": "CVE-2024-35220",
+      "frozen_v2_class": "T",
+      "package": "@fastify/session",
+      "repository": "https://github.com/fastify/session.git",
+      "vulnerable_commit": "8b6241c1b81a99dac8ad636aa2b237b31628e82e",
+      "fixed_commit": "0495ce5b534c4550f25228821db8098293439f2f",
+      "lifetime_seconds": 3,
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "logout",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "termination",
+          "note": "TERMINATION: application logout"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_logout"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_logout"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "replay_after_logout": "denied"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "replay_after_logout": "denied"
+        }
+      },
+      "source_basis": [
+        "Host external_targets/hosts/fastify_session_host.js lines 31 to 32: /logout calls request.session.destroy and answers logged_out true.",
+        "Both revisions, lib/session.js lines 113 to 119 (identical in both): destroy calls the store's destroy with the session id and sets request.session to null.",
+        "Both revisions, lib/store.js lines 23 to 26 (identical in both): the memory store deletes the id.",
+        "Both revisions, lib/fastifySession.js lines 43 to 56 and 73 to 83: the replayed cookie still unsigns, the store returns no session for its id, and a new empty Session is created; the host finds no user and answers 401 no_session. Both revisions refuse the copy.",
+        "The repair (fixed revision lib/cookie.js lines 14 to 16 and 63, lib/fastifySession.js lines 95 to 97) concerns only the expiry test of a session restored from the store, which a deleted session never reaches. The lifetime of 3 seconds does not elapse within this plan, which takes well under one second after the login."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both revisions",
+      "expected_category": "REFUSED_AT_BOTH"
+    },
+    {
+      "id": "T1.lifetime",
+      "target": "T1",
+      "contract": "lifetime",
+      "cve": "CVE-2024-35220",
+      "frozen_v2_class": "T",
+      "package": "@fastify/session",
+      "repository": "https://github.com/fastify/session.git",
+      "vulnerable_commit": "8b6241c1b81a99dac8ad636aa2b237b31628e82e",
+      "fixed_commit": "0495ce5b534c4550f25228821db8098293439f2f",
+      "lifetime_seconds": 3,
+      "boundary_wait_seconds": 7,
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "termination",
+          "do": "wait_since",
+          "artifact": "alice1",
+          "seconds": "boundary_wait_seconds",
+          "note": "TERMINATION: the configured session lifetime has elapsed"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_lifetime"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_unexpired_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_lifetime"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "control_unexpired_other_user",
+        "control_fresh_login"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "replay_after_lifetime": "success",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "replay_after_lifetime": "denied",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login": "success"
+        }
+      },
+      "source_basis": [
+        "Vulnerable revision, lib/cookie.js lines 14 to 15: when originalMaxAge is present the constructor assigns maxAge again, and the maxAge setter recomputes the expiry as now plus maxAge. A session restored from the store therefore always carries a future expiry.",
+        "Vulnerable revision, lib/fastifySession.js line 95: the expiry test uses restoredSession.cookie.expires, which is the recomputed value, so the test is never true and the stored session is accepted after its lifetime.",
+        "Fixed revision, lib/cookie.js: the stored expiry is kept as originalExpires; lib/fastifySession.js lines 95 to 97 test originalExpires, destroy the session and regenerate an empty one. The host then finds no user and answers 401 no_session."
+      ],
+      "expectation_origin": "frozen in phase 1, external_targets/EXTERNAL_SPEC.json, target T1 (plan, checkpoints, expectations and source basis copied unchanged)",
+      "expected_category": "FLIPS"
+    },
+    {
+      "id": "T2.logout",
+      "target": "T2",
+      "contract": "logout",
+      "cve": "CVE-2024-31999",
+      "frozen_v2_class": "A",
+      "package": "@fastify/secure-session",
+      "repository": "https://github.com/fastify/fastify-secure-session.git",
+      "vulnerable_commit": "7b6eebea04aa8b231004ee2b579bd16891ac83ef",
+      "fixed_commit": "56d66642ecc633cff0606927601e81cdac361370",
+      "lifetime_seconds": 5,
+      "boundary_wait_seconds": 10,
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "logout",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "termination",
+          "note": "TERMINATION: application logout"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_logout"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user_after_logout"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_logout"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user_after_logout",
+        "control_fresh_login"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "replay_after_logout": "success",
+          "control_other_user_after_logout": "success",
+          "control_fresh_login": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "replay_after_logout": "success",
+          "control_other_user_after_logout": "success",
+          "control_fresh_login": "success"
+        }
+      },
+      "source_basis": [
+        "Both revisions keep the whole session in an encrypted cookie and hold no state on the server. Session.delete() only clears the cookie in the reply. A copy of the cookie taken before logout therefore still decrypts, in both revisions, so the replay directly after logout is expected to succeed in both.",
+        "Vulnerable revision, index.js: decodeSecureSession returns the decrypted session without any age test, so the copy is accepted for ever.",
+        "Fixed revision, index.js: the Session constructor stamps __ts in whole seconds when it is absent, and decodeSecureSession returns null when (__ts + expiry) * 1000 is not later than the current time. The option expiry is new in this revision (default 86401 seconds). With expiry set to the lifetime above, the copy is refused once the lifetime has elapsed and the host answers 401 no_session.",
+        "Consequence stated in advance: the repair bounds the lifetime of a copied cookie. It does not make logout revoke it. The frozen class of the disclosure is A; the control that the repair adds is a lifetime bound."
+      ],
+      "expectation_origin": "frozen in phase 1, external_targets/EXTERNAL_SPEC.json, target T2: the first nine plan steps and the checkpoints they produce, copied unchanged",
+      "expected_category": "ACCEPTED_AT_BOTH"
+    },
+    {
+      "id": "T2.lifetime",
+      "target": "T2",
+      "contract": "lifetime",
+      "cve": "CVE-2024-31999",
+      "frozen_v2_class": "A",
+      "package": "@fastify/secure-session",
+      "repository": "https://github.com/fastify/fastify-secure-session.git",
+      "vulnerable_commit": "7b6eebea04aa8b231004ee2b579bd16891ac83ef",
+      "fixed_commit": "56d66642ecc633cff0606927601e81cdac361370",
+      "lifetime_seconds": 5,
+      "boundary_wait_seconds": 10,
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "termination",
+          "do": "wait_since",
+          "artifact": "alice1",
+          "seconds": "boundary_wait_seconds",
+          "note": "TERMINATION: the configured session lifetime has elapsed"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_lifetime"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_unexpired_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice3"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice3",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login_after_lifetime"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_lifetime"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "control_unexpired_other_user",
+        "control_fresh_login_after_lifetime"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "replay_after_lifetime": "success",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login_after_lifetime": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "replay_after_lifetime": "denied",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login_after_lifetime": "success"
+        }
+      },
+      "source_basis": [
+        "Both revisions keep the whole session in an encrypted cookie and hold no state on the server. Session.delete() only clears the cookie in the reply. A copy of the cookie taken before logout therefore still decrypts, in both revisions, so the replay directly after logout is expected to succeed in both.",
+        "Vulnerable revision, index.js: decodeSecureSession returns the decrypted session without any age test, so the copy is accepted for ever.",
+        "Fixed revision, index.js: the Session constructor stamps __ts in whole seconds when it is absent, and decodeSecureSession returns null when (__ts + expiry) * 1000 is not later than the current time. The option expiry is new in this revision (default 86401 seconds). With expiry set to the lifetime above, the copy is refused once the lifetime has elapsed and the host answers 401 no_session.",
+        "Consequence stated in advance: the repair bounds the lifetime of a copied cookie. It does not make logout revoke it. The frozen class of the disclosure is A; the control that the repair adds is a lifetime bound.",
+        "Phase 3: the logout of the phase 1 plan is left out. Both revisions hold no server state, so a logout does not change whether the copied cookie decrypts; the expectation for the replay after the lifetime is the phase 1 one. Bob logs in after the wait, so his session is younger than the lifetime and is accepted in both revisions."
+      ],
+      "expectation_origin": "replay expectation frozen in phase 1 (target T2, replay_after_lifetime and control_fresh_login_after_lifetime); the plan is the lifetime part of the phase 1 plan without the logout before it, with the other-user control of target T1",
+      "expected_category": "FLIPS"
+    },
+    {
+      "id": "T3.logout",
+      "target": "T3",
+      "contract": "logout",
+      "cve": "CVE-2018-1000814",
+      "frozen_v2_class": "T",
+      "package": "aiohttp-session",
+      "repository": "https://github.com/aio-libs/aiohttp-session.git",
+      "vulnerable_commit": "faadf107ff156deacd408873fc33b936e7c1d79b",
+      "fixed_commit": "1b356f01bbab57d041c9a75bacd72fbbf8524728",
+      "lifetime_seconds": 3,
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "logout",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "termination",
+          "note": "TERMINATION: application logout"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_logout"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_logout"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "replay_after_logout": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "replay_after_logout": "success"
+        }
+      },
+      "source_basis": [
+        "Host phase2/hosts/aiohttp_session_host.py lines 39 to 42: /logout calls session.invalidate() and answers logged_out true.",
+        "Both revisions, aiohttp_session/__init__.py invalidate (vulnerable lines 68 to 70, fixed lines 71 to 73) empties the mapping; nacl_storage.py lines 49 to 52 then call save_cookie with empty data, and save_cookie (vulnerable lines 239 to 244, fixed lines 242 to 247) deletes the cookie on the client. No state is kept on the server.",
+        "Both revisions, aiohttp_session/nacl_storage.py lines 31 to 43 (identical): a copy of the cookie taken before logout still decrypts and yields the stored user.",
+        "Fixed revision, aiohttp_session/__init__.py lines 27 to 30: the copy is dropped only when age > max_age (3 seconds). The replay is sent well under one second after the login, so age is 0 or 1 and the user is kept. Both revisions accept the copy."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both revisions",
+      "expected_category": "ACCEPTED_AT_BOTH"
+    },
+    {
+      "id": "T3.lifetime",
+      "target": "T3",
+      "contract": "lifetime",
+      "cve": "CVE-2018-1000814",
+      "frozen_v2_class": "T",
+      "package": "aiohttp-session",
+      "repository": "https://github.com/aio-libs/aiohttp-session.git",
+      "vulnerable_commit": "faadf107ff156deacd408873fc33b936e7c1d79b",
+      "fixed_commit": "1b356f01bbab57d041c9a75bacd72fbbf8524728",
+      "lifetime_seconds": 3,
+      "boundary_wait_seconds": 7,
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "termination",
+          "do": "wait_since",
+          "artifact": "alice1",
+          "seconds": "boundary_wait_seconds",
+          "note": "TERMINATION: the configured session lifetime has elapsed"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_lifetime"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_unexpired_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_lifetime"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "control_unexpired_other_user",
+        "control_fresh_login"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "replay_after_lifetime": "success",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "replay_after_lifetime": "denied",
+          "control_unexpired_other_user": "success",
+          "control_fresh_login": "success"
+        }
+      },
+      "source_basis": [
+        "Both revisions, aiohttp_session/nacl_storage.py lines 31 to 47 (the file is identical in both): load_session decrypts the cookie with SecretBox and builds Session(None, data=data, new=False, max_age=self.max_age) without any test of age.",
+        "Vulnerable revision, aiohttp_session/__init__.py lines 18 to 34: Session.__init__ keeps 'created' but never compares it with max_age and copies the stored 'session' mapping whenever it is present, so a copy of alice's cookie still carries the user after max_age and the host answers 200 with sub alice.",
+        "Fixed revision, aiohttp_session/__init__.py lines 27 to 30: now = int(time.time()), age = now - created, and when max_age is set and age > max_age the stored mapping is dropped. The host then finds no user and answers 401 no_session.",
+        "Vulnerable revision, aiohttp_session/__init__.py lines 232 to 246 (fixed revision lines 235 to 249): max_age reaches the client only as the Max-Age and Expires attributes of the cookie, which a client that copies the value does not have to honour.",
+        "Both revisions, aiohttp_session/cookie_storage.py lines 35 to 41: EncryptedCookieStorage passes ttl=max_age to Fernet and therefore already refuses an old cookie; the host uses NaClCookieStorage, the storage exercised by the maintainer regression tests/test_nacl_storage.py.",
+        "Timing: 'created' is stored in whole seconds at login. With max_age 3 and a wait of at least 7 seconds after the login answer, age is at least 6 at the replay, so age > max_age holds. The controls are taken less than one second after their own login, so age is 0 or 1 and the stored mapping is kept in both revisions."
+      ],
+      "expectation_origin": "frozen in phase 2, phase2/EXTERNAL_SPEC_PHASE2.json, target T3 (copied unchanged)",
+      "expected_category": "FLIPS"
+    },
+    {
+      "id": "T4.logout",
+      "target": "T4",
+      "contract": "logout",
+      "cve": "CVE-2025-46336",
+      "frozen_v2_class": "A",
+      "package": "rack-session",
+      "repository": "https://github.com/rack/rack-session.git",
+      "vulnerable_commit": "c837afff21a5b27ccef5f949750d28c4a75fe069",
+      "fixed_commit": "c28c4a8c1861d814e09f2ae48264ac4c40be2d3b",
+      "slow_seconds": 3,
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "termination",
+          "do": "logout",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "termination",
+          "note": "TERMINATION: application logout"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_logout"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_logout"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_other_user",
+        "control_fresh_login"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "replay_after_logout": "denied"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_other_user": "success",
+          "control_fresh_login": "success",
+          "replay_after_logout": "denied"
+        }
+      },
+      "source_basis": [
+        "Host phase2/hosts/rack_session_host.rb lines 40 to 45: /logout deletes the user and sets session.options[:renew].",
+        "Both revisions, lib/rack/session/abstract/id.rb lines 385 to 388 (identical in both): renew calls delete_session for the old id; lib/rack/session/pool.rb (vulnerable lines 61 to 66, fixed lines 62 to 73) deletes the old id from the pool.",
+        "Both revisions, lib/rack/session/pool.rb lines 44 to 51: the replayed id is unknown, find_session yields a new empty session, and the host answers 401 no_session.",
+        "No request of this plan is running when the logout happens, so nothing writes the old id back. Both revisions refuse the copy; the repair (fixed pool.rb line 56) is not reached."
+      ],
+      "expectation_origin": "new in phase 3, written from the source of both revisions",
+      "expected_category": "REFUSED_AT_BOTH"
+    },
+    {
+      "id": "T4.concurrent_logout",
+      "target": "T4",
+      "contract": "concurrent_logout",
+      "cve": "CVE-2025-46336",
+      "frozen_v2_class": "A",
+      "package": "rack-session",
+      "repository": "https://github.com/rack/rack-session.git",
+      "vulnerable_commit": "c837afff21a5b27ccef5f949750d28c4a75fe069",
+      "fixed_commit": "c28c4a8c1861d814e09f2ae48264ac4c40be2d3b",
+      "slow_seconds": 3,
+      "head_start_seconds": 1,
+      "join_timeout_seconds": 30,
+      "plan": [
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "alice",
+          "as": "alice",
+          "artifact": "alice1"
+        },
+        {
+          "phase": "setup",
+          "do": "login",
+          "user": "bob",
+          "as": "bob",
+          "artifact": "bob1"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "pre_alice"
+        },
+        {
+          "phase": "pre_termination",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "pre_bob"
+        },
+        {
+          "phase": "concurrent",
+          "do": "profile_background",
+          "artifact": "alice1",
+          "as": "alice (slow request)",
+          "path": "/slow_profile",
+          "handle": "slow1",
+          "note": "a request that loads alice's session and is still running when she logs out"
+        },
+        {
+          "phase": "concurrent",
+          "do": "pause",
+          "seconds": "head_start_seconds",
+          "note": "the slow request has loaded the session before the logout is sent"
+        },
+        {
+          "phase": "termination",
+          "do": "logout",
+          "artifact": "alice1",
+          "as": "alice",
+          "checkpoint": "termination",
+          "note": "TERMINATION: application logout while the slow request is running"
+        },
+        {
+          "phase": "negative_a",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "control_logout_effective",
+          "note": "replay directly after logout, before the slow request has finished"
+        },
+        {
+          "phase": "concurrent",
+          "do": "join",
+          "handle": "slow1",
+          "checkpoint": "slow_request_completed",
+          "spans_checkpoint": "termination"
+        },
+        {
+          "phase": "replay",
+          "do": "profile",
+          "artifact": "alice1",
+          "as": "attacker (replaying alice1)",
+          "checkpoint": "replay_after_concurrent_request"
+        },
+        {
+          "phase": "negative_c",
+          "do": "profile",
+          "artifact": "bob1",
+          "as": "bob",
+          "checkpoint": "control_other_user"
+        },
+        {
+          "phase": "negative_b",
+          "do": "login",
+          "user": "alice",
+          "as": "alice (fresh login)",
+          "artifact": "alice2"
+        },
+        {
+          "phase": "negative_b",
+          "do": "profile",
+          "artifact": "alice2",
+          "as": "alice (fresh login)",
+          "checkpoint": "control_fresh_login"
+        }
+      ],
+      "replay_checkpoints": [
+        "replay_after_concurrent_request"
+      ],
+      "control_checkpoints": [
+        "pre_alice",
+        "pre_bob",
+        "termination",
+        "control_logout_effective",
+        "slow_request_completed",
+        "control_other_user",
+        "control_fresh_login"
+      ],
+      "expected": {
+        "vulnerable": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_logout_effective": "denied",
+          "slow_request_completed": "success",
+          "replay_after_concurrent_request": "success",
+          "control_other_user": "success",
+          "control_fresh_login": "success"
+        },
+        "fixed": {
+          "pre_alice": "success",
+          "pre_bob": "success",
+          "termination": "reported",
+          "control_logout_effective": "denied",
+          "slow_request_completed": "success",
+          "replay_after_concurrent_request": "denied",
+          "control_other_user": "success",
+          "control_fresh_login": "success"
+        }
+      },
+      "replay_requires": {
+        "replay_after_concurrent_request": {
+          "termination": "reported",
+          "control_logout_effective": "denied",
+          "slow_request_completed": "success"
+        }
+      },
+      "source_basis": [
+        "Both revisions, lib/rack/session/abstract/id.rb lines 271 to 277 and 381 to 396 (the file is identical in both): the session is committed after the application has returned, and a request that has loaded the session calls write_session with the data it loaded, even when another request has deleted that session in the meantime.",
+        "Both revisions, lib/rack/session/pool.rb lines 44 to 51 (find_session): an unknown session id yields a new empty session, so the host finds no user and answers 401 no_session.",
+        "Host, following the maintainer regression test/spec_session_pool.rb lines 298 to 304 of the fixed revision: logout deletes the user and sets session.options[:renew]; id.rb lines 385 to 388 then call delete_session for the old id. Directly after logout the copied cookie is therefore refused in both revisions (control_logout_effective: denied).",
+        "Vulnerable revision, lib/rack/session/pool.rb lines 54 to 58: write_session stores the data under the old id without any test. The slow request, which loaded alice's session before the logout, writes it back when it ends, so the copied cookie works again afterwards (replay_after_concurrent_request: success).",
+        "Fixed revision, lib/rack/session/pool.rb line 56: write_session returns false when the id is no longer in the pool, and id.rb lines 396 to 397 then log 'failed to save session' and set no cookie. The deleted session is not restored and the replay is refused (replay_after_concurrent_request: denied).",
+        "Fixed revision, lib/rack/session/pool.rb lines 62 to 73: delete_session stores an empty session under the new id, so the write of the logout request itself still succeeds and the logout answer is 200 in both revisions (termination: reported).",
+        "The slow request reads the user before it waits, so its own answer is success in both revisions (slow_request_completed). Its answer is computed before the commit, so the refused write in the fixed revision does not change it."
+      ],
+      "expectation_origin": "frozen in phase 2, phase2/EXTERNAL_SPEC_PHASE2.json, target T4 (copied unchanged)",
+      "expected_category": "FLIPS"
+    }
+  ],
+  "categories": {
+    "FLIPS": "the replay is accepted at the vulnerable revision and refused at the fixed one",
+    "REFUSED_AT_BOTH": "refused at both",
+    "ACCEPTED_AT_BOTH": "accepted at both"
+  },
+  "verdict_rule": {
+    "run_valid": "A run is valid when the set-up record of its container is correct (pinned commit, install exit 0, host ready for that run), every control checkpoint is as expected, there is no transport or order error, and every wait or pause is at least as long as required.",
+    "per_cell": [
+      "CONFIRMED: all 20 runs valid and every replay as expected.",
+      "NOT_CONFIRMED: at least one valid run has a replay that differs from the expectation.",
+      "INCONCLUSIVE: no valid run differs, but at least one run is invalid."
+    ],
+    "counts": "Counts are reported in every case, for example 'vulnerable 10 of 10 accepted, fixed 10 of 10 refused', with the observed category.",
+    "runs": "No cell is run again. A second run of a cell is allowed only if the first stopped before any checkpoint was reached, for a set-up reason; both are kept."
+  },
+  "scope": "Four libraries, two revisions each, eight cells, ten runs per revision, behind the host applications of phases 1 and 2. It is not a benchmark and not a detection rate."
+}

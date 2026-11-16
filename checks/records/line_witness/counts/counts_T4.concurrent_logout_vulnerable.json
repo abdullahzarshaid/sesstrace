@@ -1,0 +1,6 @@
+{
+  "cell": "T4.concurrent_logout",
+  "variant": "vulnerable",
+  "runtime": "ruby",
+  "counts": []
+}

@@ -1,0 +1,1222 @@
+{
+  "specification": "SPEC_CELLS_D.json",
+  "repeats_per_revision": 3,
+  "reading_rule": "For each application, the contracts whose outcome changes between the two releases are the lifecycle conditions that the repair enforces; they are compared with the class frozen for the record (T5: B, T6: B, T7: A, T8: T), whichever way the comparison falls.",
+  "cells": [
+    {
+      "cell": "T5.logout",
+      "target": "T5",
+      "contract": "logout",
+      "cve": "CVE-2026-35594",
+      "package": "Vikunja",
+      "frozen_v2_class": "B",
+      "expected_category": "ACCEPTED_AT_BOTH",
+      "replay_checkpoint": "replay_after_logout",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "success"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "fixed 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "ACCEPTED_AT_BOTH",
+      "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused, fixed 3 of 3 accepted, 0 of 3 refused",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "cell": "T5.lifetime",
+      "target": "T5",
+      "contract": "lifetime",
+      "cve": "CVE-2026-35594",
+      "package": "Vikunja",
+      "frozen_v2_class": "B",
+      "expected_category": "REFUSED_AT_BOTH",
+      "replay_checkpoint": "replay_after_lifetime",
+      "expected_replay": {
+        "vulnerable": "denied",
+        "fixed": "denied"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "vulnerable 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "fixed 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "REFUSED_AT_BOTH",
+      "count_text": "vulnerable 0 of 3 accepted, 3 of 3 refused, fixed 0 of 3 accepted, 3 of 3 refused",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "cell": "T5.credential_change",
+      "target": "T5",
+      "contract": "credential_change",
+      "cve": "CVE-2026-35594",
+      "package": "Vikunja",
+      "frozen_v2_class": "B",
+      "expected_category": "ACCEPTED_AT_BOTH",
+      "replay_checkpoint": "replay_after_credential_change",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "success"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "fixed 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "ACCEPTED_AT_BOTH",
+      "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused, fixed 3 of 3 accepted, 0 of 3 refused",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "cell": "T6.logout",
+      "target": "T6",
+      "contract": "logout",
+      "cve": "CVE-2026-65984",
+      "package": "FUXA",
+      "frozen_v2_class": "B",
+      "expected_category": "ACCEPTED_AT_BOTH",
+      "replay_checkpoint": "replay_after_logout",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "success"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "fixed 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "ACCEPTED_AT_BOTH",
+      "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused, fixed 3 of 3 accepted, 0 of 3 refused",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "cell": "T6.lifetime",
+      "target": "T6",
+      "contract": "lifetime",
+      "cve": "CVE-2026-65984",
+      "package": "FUXA",
+      "frozen_v2_class": "B",
+      "expected_category": "REFUSED_AT_BOTH",
+      "replay_checkpoint": "replay_after_lifetime",
+      "expected_replay": {
+        "vulnerable": "denied",
+        "fixed": "denied"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "vulnerable 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "fixed 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "REFUSED_AT_BOTH",
+      "count_text": "vulnerable 0 of 3 accepted, 3 of 3 refused, fixed 0 of 3 accepted, 3 of 3 refused",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "cell": "T6.account_disabled",
+      "target": "T6",
+      "contract": "account_disabled",
+      "cve": "CVE-2026-65984",
+      "package": "FUXA",
+      "frozen_v2_class": "B",
+      "expected_category": "FLIPS",
+      "replay_checkpoint": "replay_after_account_disabled",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "denied"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "fixed 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "FLIPS",
+      "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused, fixed 0 of 3 accepted, 3 of 3 refused",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "cell": "T7.logout",
+      "target": "T7",
+      "contract": "logout",
+      "cve": "CVE-2024-34709",
+      "package": "Directus",
+      "frozen_v2_class": "A",
+      "expected_category": "FLIPS",
+      "replay_checkpoint": "replay_after_logout",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "denied"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "other": 3
+          },
+          "count_text": "fixed 0 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "other",
+              "replay_as_expected": false,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "other",
+              "replay_as_expected": false,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "other",
+              "replay_as_expected": false,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [
+        "fixed run_01: replay replay_after_logout was other, expected denied",
+        "fixed run_02: replay replay_after_logout was other, expected denied",
+        "fixed run_03: replay replay_after_logout was other, expected denied"
+      ],
+      "observed_category": "MIXED",
+      "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused, fixed 0 of 3 accepted, 0 of 3 refused",
+      "verdict": "NOT_CONFIRMED"
+    },
+    {
+      "cell": "T7.lifetime",
+      "target": "T7",
+      "contract": "lifetime",
+      "cve": "CVE-2024-34709",
+      "package": "Directus",
+      "frozen_v2_class": "A",
+      "expected_category": "REFUSED_AT_BOTH",
+      "replay_checkpoint": "replay_after_lifetime",
+      "expected_replay": {
+        "vulnerable": "denied",
+        "fixed": "denied"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "vulnerable 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "fixed 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "REFUSED_AT_BOTH",
+      "count_text": "vulnerable 0 of 3 accepted, 3 of 3 refused, fixed 0 of 3 accepted, 3 of 3 refused",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "cell": "T7.credential_change",
+      "target": "T7",
+      "contract": "credential_change",
+      "cve": "CVE-2024-34709",
+      "package": "Directus",
+      "frozen_v2_class": "A",
+      "expected_category": "ACCEPTED_AT_BOTH",
+      "replay_checkpoint": "replay_after_credential_change",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "success"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 0,
+          "valid_replay_counts": {},
+          "count_text": "vulnerable 0 of 3 accepted, 0 of 3 refused (0 of 3 runs valid)",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": false,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": [
+                "control termination was other, expected reported"
+              ]
+            },
+            {
+              "run": 2,
+              "valid": false,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": [
+                "control termination was other, expected reported"
+              ]
+            },
+            {
+              "run": 3,
+              "valid": false,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": [
+                "control termination was other, expected reported"
+              ]
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 0,
+          "valid_replay_counts": {},
+          "count_text": "fixed 0 of 3 accepted, 0 of 3 refused (0 of 3 runs valid)",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": false,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": [
+                "control termination was other, expected reported"
+              ]
+            },
+            {
+              "run": 2,
+              "valid": false,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": [
+                "control termination was other, expected reported"
+              ]
+            },
+            {
+              "run": 3,
+              "valid": false,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": [
+                "control termination was other, expected reported"
+              ]
+            }
+          ]
+        }
+      },
+      "reasons": [
+        "vulnerable run_01: invalid: control termination was other, expected reported",
+        "vulnerable run_02: invalid: control termination was other, expected reported",
+        "vulnerable run_03: invalid: control termination was other, expected reported",
+        "fixed run_01: invalid: control termination was other, expected reported",
+        "fixed run_02: invalid: control termination was other, expected reported",
+        "fixed run_03: invalid: control termination was other, expected reported"
+      ],
+      "observed_category": "NO_VALID_RUN",
+      "count_text": "vulnerable 0 of 3 accepted, 0 of 3 refused (0 of 3 runs valid), fixed 0 of 3 accepted, 0 of 3 refused (0 of 3 runs valid)",
+      "verdict": "INCONCLUSIVE"
+    },
+    {
+      "cell": "T7.account_disabled",
+      "target": "T7",
+      "contract": "account_disabled",
+      "cve": "CVE-2024-34709",
+      "package": "Directus",
+      "frozen_v2_class": "A",
+      "expected_category": "ACCEPTED_AT_BOTH",
+      "replay_checkpoint": "replay_after_account_disabled",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "success"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "fixed 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "ACCEPTED_AT_BOTH",
+      "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused, fixed 3 of 3 accepted, 0 of 3 refused",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "cell": "T8.logout",
+      "target": "T8",
+      "contract": "logout",
+      "cve": "CVE-2024-55603",
+      "package": "Kanboard",
+      "frozen_v2_class": "T",
+      "expected_category": "REFUSED_AT_BOTH",
+      "replay_checkpoint": "replay_after_logout",
+      "expected_replay": {
+        "vulnerable": "denied",
+        "fixed": "denied"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "vulnerable 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "fixed 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "REFUSED_AT_BOTH",
+      "count_text": "vulnerable 0 of 3 accepted, 3 of 3 refused, fixed 0 of 3 accepted, 3 of 3 refused",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "cell": "T8.lifetime",
+      "target": "T8",
+      "contract": "lifetime",
+      "cve": "CVE-2024-55603",
+      "package": "Kanboard",
+      "frozen_v2_class": "T",
+      "expected_category": "FLIPS",
+      "replay_checkpoint": "replay_after_lifetime",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "denied"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "fixed 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "FLIPS",
+      "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused, fixed 0 of 3 accepted, 3 of 3 refused",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "cell": "T8.credential_change",
+      "target": "T8",
+      "contract": "credential_change",
+      "cve": "CVE-2024-55603",
+      "package": "Kanboard",
+      "frozen_v2_class": "T",
+      "expected_category": "ACCEPTED_AT_BOTH",
+      "replay_checkpoint": "replay_after_credential_change",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "success"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "fixed 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "ACCEPTED_AT_BOTH",
+      "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused, fixed 3 of 3 accepted, 0 of 3 refused",
+      "verdict": "CONFIRMED"
+    },
+    {
+      "cell": "T8.account_disabled",
+      "target": "T8",
+      "contract": "account_disabled",
+      "cve": "CVE-2024-55603",
+      "package": "Kanboard",
+      "frozen_v2_class": "T",
+      "expected_category": "REFUSED_AT_BOTH",
+      "replay_checkpoint": "replay_after_account_disabled",
+      "expected_replay": {
+        "vulnerable": "denied",
+        "fixed": "denied"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "vulnerable 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "fixed 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "REFUSED_AT_BOTH",
+      "count_text": "vulnerable 0 of 3 accepted, 3 of 3 refused, fixed 0 of 3 accepted, 3 of 3 refused",
+      "verdict": "CONFIRMED"
+    }
+  ],
+  "reading": [
+    {
+      "target": "T5",
+      "package": "Vikunja",
+      "frozen_v2_class": "B",
+      "contracts_whose_outcome_changes": [],
+      "lifecycle_condition_of_those_contracts": [],
+      "agrees_with_frozen_class": null
+    },
+    {
+      "target": "T6",
+      "package": "FUXA",
+      "frozen_v2_class": "B",
+      "contracts_whose_outcome_changes": [
+        "account_disabled"
+      ],
+      "lifecycle_condition_of_those_contracts": [
+        "B"
+      ],
+      "agrees_with_frozen_class": true
+    },
+    {
+      "target": "T7",
+      "package": "Directus",
+      "frozen_v2_class": "A",
+      "contracts_whose_outcome_changes": [],
+      "lifecycle_condition_of_those_contracts": [],
+      "agrees_with_frozen_class": null
+    },
+    {
+      "target": "T8",
+      "package": "Kanboard",
+      "frozen_v2_class": "T",
+      "contracts_whose_outcome_changes": [
+        "lifetime"
+      ],
+      "lifecycle_condition_of_those_contracts": [
+        "T"
+      ],
+      "agrees_with_frozen_class": true
+    }
+  ],
+  "counts": {
+    "CONFIRMED": 12,
+    "NOT_CONFIRMED": 1,
+    "INCONCLUSIVE": 1
+  },
+  "scope": "Four complete applications at two releases each, behind adapters written for this check. It is not a benchmark and not a detection rate."
+}

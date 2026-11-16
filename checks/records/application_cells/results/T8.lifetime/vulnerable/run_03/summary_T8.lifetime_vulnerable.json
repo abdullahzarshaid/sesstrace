@@ -1,0 +1,60 @@
+{
+  "target": "T8.lifetime",
+  "cve": "CVE-2024-55603",
+  "package": "Kanboard",
+  "variant": "vulnerable",
+  "commit_expected": "sha256:1bc1ed4520ae9c50d62f58a64983a62298185376aafc84ca3472f76bce9835eb",
+  "lifetime_seconds": 30,
+  "checkpoints": {
+    "pre_alice": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 2,
+      "artifact": "A1"
+    },
+    "replay_after_lifetime": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 4,
+      "artifact": "A1"
+    },
+    "control_unexpired_other_user": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 5,
+      "artifact": "A2"
+    },
+    "control_fresh_login_after_lifetime": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 7,
+      "artifact": "A3"
+    },
+    "control_unknown_credential": {
+      "outcome": "denied",
+      "status": 401,
+      "reason": "contract_denial",
+      "step": 8,
+      "artifact": "A4"
+    }
+  },
+  "sesstrace_invariant": {
+    "replay_after_lifetime": "FAIL"
+  },
+  "waits": [
+    {
+      "required_seconds": 75.0,
+      "measured_seconds": 75.06,
+      "since_artifact": "A1",
+      "after_step": 2,
+      "note": "TERMINATION: the configured lifetime has elapsed"
+    }
+  ],
+  "errors": [],
+  "http_steps": 8,
+  "utc_end": "2026-11-15T12:27:18Z"
+}

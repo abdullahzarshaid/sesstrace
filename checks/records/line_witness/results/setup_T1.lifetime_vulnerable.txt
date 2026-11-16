@@ -1,0 +1,7 @@
+head=8b6241c1b81a99dac8ad636aa2b237b31628e82e
+install_exit=0
+witness_command=NODE_V8_COVERAGE=/out/raw/T1.lifetime_vulnerable.v8 NODE_OPTIONS='--require /p3/witness/node_preload.js' node /ext/hosts/fastify_session_host.js /tmp/checkout/T1/vulnerable 19600 3
+host_ready=1
+driver_exit=0
+host_exit=0
+analyze_exit=0

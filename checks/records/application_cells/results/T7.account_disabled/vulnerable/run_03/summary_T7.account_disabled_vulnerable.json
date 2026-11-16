@@ -1,0 +1,64 @@
+{
+  "target": "T7.account_disabled",
+  "cve": "CVE-2024-34709",
+  "package": "Directus",
+  "variant": "vulnerable",
+  "commit_expected": "sha256:9736a768e8fbfcb5e6861574d6e824ddad434df992a3b826c84ae94937ae060c",
+  "lifetime_seconds": null,
+  "checkpoints": {
+    "pre_alice": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 3,
+      "artifact": "A1"
+    },
+    "pre_bob": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 4,
+      "artifact": "A2"
+    },
+    "termination": {
+      "outcome": "reported",
+      "status": 200,
+      "step": 5
+    },
+    "replay_after_account_disabled": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 6,
+      "artifact": "A1"
+    },
+    "control_other_user": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 7,
+      "artifact": "A2"
+    },
+    "control_fresh_login_other_user": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 9,
+      "artifact": "A3"
+    },
+    "control_unknown_credential": {
+      "outcome": "denied",
+      "status": 401,
+      "reason": "contract_denial",
+      "step": 10,
+      "artifact": "A4"
+    }
+  },
+  "sesstrace_invariant": {
+    "replay_after_account_disabled": "FAIL"
+  },
+  "waits": [],
+  "errors": [],
+  "http_steps": 10,
+  "utc_end": "2026-11-15T12:43:05Z"
+}

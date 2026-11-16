@@ -1,0 +1,158 @@
+{
+ "mechanism": "T2.lifetime",
+ "variant": "vulnerable",
+ "artifacts": [
+  {
+   "id": "A1",
+   "type": "session_cookie",
+   "holder": "alice",
+   "issued_at_step": 1,
+   "value_prefix": "<redacted>",
+   "note": "alice1",
+   "presented_at_steps": [
+    2,
+    4
+   ]
+  },
+  {
+   "id": "A2",
+   "type": "session_cookie",
+   "holder": "bob",
+   "issued_at_step": 3,
+   "value_prefix": "<redacted>",
+   "note": "bob1",
+   "presented_at_steps": [
+    5
+   ]
+  },
+  {
+   "id": "A3",
+   "type": "session_cookie",
+   "holder": "alice (fresh login)",
+   "issued_at_step": 6,
+   "value_prefix": "<redacted>",
+   "note": "alice3",
+   "presented_at_steps": [
+    7
+   ]
+  }
+ ],
+ "steps": [
+  {
+   "step": 1,
+   "parent_step": null,
+   "phase": "setup",
+   "actor": "alice",
+   "method": "GET",
+   "host": "target",
+   "path": "/login?field=<redacted>",
+   "status": 200,
+   "artifact_presented": null,
+   "response": {
+    "logged_in": true,
+    "redacted_field_count": 0
+   },
+   "transport_error": null
+  },
+  {
+   "step": 2,
+   "parent_step": null,
+   "phase": "pre_termination",
+   "actor": "alice",
+   "method": "GET",
+   "host": "target",
+   "path": "/profile",
+   "status": 200,
+   "artifact_presented": "A1",
+   "response": {
+    "rp": "RP1",
+    "sub": "alice",
+    "redacted_field_count": 0
+   },
+   "transport_error": null
+  },
+  {
+   "step": 3,
+   "parent_step": null,
+   "phase": "setup",
+   "actor": "bob",
+   "method": "GET",
+   "host": "target",
+   "path": "/login?field=<redacted>",
+   "status": 200,
+   "artifact_presented": null,
+   "response": {
+    "logged_in": true,
+    "redacted_field_count": 0
+   },
+   "transport_error": null
+  },
+  {
+   "step": 4,
+   "parent_step": null,
+   "phase": "replay",
+   "actor": "attacker (replaying alice1)",
+   "method": "GET",
+   "host": "target",
+   "path": "/profile",
+   "status": 200,
+   "artifact_presented": "A1",
+   "response": {
+    "rp": "RP1",
+    "sub": "alice",
+    "redacted_field_count": 0
+   },
+   "transport_error": null
+  },
+  {
+   "step": 5,
+   "parent_step": null,
+   "phase": "negative_c",
+   "actor": "bob",
+   "method": "GET",
+   "host": "target",
+   "path": "/profile",
+   "status": 200,
+   "artifact_presented": "A2",
+   "response": {
+    "rp": "RP1",
+    "sub": "bob",
+    "redacted_field_count": 0
+   },
+   "transport_error": null
+  },
+  {
+   "step": 6,
+   "parent_step": null,
+   "phase": "negative_b",
+   "actor": "alice (fresh login)",
+   "method": "GET",
+   "host": "target",
+   "path": "/login?field=<redacted>",
+   "status": 200,
+   "artifact_presented": null,
+   "response": {
+    "logged_in": true,
+    "redacted_field_count": 0
+   },
+   "transport_error": null
+  },
+  {
+   "step": 7,
+   "parent_step": null,
+   "phase": "negative_b",
+   "actor": "alice (fresh login)",
+   "method": "GET",
+   "host": "target",
+   "path": "/profile",
+   "status": 200,
+   "artifact_presented": "A3",
+   "response": {
+    "rp": "RP1",
+    "sub": "alice",
+    "redacted_field_count": 0
+   },
+   "transport_error": null
+  }
+ ]
+}

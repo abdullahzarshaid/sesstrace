@@ -1,0 +1,91 @@
+{
+  "target": "T4.concurrent_logout",
+  "cve": "CVE-2025-46336",
+  "package": "rack-session",
+  "variant": "fixed",
+  "commit_expected": "c28c4a8c1861d814e09f2ae48264ac4c40be2d3b",
+  "lifetime_seconds": null,
+  "checkpoints": {
+    "pre_alice": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 3,
+      "artifact": "A1"
+    },
+    "pre_bob": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 4,
+      "artifact": "A2"
+    },
+    "termination": {
+      "outcome": "reported",
+      "status": 200,
+      "step": 6,
+      "artifact": "A1"
+    },
+    "control_logout_effective": {
+      "outcome": "denied",
+      "status": 401,
+      "reason": "contract_denial",
+      "step": 7,
+      "artifact": "A1"
+    },
+    "slow_request_completed": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 5,
+      "artifact": "A1"
+    },
+    "replay_after_concurrent_request": {
+      "outcome": "denied",
+      "status": 401,
+      "reason": "contract_denial",
+      "step": 8,
+      "artifact": "A1"
+    },
+    "control_other_user": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 9,
+      "artifact": "A2"
+    },
+    "control_fresh_login": {
+      "outcome": "success",
+      "status": 200,
+      "reason": "semantic_success",
+      "step": 11,
+      "artifact": "A3"
+    }
+  },
+  "sesstrace_invariant": {
+    "replay_after_concurrent_request": "PASS"
+  },
+  "waits": [],
+  "errors": [],
+  "http_steps": 11,
+  "utc_end": "2026-11-15T11:13:40Z",
+  "pauses": [
+    {
+      "required_seconds": 1.0,
+      "measured_seconds": 1.0,
+      "after_step": 5,
+      "note": "the slow request has loaded the session before the logout is sent"
+    }
+  ],
+  "concurrency": [
+    {
+      "background_checkpoint": "slow_request_completed",
+      "spans_checkpoint": "termination",
+      "background_sent_s": 0.008,
+      "spanned_sent_s": 1.009,
+      "spanned_answered_s": 1.011,
+      "background_answered_s": 3.013,
+      "order_ok": true
+    }
+  ]
+}

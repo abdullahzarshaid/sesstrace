@@ -1,0 +1,170 @@
+{
+  "specification": "EXTERNAL_SPEC_PHASE2.json",
+  "targets": [
+    {
+      "id": "T3",
+      "cve": "CVE-2018-1000814",
+      "package": "aiohttp-session",
+      "revisions": {
+        "vulnerable": {
+          "expected": {
+            "pre_alice": "success",
+            "replay_after_lifetime": "success",
+            "control_unexpired_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "observed": {
+            "pre_alice": "success",
+            "replay_after_lifetime": "success",
+            "control_unexpired_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "sesstrace_invariant": {
+            "replay_after_lifetime": "FAIL"
+          },
+          "waits": [
+            {
+              "required_seconds": 7.0,
+              "measured_seconds": 7.02,
+              "since_artifact": "A1",
+              "after_step": 2,
+              "note": "TERMINATION: the configured session lifetime has elapsed"
+            }
+          ],
+          "http_steps": 7
+        },
+        "fixed": {
+          "expected": {
+            "pre_alice": "success",
+            "replay_after_lifetime": "denied",
+            "control_unexpired_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "observed": {
+            "pre_alice": "success",
+            "replay_after_lifetime": "denied",
+            "control_unexpired_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "sesstrace_invariant": {
+            "replay_after_lifetime": "PASS"
+          },
+          "waits": [
+            {
+              "required_seconds": 7.0,
+              "measured_seconds": 7.02,
+              "since_artifact": "A1",
+              "after_step": 2,
+              "note": "TERMINATION: the configured session lifetime has elapsed"
+            }
+          ],
+          "http_steps": 7
+        }
+      },
+      "reasons": [],
+      "verdict": "CONFIRMED"
+    },
+    {
+      "id": "T4",
+      "cve": "CVE-2025-46336",
+      "package": "rack-session",
+      "revisions": {
+        "vulnerable": {
+          "expected": {
+            "pre_alice": "success",
+            "pre_bob": "success",
+            "termination": "reported",
+            "control_logout_effective": "denied",
+            "slow_request_completed": "success",
+            "replay_after_concurrent_request": "success",
+            "control_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "observed": {
+            "pre_alice": "success",
+            "pre_bob": "success",
+            "termination": "reported",
+            "control_logout_effective": "denied",
+            "slow_request_completed": "success",
+            "replay_after_concurrent_request": "success",
+            "control_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "sesstrace_invariant": {
+            "replay_after_concurrent_request": "FAIL"
+          },
+          "waits": [],
+          "http_steps": 11,
+          "pauses": [
+            {
+              "required_seconds": 1.0,
+              "measured_seconds": 1.0,
+              "after_step": 5,
+              "note": "the slow request has loaded the session before the logout is sent"
+            }
+          ],
+          "concurrency": [
+            {
+              "background_checkpoint": "slow_request_completed",
+              "spans_checkpoint": "termination",
+              "background_sent_s": 0.008,
+              "spanned_sent_s": 1.008,
+              "spanned_answered_s": 1.011,
+              "background_answered_s": 3.01,
+              "order_ok": true
+            }
+          ]
+        },
+        "fixed": {
+          "expected": {
+            "pre_alice": "success",
+            "pre_bob": "success",
+            "termination": "reported",
+            "control_logout_effective": "denied",
+            "slow_request_completed": "success",
+            "replay_after_concurrent_request": "denied",
+            "control_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "observed": {
+            "pre_alice": "success",
+            "pre_bob": "success",
+            "termination": "reported",
+            "control_logout_effective": "denied",
+            "slow_request_completed": "success",
+            "replay_after_concurrent_request": "denied",
+            "control_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "sesstrace_invariant": {
+            "replay_after_concurrent_request": "PASS"
+          },
+          "waits": [],
+          "http_steps": 11,
+          "pauses": [
+            {
+              "required_seconds": 1.0,
+              "measured_seconds": 1.0,
+              "after_step": 5,
+              "note": "the slow request has loaded the session before the logout is sent"
+            }
+          ],
+          "concurrency": [
+            {
+              "background_checkpoint": "slow_request_completed",
+              "spans_checkpoint": "termination",
+              "background_sent_s": 0.009,
+              "spanned_sent_s": 1.009,
+              "spanned_answered_s": 1.012,
+              "background_answered_s": 3.027,
+              "order_ok": true
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "verdict": "CONFIRMED"
+    }
+  ],
+  "reading": "Two further libraries, two revisions each, one host application per library written for this check. The result is about these four builds under these host applications. It is not a detection rate and not a field validation."
+}

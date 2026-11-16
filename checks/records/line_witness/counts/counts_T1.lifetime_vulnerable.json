@@ -1,0 +1,15 @@
+{
+  "cell": "T1.lifetime",
+  "variant": "vulnerable",
+  "runtime": "node",
+  "counts": [
+    {
+      "file": "lib/fastifySession.js",
+      "line": 96,
+      "kind": "line",
+      "expected_count": 0,
+      "role": "vulnerable_counterpart",
+      "count": 0
+    }
+  ]
+}

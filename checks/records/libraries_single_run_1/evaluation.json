@@ -1,0 +1,150 @@
+{
+  "specification": "EXTERNAL_SPEC.json",
+  "targets": [
+    {
+      "id": "T1",
+      "cve": "CVE-2024-35220",
+      "package": "@fastify/session",
+      "revisions": {
+        "vulnerable": {
+          "expected": {
+            "pre_alice": "success",
+            "replay_after_lifetime": "success",
+            "control_unexpired_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "observed": {
+            "pre_alice": "success",
+            "replay_after_lifetime": "success",
+            "control_unexpired_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "sesstrace_invariant": {
+            "replay_after_lifetime": "FAIL"
+          },
+          "waits": [
+            {
+              "required_seconds": 7.0,
+              "measured_seconds": 7.01,
+              "since_artifact": "A1",
+              "after_step": 2,
+              "note": "TERMINATION: the configured session lifetime has elapsed"
+            }
+          ],
+          "http_steps": 7
+        },
+        "fixed": {
+          "expected": {
+            "pre_alice": "success",
+            "replay_after_lifetime": "denied",
+            "control_unexpired_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "observed": {
+            "pre_alice": "success",
+            "replay_after_lifetime": "denied",
+            "control_unexpired_other_user": "success",
+            "control_fresh_login": "success"
+          },
+          "sesstrace_invariant": {
+            "replay_after_lifetime": "PASS"
+          },
+          "waits": [
+            {
+              "required_seconds": 7.0,
+              "measured_seconds": 7.01,
+              "since_artifact": "A1",
+              "after_step": 2,
+              "note": "TERMINATION: the configured session lifetime has elapsed"
+            }
+          ],
+          "http_steps": 7
+        }
+      },
+      "reasons": [],
+      "verdict": "CONFIRMED"
+    },
+    {
+      "id": "T2",
+      "cve": "CVE-2024-31999",
+      "package": "@fastify/secure-session",
+      "revisions": {
+        "vulnerable": {
+          "expected": {
+            "pre_alice": "success",
+            "pre_bob": "success",
+            "termination": "reported",
+            "replay_after_logout": "success",
+            "control_other_user_after_logout": "success",
+            "control_fresh_login": "success",
+            "replay_after_lifetime": "success",
+            "control_fresh_login_after_lifetime": "success"
+          },
+          "observed": {
+            "pre_alice": "success",
+            "pre_bob": "success",
+            "termination": "reported",
+            "replay_after_logout": "success",
+            "control_other_user_after_logout": "success",
+            "control_fresh_login": "success",
+            "replay_after_lifetime": "success",
+            "control_fresh_login_after_lifetime": "success"
+          },
+          "sesstrace_invariant": {
+            "replay_after_logout": "FAIL",
+            "replay_after_lifetime": "FAIL"
+          },
+          "waits": [
+            {
+              "required_seconds": 10.0,
+              "measured_seconds": 10.04,
+              "since_artifact": "A1",
+              "after_step": 9,
+              "note": "TERMINATION: the configured session lifetime has elapsed"
+            }
+          ],
+          "http_steps": 12
+        },
+        "fixed": {
+          "expected": {
+            "pre_alice": "success",
+            "pre_bob": "success",
+            "termination": "reported",
+            "replay_after_logout": "success",
+            "control_other_user_after_logout": "success",
+            "control_fresh_login": "success",
+            "replay_after_lifetime": "denied",
+            "control_fresh_login_after_lifetime": "success"
+          },
+          "observed": {
+            "pre_alice": "success",
+            "pre_bob": "success",
+            "termination": "reported",
+            "replay_after_logout": "success",
+            "control_other_user_after_logout": "success",
+            "control_fresh_login": "success",
+            "replay_after_lifetime": "denied",
+            "control_fresh_login_after_lifetime": "success"
+          },
+          "sesstrace_invariant": {
+            "replay_after_logout": "FAIL",
+            "replay_after_lifetime": "PASS"
+          },
+          "waits": [
+            {
+              "required_seconds": 10.0,
+              "measured_seconds": 10.04,
+              "since_artifact": "A1",
+              "after_step": 9,
+              "note": "TERMINATION: the configured session lifetime has elapsed"
+            }
+          ],
+          "http_steps": 12
+        }
+      },
+      "reasons": [],
+      "verdict": "CONFIRMED"
+    }
+  ],
+  "reading": "Two libraries, two revisions each, one host application per library written for this check. The result is about these four builds under this host application. It is not a detection rate and not a field validation."
+}

@@ -1,0 +1,147 @@
+{
+  "part": "C, line witness",
+  "status_when_written": "NOT RUN. Written before the witness runs.",
+  "how_lines_were_listed": "git diff -U0 <vulnerable_commit> <fixed_commit>, fixed side, non-blank added or changed lines, files under test/, tests/, spec/ or docs/ and Markdown, README, CHANGES, releases and package.json files excluded",
+  "run": "One extra run per revision of each cell below, with counting switched on from outside the host file. The host files stay byte-identical. No package that phases 1 and 2 did not install.",
+  "result_words": {
+    "WITNESSED": "the outcomes of the run are as specified for that revision and, at the fixed revision, the named line or branch has the count stated here",
+    "NOT_WITNESSED": "otherwise; the counts found are reported",
+    "NOT_DONE": "the facility could not be used under the limits of the prompt; the reason is given"
+  },
+  "cells": [
+    {
+      "cell": "T1.lifetime",
+      "target": "T1",
+      "package": "@fastify/session",
+      "vulnerable_commit": "8b6241c1b81a99dac8ad636aa2b237b31628e82e",
+      "fixed_commit": "0495ce5b534c4550f25228821db8098293439f2f",
+      "fix_lines_in_implementation_files": {
+        "lib/cookie.js": [
+          14,
+          15,
+          16,
+          63
+        ],
+        "lib/fastifySession.js": [
+          95,
+          97
+        ]
+      },
+      "runtime": "node",
+      "facility": "NODE_V8_COVERAGE (block counts of V8), with witness/node_preload.js loaded through NODE_OPTIONS so that the stop signal ends the host normally and the counts are written",
+      "refusal": {
+        "file": "lib/fastifySession.js",
+        "line": 98,
+        "kind": "line",
+        "text": "restoredSession.destroy(err => {"
+      },
+      "expected_count_fixed": 1,
+      "vulnerable_counterpart": {
+        "file": "lib/fastifySession.js",
+        "line": 96,
+        "kind": "line",
+        "expected_count": 0
+      },
+      "argument": "Fixed revision lib/fastifySession.js lines 95 to 98: the body of the test at line 97 runs only for a request whose cookie names a session in the store whose original expiry has passed. In the plan of T1.lifetime, the logins carry no cookie; pre_alice is sent before the lifetime of 3 seconds has passed; bob's profile and alice's fresh profile are sent right after their own logins. Only the replay of alice's first cookie, sent at least 7 seconds after her login, carries an expired session, so line 98 runs exactly once. At the vulnerable revision the same statement is line 96 and is expected not to run, because the expiry is recomputed on restore (lib/cookie.js) and the test at line 95 is never true."
+    },
+    {
+      "cell": "T2.lifetime",
+      "target": "T2",
+      "package": "@fastify/secure-session",
+      "vulnerable_commit": "7b6eebea04aa8b231004ee2b579bd16891ac83ef",
+      "fixed_commit": "56d66642ecc633cff0606927601e81cdac361370",
+      "fix_lines_in_implementation_files": {
+        "index.js": [
+          53,
+          56,
+          57,
+          58,
+          128,
+          129,
+          148,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          244,
+          292,
+          293,
+          294,
+          316,
+          317,
+          318,
+          320,
+          321
+        ]
+      },
+      "runtime": "node",
+      "facility": "NODE_V8_COVERAGE (block counts of V8), with witness/node_preload.js loaded through NODE_OPTIONS",
+      "refusal": {
+        "file": "index.js",
+        "line": 197,
+        "kind": "line",
+        "text": "return null"
+      },
+      "expected_count_fixed": 1,
+      "vulnerable_counterpart": null,
+      "argument": "Fixed revision index.js lines 193 to 198: decodeSecureSession returns null when __ts plus expiry has passed. It is called only for requests that carry the session cookie. In the plan of T2.lifetime, the logins carry no cookie; pre_alice is sent before the lifetime of 5 seconds; bob's and the fresh login's profiles are sent right after their logins. Only the replay, sent at least 10 seconds after alice's login, carries an expired __ts, so line 197 runs exactly once. The line does not exist at the vulnerable revision."
+    },
+    {
+      "cell": "T3.lifetime",
+      "target": "T3",
+      "package": "aiohttp-session",
+      "vulnerable_commit": "faadf107ff156deacd408873fc33b936e7c1d79b",
+      "fixed_commit": "1b356f01bbab57d041c9a75bacd72fbbf8524728",
+      "fix_lines_in_implementation_files": {
+        "aiohttp_session/__init__.py": [
+          27,
+          28,
+          29,
+          30,
+          32
+        ]
+      },
+      "runtime": "python",
+      "facility": "the standard trace module (line counts), through witness/python_trace_run.py, which runs the unchanged host file with runpy",
+      "refusal": {
+        "file": "aiohttp_session/__init__.py",
+        "line": 30,
+        "kind": "line",
+        "text": "session_data = None"
+      },
+      "expected_count_fixed": 4,
+      "vulnerable_counterpart": null,
+      "argument": "Fixed revision aiohttp_session/__init__.py lines 25 to 30. Line 30 is NOT reached by the replay alone: a new session (new_session, called by each of the three logins of the plan) has no 'created', so line 28 sets age to the current epoch time and line 30 runs for it as well, without effect because its data is already None. The replay of alice's first cookie, sent at least 7 seconds after a login with max_age 3, adds exactly one execution. Profiles of fresh sessions have age 0 or 1 and do not reach line 30. Expected count at the fixed revision: 3 logins plus 1 replay = 4. A count of 3 would mean that the replay did not reach the line. The line does not exist at the vulnerable revision."
+    },
+    {
+      "cell": "T4.concurrent_logout",
+      "target": "T4",
+      "package": "rack-session",
+      "vulnerable_commit": "c837afff21a5b27ccef5f949750d28c4a75fe069",
+      "fixed_commit": "c28c4a8c1861d814e09f2ae48264ac4c40be2d3b",
+      "fix_lines_in_implementation_files": {
+        "lib/rack/session/pool.rb": [
+          56,
+          67,
+          68,
+          69,
+          70,
+          71
+        ]
+      },
+      "runtime": "ruby",
+      "facility": "the standard Coverage library (lines and branches), through witness/ruby_coverage.rb loaded with RUBYOPT",
+      "refusal": {
+        "file": "lib/rack/session/pool.rb",
+        "line": 56,
+        "kind": "branch_then",
+        "text": "return false unless get_session_with_fallback(session_id)"
+      },
+      "expected_count_fixed": 1,
+      "vulnerable_counterpart": null,
+      "argument": "Fixed revision lib/rack/session/pool.rb line 56: write_session runs for every committed session, but its 'return false' branch is taken only for an id that is no longer in the pool. In the plan, every other write is for an id that exists: logins, profiles and the logout write ids that find_session or delete_session (lines 46 to 48 and 67 to 70) have just stored, and the replays of the deleted id are answered with a new id that find_session stores before the write. Only the commit of the slow request, which writes alice's old id after the logout deleted it, takes the branch, so its count is exactly 1. The line does not exist at the vulnerable revision."
+    }
+  ]
+}

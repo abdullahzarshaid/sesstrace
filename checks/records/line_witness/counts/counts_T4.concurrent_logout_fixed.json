@@ -1,0 +1,57 @@
+{
+  "cell": "T4.concurrent_logout",
+  "variant": "fixed",
+  "runtime": "ruby",
+  "counts": [
+    {
+      "file": "lib/rack/session/pool.rb",
+      "line": 56,
+      "kind": "branch_then",
+      "text": "return false unless get_session_with_fallback(session_id)",
+      "role": "refusal",
+      "count": 1
+    },
+    {
+      "file": "lib/rack/session/pool.rb",
+      "line": 56,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 11
+    },
+    {
+      "file": "lib/rack/session/pool.rb",
+      "line": 67,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "lib/rack/session/pool.rb",
+      "line": 68,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "lib/rack/session/pool.rb",
+      "line": 69,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "lib/rack/session/pool.rb",
+      "line": 70,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 1
+    },
+    {
+      "file": "lib/rack/session/pool.rb",
+      "line": 71,
+      "kind": "line",
+      "role": "fix_line",
+      "count": null
+    }
+  ]
+}

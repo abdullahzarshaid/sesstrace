@@ -1,0 +1,14 @@
+head=sha256:a91754327ae0fe0020100c524e1a879ca36463ac5fef8e18be382e2e187992ad
+install_exit=0
+run_01_T7.logout_host_ready=1
+run_02_T7.logout_host_ready=1
+run_03_T7.logout_host_ready=1
+run_01_T7.lifetime_host_ready=1
+run_02_T7.lifetime_host_ready=1
+run_03_T7.lifetime_host_ready=1
+run_01_T7.credential_change_host_ready=1
+run_02_T7.credential_change_host_ready=1
+run_03_T7.credential_change_host_ready=1
+run_01_T7.account_disabled_host_ready=1
+run_02_T7.account_disabled_host_ready=1
+run_03_T7.account_disabled_host_ready=1

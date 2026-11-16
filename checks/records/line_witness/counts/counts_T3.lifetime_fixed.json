@@ -1,0 +1,50 @@
+{
+  "cell": "T3.lifetime",
+  "variant": "fixed",
+  "runtime": "python",
+  "counts": [
+    {
+      "file": "aiohttp_session/__init__.py",
+      "line": 30,
+      "kind": "line",
+      "text": "session_data = None",
+      "role": "refusal",
+      "count": 4
+    },
+    {
+      "file": "aiohttp_session/__init__.py",
+      "line": 27,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 7
+    },
+    {
+      "file": "aiohttp_session/__init__.py",
+      "line": 28,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 7
+    },
+    {
+      "file": "aiohttp_session/__init__.py",
+      "line": 29,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 7
+    },
+    {
+      "file": "aiohttp_session/__init__.py",
+      "line": 30,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 4
+    },
+    {
+      "file": "aiohttp_session/__init__.py",
+      "line": 32,
+      "kind": "line",
+      "role": "fix_line",
+      "count": 3
+    }
+  ]
+}
