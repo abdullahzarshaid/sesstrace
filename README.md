@@ -13,7 +13,7 @@ The package is pure Python (3.7 or later), uses the standard library only, and h
 | Part | What it is | Command |
 |---|---|---|
 | Laboratory | Eight synthetic mechanisms (M1 to M8) on loopback HTTP, each in a vulnerable and a fixed variant | `sesstrace lab run`, `sesstrace lab verify` |
-| Replay engine | Driver, evaluator and audit for plans run against real software | `sesstrace run`, `sesstrace evaluate`, `sesstrace audit` |
+| Replay engine | Driver, evaluator and audit for plans run against real software | `sesstrace run`, `sesstrace evaluate`, `sesstrace audit`, `sesstrace compare` |
 | Checks | Eight public targets (four libraries, four applications), their frozen specifications and the records of 256 runs | `checks/` |
 
 ## Quick start

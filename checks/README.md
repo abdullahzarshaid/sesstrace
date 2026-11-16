@@ -85,7 +85,11 @@ without sending any checkpoint. Use it to see that an application starts before 
 
 A runner writes into a new output folder and refuses an existing one. At the end it evaluates and audits the run
 without network; the evaluation is `evaluation.json`. A fresh run is compared with the published one by the verdict and
-the category of every cell, not byte for byte: times, ports and request counts of the applications differ between runs.
+the category of every cell, not byte for byte, because times and ports differ between runs:
+
+```bash
+sesstrace compare checks/records/library_cells/evaluation.json <out>/evaluation.json
+```
 
 ## What a deviation means
 

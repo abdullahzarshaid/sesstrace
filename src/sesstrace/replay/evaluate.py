@@ -250,6 +250,29 @@ def combine(reports):
     return [latest[name] for name in order]
 
 
+def _verdicts(report):
+    """{entry: (verdict, observed category or None)} for either layout."""
+    if "cells" in report:
+        return {row["cell"]: (row["verdict"], row["observed_category"]) for row in report["cells"]}
+    return {row["id"]: (row["verdict"], None) for row in report["targets"]}
+
+
+def compare(reference, fresh):
+    """Compare a fresh evaluation with a reference one, entry by entry.
+
+    Two runs of the same check differ in times, ports and request counts, so
+    their evaluations are not compared byte for byte. What must agree is the
+    verdict of every entry and, for cells, the observed category. Returns one
+    row per entry of either evaluation.
+    """
+    before, after = _verdicts(reference), _verdicts(fresh)
+    rows = []
+    for name in list(before) + [name for name in after if name not in before]:
+        rows.append({"entry": name, "reference": before.get(name), "fresh": after.get(name),
+                     "same": name in before and name in after and before[name] == after[name]})
+    return rows
+
+
 def evaluate(spec, results_dir, mode=None):
     """Evaluate a results folder; the layout is taken from the specification unless `mode` names it."""
     if mode is None:

@@ -10,7 +10,8 @@
     sesstrace evaluate       turn the records of finished runs into verdicts
     sesstrace audit          check finished runs against their plan
     sesstrace report         print the table of one or more evaluations
-    sesstrace witness counts    turn the raw line counts of a witness run into the counts of the named lines
+    sesstrace compare        compare a fresh evaluation with a reference one
+    sesstrace witness counts    counts of the named lines in one witness run
     sesstrace witness evaluate  compare the witness runs with their specification
 
 Exit status: 0 when the command did its work and every check it makes held,
@@ -153,6 +154,22 @@ def _report(args):
     return 0
 
 
+def _compare(args):
+    rows = evaluate.compare(read_json(args.reference), read_json(args.fresh))
+
+    def text(pair):
+        if pair is None:
+            return "(not in this evaluation)"
+        return pair[0] if pair[1] is None else "%s, %s" % pair
+
+    for row in rows:
+        print("%-9s %-26s reference: %-34s fresh: %s" % ("same" if row["same"] else "DIFFERENT", row["entry"],
+                                                        text(row["reference"]), text(row["fresh"])))
+    different = sum(1 for row in rows if not row["same"])
+    print("%d entries, %d the same, %d different" % (len(rows), len(rows) - different, different))
+    return 1 if different else 0
+
+
 def _witness_counts(args):
     report = witness.counts(specification.load(args.spec), args.cell, args.revision, args.checkout, args.raw)
     write_json(args.out, report)
@@ -227,6 +244,11 @@ def build_parser():
     auditing.add_argument("--results", required=True)
     auditing.add_argument("--out", help="file for the audit report (JSON)")
     auditing.set_defaults(handler=_audit)
+
+    comparison = commands.add_parser("compare", help="compare the verdicts of a fresh evaluation with a reference one")
+    comparison.add_argument("reference", help="evaluation file of the earlier run")
+    comparison.add_argument("fresh", help="evaluation file of the new run")
+    comparison.set_defaults(handler=_compare)
 
     lines = commands.add_parser("witness", help="line witness").add_subparsers(dest="witness_command")
     lines.required = True

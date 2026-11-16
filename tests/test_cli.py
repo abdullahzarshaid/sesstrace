@@ -70,6 +70,22 @@ class CommandLine(unittest.TestCase):
             self.assertEqual(code, 0)
             self.assertIn("14 cells: CONFIRMED 12, NOT_CONFIRMED 1, INCONCLUSIVE 1", out)
 
+    def test_compare_a_fresh_evaluation_with_the_published_one(self):
+        published = CHECKS / "records" / "application_cells" / "evaluation.json"
+        code, out, _ = sesstrace("compare", published, published)
+        self.assertEqual(code, 0, out)
+        self.assertIn("14 entries, 14 the same, 0 different", out)
+        with tempfile.TemporaryDirectory(prefix="sesstrace-test-") as scratch:
+            fresh = json.loads(published.read_text(encoding="utf-8"))
+            fresh["cells"][0]["verdict"] = "INCONCLUSIVE"
+            fresh["cells"][1]["observed_category"] = "MIXED"
+            del fresh["cells"][2]
+            write_text(Path(scratch) / "fresh.json", json.dumps(fresh))
+            code, out, _ = sesstrace("compare", published, Path(scratch) / "fresh.json")
+        self.assertEqual(code, 1)
+        self.assertIn("14 entries, 11 the same, 3 different", out)
+        self.assertIn("(not in this evaluation)", out)
+
     def test_freeze_write_then_check(self):
         with tempfile.TemporaryDirectory(prefix="sesstrace-test-") as scratch:
             write_text(Path(scratch) / "spec.json", "{}\n")
