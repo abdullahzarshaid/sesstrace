@@ -14,11 +14,13 @@ application:
              and branch counts per file
 
 `counts` turns one raw record into the counts of the named lines. `evaluate`
-compares outcomes and counts with the specification.
+compares outcomes and counts with the specification. `audit` checks the
+witness runs against the plans of their cells, as is done for the cell runs.
 """
 from pathlib import Path
 
 from ..fileio import read_json, read_key_values
+from .audit import audit_runs
 from .evaluate import judge_summary, setup_problems
 from .spec import VARIANTS
 
@@ -174,3 +176,15 @@ def evaluate(cells_spec, witness_spec, out_dir):
         rows.append(row)
     return {"cells": rows, "counts": {word: sum(1 for row in rows if row["result"] == word) for word in RESULTS}}
 
+
+def run_folders(cells_spec, witness_spec, out_dir):
+    """Yield (entry, revision, run label, folder) for the one witness run of every cell and revision."""
+    entries = {entry["id"]: entry for entry in cells_spec["targets"]}
+    for cell in witness_spec["cells"]:
+        for variant in VARIANTS:
+            yield entries[cell["cell"]], variant, "witness", Path(out_dir) / "results" / cell["cell"] / variant / "witness"
+
+
+def audit(cells_spec, witness_spec, out_dir):
+    """Check every witness run against the plan of its cell, using the trace. See `audit.audit_runs`."""
+    return audit_runs(run_folders(cells_spec, witness_spec, out_dir))

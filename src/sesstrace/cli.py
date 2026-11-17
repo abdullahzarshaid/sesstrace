@@ -7,15 +7,18 @@
     sesstrace freeze write   record the hashes of the files of a check
     sesstrace freeze check   compare the files with the last record
     sesstrace run            drive one entry against a running target
+    sesstrace merge          put the results of several attempts of a series into one folder
     sesstrace evaluate       turn the records of finished runs into verdicts
     sesstrace audit          check finished runs against their plan
     sesstrace report         print the table of one or more evaluations
     sesstrace compare        compare a fresh evaluation with a reference one
     sesstrace witness counts    counts of the named lines in one witness run
     sesstrace witness evaluate  compare the witness runs with their specification
+    sesstrace witness audit     check the witness runs against the plans of their cells
 
 Exit status: 0 when the command did its work and every check it makes held,
-1 when a check did not hold, 2 for a wrong command line.
+1 when a check did not hold, 2 for a wrong command line. For `run`, 1 means
+that the records were written and at least one step ended in an error.
 """
 import argparse
 import json
@@ -24,7 +27,7 @@ from pathlib import Path
 
 from . import __version__
 from .fileio import read_json, write_json
-from .replay import audit, driver, evaluate, freeze, witness, spec as specification
+from .replay import audit, driver, evaluate, freeze, merge, witness, spec as specification
 
 
 def _lab_run(args):
@@ -101,6 +104,19 @@ def _run(args):
     print(json.dumps({"entry": summary["target"], "revision": summary["variant"],
                       "checkpoints": {name: row["outcome"] for name, row in summary["checkpoints"].items()},
                       "invariant": summary["sesstrace_invariant"], "errors": len(summary["errors"])}))
+    return 1 if summary["errors"] else 0
+
+
+def _merge(args):
+    try:
+        record = merge.merge(args.results, args.out)
+    except merge.Overlap as overlap:
+        print("nothing was copied: %s" % overlap)
+        return 1
+    write_json(Path(args.out) / "merge_record.json", record)
+    for attempt in record["attempts"]:
+        print("%4d files from %s" % (len(attempt["files"]), attempt["results"]))
+    print("%d files in %s" % (record["files"], Path(args.out) / "results"))
     return 0
 
 
@@ -117,9 +133,12 @@ def _evaluate(args):
 
 
 def _audit(args):
-    report = audit.audit_results(specification.load(args.spec), args.results)
-    if args.out:
-        write_json(args.out, report)
+    return _audit_report(audit.audit_results(specification.load(args.spec), args.results), args.out)
+
+
+def _audit_report(report, out):
+    if out:
+        write_json(out, report)
     for line in report["problems"]:
         print("PROBLEM  " + line)
     for line in report["runs_without_records"]:
@@ -155,12 +174,12 @@ def _report(args):
 
 
 def _compare(args):
-    rows = evaluate.compare(read_json(args.reference), read_json(args.fresh))
+    rows = evaluate.compare(read_json(args.reference), read_json(args.fresh), counts=args.counts)
 
-    def text(pair):
-        if pair is None:
+    def text(found):
+        if found is None:
             return "(not in this evaluation)"
-        return pair[0] if pair[1] is None else "%s, %s" % pair
+        return ", ".join(part for part in found if part is not None)
 
     for row in rows:
         print("%-9s %-26s reference: %-34s fresh: %s" % ("same" if row["same"] else "DIFFERENT", row["entry"],
@@ -184,6 +203,11 @@ def _witness_evaluate(args):
     print(json.dumps({row["cell"]: [row["result"], row["refusal_count_found"], row["expected_count_fixed"]]
                       for row in report["cells"]}))
     return 0
+
+
+def _witness_audit(args):
+    report = witness.audit(specification.load(args.cells), specification.load(args.spec), args.results)
+    return _audit_report(report, args.out)
 
 
 def build_parser():
@@ -232,6 +256,11 @@ def build_parser():
     run.add_argument("--out", required=True, help="folder for the summary and the trace of this run")
     run.set_defaults(handler=_run)
 
+    merging = commands.add_parser("merge", help="put the results of several attempts of one series into one folder")
+    merging.add_argument("--out", required=True, help="new folder; it receives results/ and merge_record.json")
+    merging.add_argument("results", nargs="+", help="results folders of the attempts, in the order they were run")
+    merging.set_defaults(handler=_merge)
+
     evaluation = commands.add_parser("evaluate", help="turn the records of finished runs into verdicts")
     evaluation.add_argument("--spec", required=True)
     evaluation.add_argument("--results", required=True)
@@ -248,6 +277,7 @@ def build_parser():
     comparison = commands.add_parser("compare", help="compare the verdicts of a fresh evaluation with a reference one")
     comparison.add_argument("reference", help="evaluation file of the earlier run")
     comparison.add_argument("fresh", help="evaluation file of the new run")
+    comparison.add_argument("--counts", action="store_true", help="the counts of valid replays must agree as well")
     comparison.set_defaults(handler=_compare)
 
     lines = commands.add_parser("witness", help="line witness").add_subparsers(dest="witness_command")
@@ -266,6 +296,12 @@ def build_parser():
     witness_evaluate.add_argument("--results", required=True, help="folder that holds results/ and counts/")
     witness_evaluate.add_argument("--out", required=True)
     witness_evaluate.set_defaults(handler=_witness_evaluate)
+    witness_audit = lines.add_parser("audit", help="check the witness runs against the plans of their cells")
+    witness_audit.add_argument("--cells", required=True, help="the cell specification the witness cells belong to")
+    witness_audit.add_argument("--spec", required=True, help="the witness specification")
+    witness_audit.add_argument("--results", required=True, help="folder that holds results/")
+    witness_audit.add_argument("--out", help="file for the audit report (JSON)")
+    witness_audit.set_defaults(handler=_witness_audit)
 
     report = commands.add_parser("report", help="print the table of one or more evaluation files")
     report.add_argument("files", nargs="+", help="evaluation files, in the order their series were run")

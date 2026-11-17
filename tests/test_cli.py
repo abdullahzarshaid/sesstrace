@@ -10,7 +10,8 @@ from pathlib import Path
 from sesstrace import __version__
 from sesstrace.fileio import write_text
 from tests import scenarios
-from tests.stubs import ApplicationStub
+from tests.stubs import ApplicationStub, SessionStub
+from tests.test_merge import split
 
 ROOT = Path(__file__).resolve().parents[1]
 CHECKS = ROOT / "checks"
@@ -86,6 +87,55 @@ class CommandLine(unittest.TestCase):
         self.assertIn("14 entries, 11 the same, 3 different", out)
         self.assertIn("(not in this evaluation)", out)
 
+    def test_compare_can_include_the_counts_of_valid_replays(self):
+        published = CHECKS / "records" / "application_cells" / "evaluation.json"
+        with tempfile.TemporaryDirectory(prefix="sesstrace-test-") as scratch:
+            fresh = json.loads(published.read_text(encoding="utf-8"))
+            row = fresh["cells"][0]
+            self.assertEqual(row["count_text"], "vulnerable 3 of 3 accepted, 0 of 3 refused, fixed 3 of 3 accepted, 0 of 3 refused")
+            row["count_text"] = "vulnerable 2 of 2 accepted, 0 of 2 refused, fixed 3 of 3 accepted, 0 of 3 refused"
+            write_text(Path(scratch) / "fresh.json", json.dumps(fresh))
+            code, out, _ = sesstrace("compare", published, Path(scratch) / "fresh.json")
+            self.assertEqual(code, 0, out)
+            self.assertIn("14 entries, 14 the same, 0 different", out)
+            code, out, _ = sesstrace("compare", "--counts", published, Path(scratch) / "fresh.json")
+        self.assertEqual(code, 1)
+        self.assertIn("14 entries, 13 the same, 1 different", out)
+        self.assertIn("vulnerable 2 of 2 accepted", out)
+        code, out, _ = sesstrace("compare", "--counts", published, published)
+        self.assertEqual(code, 0, out)
+
+    def test_merge_two_attempts_then_evaluate_and_audit(self):
+        spec = CHECKS / "phase3" / "SPEC_CELLS_D.json"
+        with tempfile.TemporaryDirectory(prefix="sesstrace-test-") as scratch:
+            first, second = split(scratch)
+            merged = Path(scratch) / "merged"
+            code, out, _ = sesstrace("merge", "--out", merged, first, second)
+            self.assertEqual(code, 0, out)
+            self.assertIn(" 151 files from ", out)
+            self.assertIn("  25 files from ", out)
+            self.assertEqual(json.loads((merged / "merge_record.json").read_text(encoding="utf-8"))["files"], 176)
+            code, _, _ = sesstrace("evaluate", "--spec", spec, "--results", merged / "results", "--out", merged / "evaluation.json")
+            self.assertEqual(code, 0)
+            published = CHECKS / "records" / "application_cells" / "evaluation.json"
+            self.assertEqual((merged / "evaluation.json").read_bytes(), published.read_bytes())
+            code, out, _ = sesstrace("audit", "--spec", spec, "--results", merged / "results")
+            self.assertEqual(code, 0, out)
+            self.assertIn("84 runs, 792 requests read, 0 problem(s), 0 run(s) without records", out)
+            code, out, _ = sesstrace("merge", "--out", Path(scratch) / "again", first, first)
+            self.assertEqual(code, 1)
+            self.assertIn("nothing was copied", out)
+            self.assertFalse((Path(scratch) / "again").exists())
+            code, _, err = sesstrace("merge", "--out", merged, second)
+            self.assertEqual(code, 2)
+            self.assertIn("already holds results", err)
+
+    def test_witness_audit_on_the_published_records(self):
+        code, out, _ = sesstrace("witness", "audit", "--cells", CHECKS / "phase3" / "SPEC_CELLS.json",
+                                 "--spec", CHECKS / "phase3" / "SPEC_WITNESS.json", "--results", CHECKS / "records" / "line_witness")
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out.strip(), "8 runs, 64 requests read, 0 problem(s), 0 run(s) without records, 0 request(s) not sent")
+
     def test_freeze_write_then_check(self):
         with tempfile.TemporaryDirectory(prefix="sesstrace-test-") as scratch:
             write_text(Path(scratch) / "spec.json", "{}\n")
@@ -117,6 +167,17 @@ class CommandLine(unittest.TestCase):
                 self.assertNotIn(cookie, summary)
                 self.assertNotIn(cookie, trace)
             self.assertNotIn(stub.base_url, trace)
+
+    def test_run_ends_with_status_1_when_a_step_ended_in_an_error(self):
+        with tempfile.TemporaryDirectory(prefix="sesstrace-test-") as scratch:
+            # The second login of the plan is answered with an error, as a rate limit would.
+            with SessionStub("store", fixed=True, break_login_after=1) as stub:
+                code, out, err = sesstrace("run", "--spec", CHECKS / "phase3" / "SPEC_CELLS.json", "--entry", "T1.logout",
+                                           "--revision", "fixed", "--base", stub.base_url, "--out", Path(scratch) / "run")
+            self.assertEqual(code, 1, err)
+            self.assertGreater(json.loads(out)["errors"], 0)
+            self.assertTrue((Path(scratch) / "run" / "summary_T1.logout_fixed.json").is_file())
+            self.assertTrue((Path(scratch) / "run" / "trace_T1.logout_fixed.json").is_file())
 
 
 if __name__ == "__main__":

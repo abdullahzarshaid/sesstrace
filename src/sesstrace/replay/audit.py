@@ -165,10 +165,14 @@ def run_folders(spec, results_dir):
                     yield entry, variant, label, results_dir / entry["id"] / variant / label
 
 
-def audit_results(spec, results_dir):
-    """Audit every run of a results folder. Returns counts, the problems found and the requests not sent."""
+def audit_runs(runs):
+    """Audit the runs given as (entry, revision, run label, folder).
+
+    Returns the number of runs and requests read, the runs that left no summary or no trace, the problems found
+    and the requests not sent. The report is clean when every run left its records and none has a problem.
+    """
     report = {"runs": 0, "http_steps": 0, "runs_without_records": [], "requests_not_sent": [], "problems": []}
-    for entry, variant, label, folder in run_folders(spec, results_dir):
+    for entry, variant, label, folder in runs:
         summary_path = folder / ("summary_%s_%s.json" % (entry["id"], variant))
         trace_path = folder / ("trace_%s_%s.json" % (entry["id"], variant))
         where = "%s %s %s" % (entry["id"], variant, label)
@@ -183,3 +187,8 @@ def audit_results(spec, results_dir):
         report["requests_not_sent"] += ["%s: %s" % (where, request) for request in not_sent]
     report["clean"] = not report["problems"] and not report["runs_without_records"]
     return report
+
+
+def audit_results(spec, results_dir):
+    """Audit every run the specification calls for in a results folder."""
+    return audit_runs(run_folders(spec, results_dir))

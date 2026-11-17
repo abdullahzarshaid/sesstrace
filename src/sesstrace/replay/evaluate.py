@@ -250,22 +250,26 @@ def combine(reports):
     return [latest[name] for name in order]
 
 
-def _verdicts(report):
-    """{entry: (verdict, observed category or None)} for either layout."""
-    if "cells" in report:
-        return {row["cell"]: (row["verdict"], row["observed_category"]) for row in report["cells"]}
-    return {row["id"]: (row["verdict"], None) for row in report["targets"]}
+def _verdicts(report, counts=False):
+    """{entry: (verdict, observed category or None)} for either layout; with `counts`, the counts of valid replays too."""
+    if "cells" not in report:
+        return {row["id"]: (row["verdict"], None) for row in report["targets"]}
+    if counts:
+        return {row["cell"]: (row["verdict"], row["observed_category"], row["count_text"]) for row in report["cells"]}
+    return {row["cell"]: (row["verdict"], row["observed_category"]) for row in report["cells"]}
 
 
-def compare(reference, fresh):
+def compare(reference, fresh, counts=False):
     """Compare a fresh evaluation with a reference one, entry by entry.
 
     Two runs of the same check differ in times, ports and request counts, so
     their evaluations are not compared byte for byte. What must agree is the
-    verdict of every entry and, for cells, the observed category. Returns one
-    row per entry of either evaluation.
+    verdict of every entry and, for cells, the observed category. With
+    `counts`, the counts of valid replays of every cell must agree as well:
+    two evaluations can reach the same verdict from a different number of
+    valid runs. Returns one row per entry of either evaluation.
     """
-    before, after = _verdicts(reference), _verdicts(fresh)
+    before, after = _verdicts(reference, counts), _verdicts(fresh, counts)
     rows = []
     for name in list(before) + [name for name in after if name not in before]:
         rows.append({"entry": name, "reference": before.get(name), "fresh": after.get(name),
