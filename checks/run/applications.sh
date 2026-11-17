@@ -45,7 +45,7 @@ require_freeze "$WORK" "applications_$SERIES" "$OUT/freeze_check.txt"
 mkdir -p "$OUT/results"
 MOUNTS="$(mounts "$WORK")"
 
-"$ENGINE" pull "$TOOL_IMAGE" > "$OUT/container_pull_tool.txt" 2>&1
+fetch_image "$TOOL_IMAGE" "$OUT/container_pull_tool.txt" || { echo "Could not pull $TOOL_IMAGE" | tee -a "$H" >&2; exit 5; }
 echo "tool image=$TOOL_IMAGE digest=$("$ENGINE" image inspect --format '{{json .RepoDigests}}' "$TOOL_IMAGE")" >> "$OUT/container_images.txt"
 if [ "$MODE" = run ]; then
   set +e
