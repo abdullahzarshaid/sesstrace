@@ -1,10 +1,15 @@
-"""The two Python helpers of the container runners: plan.py and matrix_table.py.
+"""The helpers of the container runners: plan.py, matrix_table.py and the shell functions of common.sh.
 
 The runners themselves need a container engine and are exercised on a Linux
-machine; what they read from the specifications is tested here.
+machine; what they read from the specifications is tested here, and the
+shell functions that decide something are run against a stand-in for the
+container engine.
 """
 import importlib.util
+import os
 import shlex
+import shutil
+import stat
 import subprocess
 import sys
 import tempfile
@@ -17,6 +22,7 @@ CHECKS = Path(__file__).resolve().parents[1] / "checks"
 CELLS = CHECKS / "phase3" / "SPEC_CELLS.json"
 APPLICATIONS = CHECKS / "phase3" / "SPEC_CELLS_D.json"
 SECOND = CHECKS / "phase3b" / "SPEC_CELLS_3B.json"
+THIRD = CHECKS / "phase3c" / "SPEC_CELLS_3C.json"
 
 
 def plan(command, spec, *arguments):
@@ -84,11 +90,21 @@ class Plan(unittest.TestCase):
         self.assertIn("refreshTokenExpiresIn = 30", command[2])
 
     def test_set_up_scripts_and_adapters_named_by_the_specifications_exist(self):
-        for spec, base in ((APPLICATIONS, CHECKS / "phase3"), (SECOND, CHECKS)):
+        for spec, base in ((APPLICATIONS, CHECKS / "phase3"), (SECOND, CHECKS), (THIRD, CHECKS)):
             for target in plan("targets", spec).split():
                 values = shell_values(plan("application", spec, target))
                 self.assertTrue((base / values["SETUP"]).is_file(), values["SETUP"])
                 self.assertTrue((base / values["ADAPTER"]).is_file(), values["ADAPTER"])
+
+    def test_third_application_series(self):
+        self.assertEqual(plan("targets", THIRD), "T5")
+        self.assertEqual(plan("cells", THIRD, "T5"), "T5.grant_withdrawn")
+        self.assertEqual(plan("repeats", THIRD), "3")
+        for revision in ("vulnerable", "fixed"):
+            self.assertEqual(plan("image", THIRD, "T5", revision), plan("image", SECOND, "T5", revision))
+        options = shlex.split(plan("app-options", THIRD, "T5"))
+        self.assertIn("VIKUNJA_RATELIMIT_NOAUTHLIMIT=100", options)
+        self.assertEqual(sorted(set(options) - set(shlex.split(plan("app-options", SECOND, "T5")))), ["VIKUNJA_RATELIMIT_NOAUTHLIMIT=100"])
 
     def test_matrix_lists_fifteen_images(self):
         lines = plan("matrix", CHECKS / "phase3" / "MATRIX_PLAN.json").splitlines()
@@ -96,6 +112,78 @@ class Plan(unittest.TestCase):
         for line in lines:
             entry, base, dockerfile, python = line.split()
             self.assertTrue(dockerfile == "-" or (CHECKS / "phase3" / dockerfile).is_file(), dockerfile)
+
+
+ENGINE = """#!/bin/sh
+# Stand-in for the container engine: the exit status of pull and of image inspect comes from the environment.
+case "$1" in
+  pull) echo "pulling $2"; exit "${PULL_EXIT:-0}" ;;
+  image) exit "${INSPECT_EXIT:-0}" ;;
+esac
+exit 9
+"""
+PINNED = "docker.io/library/python@sha256:" + "ab" * 32
+
+
+def usable_shell():
+    """bash, unless there is none or the only one is the launcher of another system."""
+    found = shutil.which("bash")
+    return None if found is None or "system32" in found.lower() else found
+
+
+@unittest.skipUnless(usable_shell(), "needs bash")
+class ShellHelpers(unittest.TestCase):
+    def setUp(self):
+        scratch = tempfile.TemporaryDirectory(prefix="sesstrace-test-")
+        self.addCleanup(scratch.cleanup)
+        self.scratch = Path(scratch.name)
+        engine = self.scratch / "engine"
+        write_text(engine, ENGINE)
+        engine.chmod(engine.stat().st_mode | stat.S_IXUSR)
+        self.engine = engine.as_posix()
+
+    def shell(self, script, *arguments, **environment):
+        settings = dict(os.environ, CONTAINER_ENGINE=self.engine, **environment)
+        common = (CHECKS / "run" / "common.sh").as_posix()
+        done = subprocess.run([usable_shell(), "-c", '. "$0"; ' + script, common] + list(arguments),
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, env=settings)
+        return done.returncode, done.stdout.strip(), done.stderr.strip()
+
+    def fetch(self, image, **environment):
+        record = self.scratch / "pull.txt"
+        code, _, _ = self.shell('fetch_image "$1" "$2"', image, record.as_posix(), **environment)
+        return code, record.read_text(encoding="utf-8")
+
+    def test_image_that_can_be_pulled(self):
+        code, record = self.fetch(PINNED)
+        self.assertEqual(code, 0)
+        self.assertEqual(record.strip(), "pulling " + PINNED)
+
+    def test_registry_out_of_reach_and_the_pinned_image_already_here(self):
+        code, record = self.fetch(PINNED, PULL_EXIT="1")
+        self.assertEqual(code, 0)
+        self.assertIn("pull failed; the image with this digest is already on this machine and is used", record)
+
+    def test_registry_out_of_reach_and_no_such_image_here(self):
+        code, record = self.fetch(PINNED, PULL_EXIT="1", INSPECT_EXIT="1")
+        self.assertEqual(code, 1)
+        self.assertNotIn("is used", record)
+
+    def test_a_local_image_is_not_taken_for_a_tag(self):
+        """A tag can point at another image tomorrow; only a digest names the same bytes."""
+        code, record = self.fetch("docker.io/library/debian:12", PULL_EXIT="1")
+        self.assertEqual(code, 1)
+        self.assertNotIn("is used", record)
+
+    def test_output_folder_is_new_and_starts_empty(self):
+        out = (self.scratch / "out").as_posix()
+        code, printed, _ = self.shell('new_output "$1"', out)
+        self.assertEqual(code, 0)
+        self.assertTrue(printed.endswith("/out"), printed)
+        self.assertEqual(list((self.scratch / "out").iterdir()), [])
+        code, _, message = self.shell('new_output "$1"', out)
+        self.assertEqual(code, 4)
+        self.assertIn("Refusing to reuse an existing output folder", message)
 
 
 class MatrixTable(unittest.TestCase):

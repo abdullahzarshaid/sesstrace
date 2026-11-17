@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Write the freeze block of one series into FREEZE_LOG.txt at the top of the repository.
 #
-# Usage:  bash checks/run/freeze.sh <libraries|applications_first|applications_second|witness|distributions> "<reason>"
+# Usage:  bash checks/run/freeze.sh <libraries|witness|distributions|applications_first|applications_second|applications_third> "<reason>"
 #
 # The block lists the specification with its expected outcomes, the host applications, adapters and set-up scripts of
 # the series, the runner scripts and every source file of the package. Write it before the first request of a series
@@ -24,6 +24,8 @@ case "$SERIES" in
     FILES="checks/phase3/SPEC_CELLS_D.json $(find checks/phase3/adapters checks/phase3/setup -type f | LC_ALL=C sort)" ;;
   applications_second)
     FILES="checks/phase3b/SPEC_CELLS_3B.json checks/phase3/setup/make_secrets.sh checks/phase3/adapters/directus_adapter.py $(find checks/phase3b/adapters checks/phase3b/setup -type f | LC_ALL=C sort)" ;;
+  applications_third)
+    FILES="checks/phase3c/SPEC_CELLS_3C.json checks/phase3/setup/make_secrets.sh checks/phase3b/adapters/vikunja_share_adapter.py checks/phase3b/setup/vikunja_share_setup.sh" ;;
   distributions)
     FILES="checks/phase3/MATRIX_PLAN.json $(find checks/phase3/A_dockerfiles -type f | LC_ALL=C sort)" ;;
   *) echo "unknown series: $SERIES" >&2; exit 2 ;;

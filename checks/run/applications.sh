@@ -1,34 +1,48 @@
 #!/usr/bin/env bash
 # The cells of the complete applications.
 #
-# Usage:  bash checks/run/applications.sh <first|second> <new output folder> <boot|run> <target>...
+# Usage:  bash checks/run/applications.sh <first|second|third> <new output folder> <boot|run> <target>...
 #   first    specification checks/phase3/SPEC_CELLS_D.json      (T5, T6, T7, T8)
 #   second   specification checks/phase3b/SPEC_CELLS_3B.json    (T5.grant_withdrawn, second attempt of T7.credential_change)
+#   third    specification checks/phase3c/SPEC_CELLS_3C.json    (further attempt of T5.grant_withdrawn)
 #   boot     start each application once, run its set-up and ask the adapter for /ready; no checkpoint is sent
 #   run      every cell of the named targets, the number of times the specification says
 #
 # For every run: a private network created with --internal (no route out), a secrets volume filled by a throw-away
 # container without network, the application container from the image pinned by digest (no published port), and one
 # container for the set-up, the adapter and the driver. Containers, network and volume are removed after the run, so
-# every run starts from an empty application. ONLY_REVISION=vulnerable or fixed restricts the run to one release.
-# The freeze block "applications_first" or "applications_second" must exist and match.
+# every run starts from an empty application. ONLY_REVISION=vulnerable or fixed restricts the run to one release;
+# the results of two attempts that ran different releases are put together with merge.sh.
+# The freeze block "applications_<series>" must exist and match.
 set -eu
 . "$(dirname "$0")/common.sh"
-[ $# -ge 4 ] || { echo "usage: bash checks/run/applications.sh <first|second> <new output folder> <boot|run> <target>..." >&2; exit 2; }
+[ $# -ge 4 ] || { echo "usage: bash checks/run/applications.sh <first|second|third> <new output folder> <boot|run> <target>..." >&2; exit 2; }
 SERIES="$1"; MODE="$3"
 case "$SERIES" in
   first)  SPEC=phase3/SPEC_CELLS_D.json;   SCRIPTS=/p3 ;;
   second) SPEC=phase3b/SPEC_CELLS_3B.json; SCRIPTS=/k ;;
-  *) echo "the series is first or second" >&2; exit 2 ;;
+  third)  SPEC=phase3c/SPEC_CELLS_3C.json; SCRIPTS=/k ;;
+  *) echo "the series is first, second or third" >&2; exit 2 ;;
 esac
 case "$MODE" in boot|run) ;; *) echo "the mode is boot or run" >&2; exit 2 ;; esac
 OUT="$(new_output "$2")"; shift 3
 WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
+# If the runner stops in the middle of a run, the container, the volume and the network of that run are removed too.
+CURRENT=""
+cleanup() {
+  if [ -n "$CURRENT" ]; then
+    "$ENGINE" rm -f "$CURRENT-app" > /dev/null 2>&1 || true
+    "$ENGINE" volume rm "$CURRENT" > /dev/null 2>&1 || true
+    "$ENGINE" network rm "$CURRENT" > /dev/null 2>&1 || true
+  fi
+  rm -rf "$WORK"
+}
+trap cleanup EXIT
 copy_repository "$WORK"
 H="$OUT/environment_host.txt"
 host_record "$H" "application cells ($SERIES), mode $MODE, targets $*"
 require_freeze "$WORK" "applications_$SERIES" "$OUT/freeze_check.txt"
+mkdir -p "$OUT/results"
 MOUNTS="$(mounts "$WORK")"
 
 "$ENGINE" pull "$TOOL_IMAGE" > "$OUT/container_pull_tool.txt" 2>&1
@@ -48,6 +62,7 @@ one_run() {  # target revision cell run-number mode
   image="$(plan "$WORK" image "$SPEC" "$target" "$revision")"
   options="$(plan "$WORK" app-options "$SPEC" "$target")"
   command="$(plan "$WORK" app-command "$SPEC" "$target")"
+  CURRENT="$id"
   "$ENGINE" network create --internal "$id" > /dev/null
   "$ENGINE" volume create "$id" > /dev/null
   "$ENGINE" run --rm --network none --security-opt no-new-privileges -v "$id":/secrets -v "$WORK/repo/checks/phase3":/p3:ro \
@@ -58,16 +73,17 @@ one_run() {  # target revision cell run-number mode
   "$ENGINE" run --rm --network "$id" --security-opt no-new-privileges $MOUNTS -v "$id":/secrets:ro -v "$OUT":/out \
     "$TOOL_IMAGE" bash /tool/checks/run/in_container_applications.sh "/tool/checks/$SPEC" "$SCRIPTS" "applications_$SERIES" \
     "$target" "$revision" "$cell" "$number" "$mode" >> "$OUT/console_${target}_${revision}.txt" 2>&1 || true
-  if [ "$number" = 1 ]; then "$ENGINE" logs "$id-app" 2>&1 | head -n 40 > "$OUT/app_log_head_${target}_${revision}_${cell}.txt"; fi
+  "$ENGINE" logs "$id-app" 2>&1 | head -n 40 > "$OUT/app_log_head_${target}_${revision}_${cell}_run_$(printf %02d "$number").txt"
   "$ENGINE" rm -f "$id-app" > /dev/null 2>&1
   "$ENGINE" volume rm "$id" > /dev/null 2>&1
   "$ENGINE" network rm "$id" > /dev/null 2>&1
+  CURRENT=""
 }
 
 for TARGET in "$@"; do
   for REVISION in ${ONLY_REVISION:-vulnerable fixed}; do
     IMAGE="$(plan "$WORK" image "$SPEC" "$TARGET" "$REVISION")"
-    "$ENGINE" pull "$IMAGE" > "$OUT/container_pull_${TARGET}_${REVISION}.txt" 2>&1 || { echo "Could not pull $IMAGE" | tee -a "$H"; continue; }
+    fetch_image "$IMAGE" "$OUT/container_pull_${TARGET}_${REVISION}.txt" || { echo "Could not pull $IMAGE" | tee -a "$H"; continue; }
     DIGEST="$("$ENGINE" image inspect --format '{{index .RepoDigests 0}}' "$IMAGE")"
     echo "$TARGET $REVISION image=$IMAGE digest=$DIGEST" >> "$OUT/container_images.txt"
     # For an application the pinned revision is the image digest.

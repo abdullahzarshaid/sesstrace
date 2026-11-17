@@ -17,8 +17,20 @@ TOOL_IMAGE="docker.io/library/python@sha256:eedf63967cdb57d8214db38ce21f105003ed
 # new_output <folder>: refuse to reuse a folder, create it, print its absolute path
 new_output() {
   if [ -e "$1" ]; then echo "Refusing to reuse an existing output folder: $1" >&2; exit 4; fi
-  mkdir -p "$1/results"
+  mkdir -p "$1"
   (cd "$1" && pwd)
+}
+
+# fetch_image <image pinned by digest> <record file>: pull the image; when the registry cannot be reached and an image
+# with this digest is already on the machine, use that one. The record file says which of the two happened.
+fetch_image() {
+  if "$ENGINE" pull "$1" > "$2" 2>&1; then return 0; fi
+  case "$1" in *@sha256:*) ;; *) return 1 ;; esac
+  if "$ENGINE" image inspect "$1" > /dev/null 2>&1; then
+    echo "pull failed; the image with this digest is already on this machine and is used" >> "$2"
+    return 0
+  fi
+  return 1
 }
 
 # copy_repository <work folder>: copy what the containers need, without the version history

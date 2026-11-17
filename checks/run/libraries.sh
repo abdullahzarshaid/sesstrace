@@ -19,11 +19,12 @@ copy_repository "$WORK"
 H="$OUT/environment_host.txt"
 host_record "$H" "library cells"
 require_freeze "$WORK" libraries "$OUT/freeze_check.txt"
+mkdir -p "$OUT/results"
 MOUNTS="$(mounts "$WORK")"
 
 for IMG in $(plan "$WORK" images "$SPEC"); do
   NAME="$(echo "$IMG" | cut -d@ -f1 | tr '/:' '__')"
-  "$ENGINE" pull "$IMG" > "$OUT/container_pull_$NAME.txt" 2>&1 || { echo "Could not pull $IMG" | tee -a "$H" >&2; exit 5; }
+  fetch_image "$IMG" "$OUT/container_pull_$NAME.txt" || { echo "Could not pull $IMG" | tee -a "$H" >&2; exit 5; }
   echo "image=$IMG digest=$("$ENGINE" image inspect --format '{{json .RepoDigests}}' "$IMG")" >> "$OUT/container_images.txt"
   set +e
   "$ENGINE" run --rm --network none --security-opt no-new-privileges -v "$WORK/repo":/tool:ro "$IMG" \
