@@ -7,10 +7,13 @@
 # could not be fetched lacks that release. Each of them alone is evaluated with runs missing. This step copies the
 # results of the attempts, unchanged, into one folder (a file that two attempts both hold stops it: nothing is run
 # twice), and then runs the evaluation and the audit in the tool image, without network. No target is contacted.
+# The freeze block "applications_<series>" must still match, so that the attempts are evaluated with the
+# specification they were run with.
 set -eu
 . "$(dirname "$0")/common.sh"
 [ $# -ge 4 ] || { echo "usage: bash checks/run/merge.sh <first|second|third> <new output folder> <output folder of an attempt>..." >&2; exit 2; }
-case "$1" in
+SERIES="$1"
+case "$SERIES" in
   first)  SPEC=phase3/SPEC_CELLS_D.json ;;
   second) SPEC=phase3b/SPEC_CELLS_3B.json ;;
   third)  SPEC=phase3c/SPEC_CELLS_3C.json ;;
@@ -21,7 +24,8 @@ WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
 copy_repository "$WORK"
 H="$OUT/environment_host.txt"
-host_record "$H" "application cells, attempts put together: $*"
+host_record "$H" "application cells ($SERIES), attempts put together: $*"
+require_freeze "$WORK" "applications_$SERIES" "$OUT/freeze_check.txt"
 
 RESULTS=""
 for ATTEMPT in "$@"; do

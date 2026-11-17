@@ -14,6 +14,9 @@
 # every run starts from an empty application. ONLY_REVISION=vulnerable or fixed restricts the run to one release;
 # the results of two attempts that ran different releases are put together with merge.sh.
 # The freeze block "applications_<series>" must exist and match.
+# Exit status: 0 when every named release was run; 3 when a release was skipped because its image could not be
+# fetched (the rest was run and evaluated); 2, 4 and 5 for a wrong command line, an existing output folder and a
+# failed freeze check or tool image.
 set -eu
 . "$(dirname "$0")/common.sh"
 [ $# -ge 4 ] || { echo "usage: bash checks/run/applications.sh <first|second|third> <new output folder> <boot|run> <target>..." >&2; exit 2; }
@@ -80,10 +83,11 @@ one_run() {  # target revision cell run-number mode
   CURRENT=""
 }
 
+SKIPPED=0
 for TARGET in "$@"; do
   for REVISION in ${ONLY_REVISION:-vulnerable fixed}; do
     IMAGE="$(plan "$WORK" image "$SPEC" "$TARGET" "$REVISION")"
-    fetch_image "$IMAGE" "$OUT/container_pull_${TARGET}_${REVISION}.txt" || { echo "Could not pull $IMAGE" | tee -a "$H"; continue; }
+    fetch_image "$IMAGE" "$OUT/container_pull_${TARGET}_${REVISION}.txt" || { echo "Could not pull $IMAGE" | tee -a "$H"; SKIPPED=1; continue; }
     DIGEST="$("$ENGINE" image inspect --format '{{index .RepoDigests 0}}' "$IMAGE")"
     echo "$TARGET $REVISION image=$IMAGE digest=$DIGEST" >> "$OUT/container_images.txt"
     # For an application the pinned revision is the image digest.
@@ -109,3 +113,7 @@ if [ "$MODE" = run ]; then
   tail -n 2 "$OUT/audit.stdout.txt"
 fi
 echo "utc_end=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$H"
+if [ "$SKIPPED" = 1 ]; then
+  echo "A release was skipped because its image could not be fetched; see $H" >&2
+  exit 3
+fi

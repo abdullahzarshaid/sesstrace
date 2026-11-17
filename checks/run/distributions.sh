@@ -5,7 +5,8 @@
 #   bash checks/run/distributions.sh build <new folder for the build records>
 #       pulls every image of the plan and builds the derived images (network: the registry and the distributions'
 #       own package mirrors). The build record says for every derived image how many of its build steps came from
-#       the cache of an earlier build on this machine; REBUILD=1 builds every step again.
+#       the cache of an earlier build on this machine, of how many (steps_from_cache=1 of 1). The cache outlives the
+#       removal of the derived images; REBUILD=1 builds every step again.
 #   bash checks/run/distributions.sh run <new output folder>
 #       runs every image once with --network none and the repository mounted read-only
 #
@@ -38,7 +39,9 @@ if [ "$MODE" = build ]; then
       STATUS=$?
       # The engine marks a step taken from the cache with CACHED (or "Using cache" with the older builder).
       FROM_CACHE="$(grep -c -E 'CACHED|Using cache' "$OUT/build_$ID.txt")"
-      echo "$ID build_exit=$STATUS steps_from_cache=$FROM_CACHE" >> "$OUT/build_records.txt"
+      # FROM is never taken from the build cache; the steps that can be are those that write a layer.
+      STEPS="$(grep -c -i -E '^[[:space:]]*(RUN|COPY|ADD|WORKDIR)[[:space:]]' "$WORK/repo/checks/phase3/$DOCKERFILE")"
+      echo "$ID build_exit=$STATUS steps_from_cache=$FROM_CACHE of $STEPS" >> "$OUT/build_records.txt"
     fi
   done
   echo "utc_end=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$OUT/build_records.txt"
