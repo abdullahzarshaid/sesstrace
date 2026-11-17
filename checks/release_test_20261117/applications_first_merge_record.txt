@@ -1,0 +1,4 @@
+merged=2026-11-17T19:18:22Z
+repository_commit=93ead6a85681c619ab9d3e9e36033416dda372a8
+attempt_1=applications_first_run_1 files=151
+attempt_2=applications_first_run_2_T8_fixed files=25

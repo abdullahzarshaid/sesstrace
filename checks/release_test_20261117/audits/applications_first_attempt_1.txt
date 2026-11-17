@@ -1,0 +1,14 @@
+NO RECORD  T8.logout fixed run_01
+NO RECORD  T8.logout fixed run_02
+NO RECORD  T8.logout fixed run_03
+NO RECORD  T8.lifetime fixed run_01
+NO RECORD  T8.lifetime fixed run_02
+NO RECORD  T8.lifetime fixed run_03
+NO RECORD  T8.credential_change fixed run_01
+NO RECORD  T8.credential_change fixed run_02
+NO RECORD  T8.credential_change fixed run_03
+NO RECORD  T8.account_disabled fixed run_01
+NO RECORD  T8.account_disabled fixed run_02
+NO RECORD  T8.account_disabled fixed run_03
+72 runs, 678 requests read, 0 problem(s), 12 run(s) without records, 0 request(s) not sent
+audit_exit=1

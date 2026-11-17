@@ -1,0 +1,16 @@
+A01_debian12           IDENTICAL  Debian GNU/Linux 12 (bookworm)     Python 3.11.2    tests 112  traces 12 of 12  
+A02_debian13           IDENTICAL  Debian GNU/Linux 13 (trixie)       Python 3.13.5    tests 112  traces 12 of 12  
+A03_ubuntu2204         IDENTICAL  Ubuntu 22.04.5 LTS                 Python 3.10.12   tests 112  traces 12 of 12  
+A04_ubuntu2404         IDENTICAL  Ubuntu 24.04.5 LTS                 Python 3.12.3    tests 112  traces 12 of 12  
+A05_fedora45           IDENTICAL  Fedora Linux 45 (Container Image)  Python 3.15.2    tests 112  traces 12 of 12  
+A06_almalinux9         IDENTICAL  AlmaLinux 9.9 (Chartreuse Bobcat)  Python 3.12.16   tests 112  traces 12 of 12  
+A07_opensuse_leap16    IDENTICAL  openSUSE Leap 16.0                 Python 3.13.14   tests 112  traces 12 of 12  
+A08_archlinux          IDENTICAL  Arch Linux                         Python 3.14.10   tests 112  traces 12 of 12  
+A09_alpine324          IDENTICAL  Alpine Linux v3.24                 Python 3.14.10   tests 112  traces 12 of 12  
+A10_amazonlinux2023    IDENTICAL  Amazon Linux 2023.12.20261112      Python 3.12.16   tests 112  traces 12 of 12  
+A11_python310_slim     IDENTICAL  Debian GNU/Linux 13 (trixie)       Python 3.10.22   tests 112  traces 12 of 12  
+A12_python311_slim     IDENTICAL  Debian GNU/Linux 13 (trixie)       Python 3.11.18   tests 112  traces 12 of 12  
+A13_python312_slim     IDENTICAL  Debian GNU/Linux 13 (trixie)       Python 3.12.16   tests 112  traces 12 of 12  
+A14_python313_slim     IDENTICAL  Debian GNU/Linux 13 (trixie)       Python 3.13.18   tests 112  traces 12 of 12  
+A15_python314_slim     IDENTICAL  Debian GNU/Linux 13 (trixie)       Python 3.14.10   tests 112  traces 12 of 12  
+15 images, 10 distinct distributions: IDENTICAL 15, DIFFERENT 0, FAILED 0

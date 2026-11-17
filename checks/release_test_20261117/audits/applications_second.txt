@@ -1,0 +1,8 @@
+not sent  T5.grant_withdrawn vulnerable run_01: profile with bob2
+not sent  T5.grant_withdrawn vulnerable run_02: profile with bob2
+not sent  T5.grant_withdrawn vulnerable run_03: profile with bob2
+not sent  T5.grant_withdrawn fixed run_01: profile with bob2
+not sent  T5.grant_withdrawn fixed run_02: profile with bob2
+not sent  T5.grant_withdrawn fixed run_03: profile with bob2
+12 runs, 114 requests read, 0 problem(s), 0 run(s) without records, 6 request(s) not sent
+audit_exit=0
