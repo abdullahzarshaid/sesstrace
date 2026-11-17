@@ -74,7 +74,8 @@ class TwoAttempts(unittest.TestCase):
     def test_files_are_copied_unchanged_and_listed_with_their_hash(self):
         out = self.new_folder()
         record = merge.merge([self.first, self.second], out)
-        self.assertEqual(record["attempts"][1]["results"], str(self.second))
+        # An attempt is named by its folder, not by where the folder lies on this machine.
+        self.assertEqual([attempt["results"] for attempt in record["attempts"]], ["attempt_1/results", "attempt_2/results"])
         for attempt, source in zip(record["attempts"], (self.first, self.second)):
             for row in attempt["files"]:
                 self.assertEqual(row["sha256"], sha256_file(source / row["file"]))
@@ -91,6 +92,10 @@ class TwoAttempts(unittest.TestCase):
                 merge.merge([self.first, self.second, again], out)
             self.assertIn("T8.logout/fixed/run_01/summary_T8.logout_fixed.json", str(raised.exception))
             self.assertFalse(out.exists())
+
+    def test_attempts_with_the_same_folder_name_keep_their_paths_as_given(self):
+        self.assertEqual(merge.labels(["a/out/results", "b/out/results"]), ["a/out/results", "b/out/results"])
+        self.assertEqual(merge.labels(["/somewhere/else/first/results", "second/results"]), ["first/results", "second/results"])
 
     def test_existing_results_and_missing_folders_are_refused(self):
         out = self.new_folder()

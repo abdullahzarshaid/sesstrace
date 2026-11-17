@@ -23,29 +23,38 @@ class Overlap(Exception):
     """Two attempts hold a file of the same name."""
 
 
+def labels(sources):
+    """Name every attempt by the last two parts of its path, for example `first_attempt/results`.
+
+    The record of a merge then does not carry where the folders lay on the machine. When two attempts would get
+    the same name, the paths are recorded as they were given.
+    """
+    short = ["/".join(Path(source).parts[-2:]) for source in sources]
+    return short if len(set(short)) == len(short) else [str(source) for source in sources]
+
+
 def merge(sources, out_dir):
     """Copy the files of every results folder into `out_dir`/results.
 
     Returns the record of the merge: for every attempt, in the order given,
-    the folder as it was named and the files taken from it with their
-    SHA-256. Raises Overlap before anything is copied when a file is in two
-    attempts.
+    its name (see `labels`) and the files taken from it with their SHA-256.
+    Raises Overlap before anything is copied when a file is in two attempts.
     """
     target = Path(out_dir) / "results"
     if target.exists():
         raise ValueError("the output folder already holds results: %s" % target)
     attempts = []
     owner = {}
-    for source in sources:
+    for source, label in zip(sources, labels(sources)):
         folder = Path(source)
         if not folder.is_dir():
             raise ValueError("not a folder: %s" % source)
         names = sorted(path.relative_to(folder).as_posix() for path in folder.rglob("*") if path.is_file())
         for name in names:
             if name in owner:
-                raise Overlap("%s is in %s and in %s" % (name, owner[name], source))
-            owner[name] = str(source)
-        attempts.append((str(source), folder, names))
+                raise Overlap("%s is in %s and in %s" % (name, owner[name], label))
+            owner[name] = label
+        attempts.append((label, folder, names))
     record = {"attempts": [], "files": len(owner)}
     for label, folder, names in attempts:
         rows = []
