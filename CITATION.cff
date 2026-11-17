@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it as below. The entry will be replaced by the article once it has a DOI."
 title: "SessTrace: replay checks for the withdrawal of session authority"
 type: software
-version: 3.0.0
+version: 3.1.0
 license: MIT
 authors:
   - family-names: "Bin Zarshaid"

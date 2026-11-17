@@ -1,6 +1,31 @@
 # Changelog
 
-## 3.0.0 (unreleased)
+## 3.1.0 (unreleased)
+
+Changes after the release test of 17 November 2026 (`checks/release_test_20261117/README.md`), and the records of one
+further series.
+
+Added
+- `sesstrace merge`: puts the results of several attempts of one series into one folder and stops when a file is in two
+  of them; `checks/run/merge.sh` runs it with the evaluation and the audit.
+- `sesstrace witness audit`: checks the witness runs against the plans of their cells. The witness runner writes it.
+- `sesstrace compare --counts`: the counts of valid replays of every cell must agree as well.
+- Third application series: the further attempt of T5.grant_withdrawn of 17 November 2026 (`checks/phase3c/`, records in
+  `checks/records/application_cells_third/`, `applications.sh third`). The cell is confirmed; 23 cells, 22 as specified.
+- `checks/release_test_20261117/`: the evaluations of a fresh run of every series with version 3.0.0, and tests that
+  compare them with the published records.
+
+Changed
+- `sesstrace run` ends with status 1 when a step ended in an error; the records are written as before.
+- Runners: an image pinned by digest that is already on the machine is used when the registry cannot be reached; the
+  application log head is saved for every run; the distribution build record states the steps that came from the cache
+  and `REBUILD=1` builds without it; the application runner removes the container, volume and network of a run when it
+  is stopped in the middle of one; only the runners that write results create `results/`.
+- 137 tests (112 before).
+
+## 3.0.0 (17 November 2026)
+
+The state that passed the release test of 17 November 2026 (commit `9792762`).
 
 The laboratory and the replay harness become one package with a command line.
 

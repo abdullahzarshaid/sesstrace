@@ -91,6 +91,22 @@ The evaluator reads summaries. The audit reads traces, which the recorder writes
 When a login issues nothing, the driver does not send the later requests that needed its credential; the audit lists them
 as not sent, and the evaluator counts the run as not valid.
 
+## Attempts
+
+A run is not repeated because of its outcome. Two cases look like a repetition and are kept apart from it.
+
+- **A release that could not be run.** When the image of a release cannot be fetched, no request has reached it and
+  nothing is known about it. The release is run on its own afterwards, and `sesstrace merge` copies the results of both
+  attempts into one folder for the evaluation and the audit. It stops when a file is in both attempts, because then
+  something was run twice.
+- **A set-up that made every run invalid.** When no run of a cell is valid for a reason in the set-up, for example a
+  missing permission or a rate limit that refuses a control, the cell is `INCONCLUSIVE` and stays so in its series. A
+  further attempt is a new series with its own frozen specification, in which only the set-up differs and the plan and
+  the expectations are those of the first. Both series are kept; `sesstrace report` takes the cell from the later one.
+
+A fresh run of a published series is compared with it by `sesstrace compare --counts`: the verdict, the observed
+category and the counts of valid replays of every cell must agree.
+
 ## Line witness
 
 For a cell whose replay flips, the witness specification names the line or branch of the fixed revision that refuses the

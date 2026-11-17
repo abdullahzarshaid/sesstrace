@@ -13,8 +13,8 @@ The package is pure Python (3.7 or later), uses the standard library only, and h
 | Part | What it is | Command |
 |---|---|---|
 | Laboratory | Eight synthetic mechanisms (M1 to M8) on loopback HTTP, each in a vulnerable and a fixed variant | `sesstrace lab run`, `sesstrace lab verify` |
-| Replay engine | Driver, evaluator and audit for plans run against real software | `sesstrace run`, `sesstrace evaluate`, `sesstrace audit`, `sesstrace compare` |
-| Checks | Eight public targets (four libraries, four applications), their frozen specifications and the records of 256 runs | `checks/` |
+| Replay engine | Driver, evaluator and audit for plans run against real software | `sesstrace run`, `sesstrace evaluate`, `sesstrace audit`, `sesstrace compare`, `sesstrace merge` |
+| Checks | Eight public targets (four libraries, four applications), their frozen specifications and the records of 262 runs | `checks/` |
 
 ## Quick start
 
@@ -33,7 +33,7 @@ Read the published checks again from their records:
 ```bash
 sesstrace evaluate --spec checks/phase3/SPEC_CELLS_D.json --results checks/records/application_cells/results --out evaluation.json
 sesstrace audit    --spec checks/phase3/SPEC_CELLS_D.json --results checks/records/application_cells/results
-sesstrace report   checks/records/library_cells/evaluation.json checks/records/application_cells/evaluation.json checks/records/application_cells_second/evaluation.json
+sesstrace report   checks/records/library_cells/evaluation.json checks/records/application_cells/evaluation.json checks/records/application_cells_second/evaluation.json checks/records/application_cells_third/evaluation.json
 ```
 
 ## How a check works
@@ -74,24 +74,31 @@ Eight targets from a fixed screening list, each at the release before and after 
 | T7 | Directus | TypeScript | releases 10.10.7, 10.11.0 | CVE-2024-34709 |
 | T8 | Kanboard | PHP | releases 1.2.42, 1.2.43 | CVE-2024-55603 |
 
-Across the eight targets there are 23 cells, 256 runs and 2,266 recorded requests.
+Across the eight targets there are 23 cells, 262 runs and 2,326 recorded requests.
 
 | Result | Cells |
 |---|---|
-| As specified in every run (`CONFIRMED`) | 21 |
+| As specified in every run (`CONFIRMED`) | 22 |
 | A valid run differs from the specification (`NOT_CONFIRMED`) | 1 |
-| No valid run (`INCONCLUSIVE`) | 1 |
+| No valid run (`INCONCLUSIVE`) | 0 |
 
-Of the 21 confirmed cells, in 6 the replay is accepted before the repair and refused after it, in 8 it is accepted at both
+Of the 22 confirmed cells, in 7 the replay is accepted before the repair and refused after it, in 8 it is accepted at both
 revisions and in 7 it is refused at both.
 
-Two cells did not come out as specified, and both are kept as they are:
+One cell did not come out as specified, and it is kept as it is:
 
 - **T7 logout.** The fixed release answered the replay with HTTP 403. The specification had named HTTP 401 as the
   not-logged-in answer of this application, so the adapter reported an unrecognised answer. The runs are valid and the
   cell is `NOT_CONFIRMED`; the expectation was not reinterpreted afterwards.
-- **T5 grant withdrawn.** A control login was refused by the rate limit of the application (HTTP 429) in every run, so no
-  run is valid and the cell is `INCONCLUSIVE`.
+
+Two cells were attempted a second time, because their first attempt had no valid run for a reason in the set-up. The plan
+and the expectations stayed as they were, and both attempts of each cell are in the records:
+
+- **T7 credential change.** The role created by the set-up was not allowed to change its own password. With that
+  permission granted the cell came out as specified.
+- **T5 grant withdrawn.** A control login was refused by the rate limit of the application (HTTP 429) in every run. With
+  the documented limit of the application raised, all six runs were valid: the copied share token was accepted before the
+  repair and refused after it.
 
 These are observations on the named old releases under one configuration each. They are not statements about current
 versions, and a replay that is accepted at both revisions of a contract the repair did not address is reported as an
@@ -103,7 +110,7 @@ refusing line of the repair exactly as often as stated in advance. Everything is
 
 ## Where the results come from
 
-The runs in `checks/records/` were made on 14 and 15 November 2026 with the scripts that were frozen for each series at
+The runs in `checks/records/` were made on 14, 15 and 17 November 2026 with the scripts that were frozen for each series at
 the time; those scripts are part of the supplementary material of the manuscript. This package is the maintained form of
 the same method. Three things tie the two together, and the test suite checks each of them:
 
@@ -111,8 +118,10 @@ the same method. Three things tie the two together, and the test suite checks ea
 - the evaluator, run over the archived records, writes the archived evaluation files byte for byte;
 - the host applications, adapters, set-up scripts and specifications in `checks/` are the frozen files, unchanged.
 
-A fresh run of all targets with this package is a separate step and needs a Linux machine with a container engine; see
-[checks/README.md](checks/README.md).
+On 17 November 2026 every series of 14 and 15 November was run again with this package and its own runners. Each cell came
+out with the published verdict, category and counts, and the laboratory gave identical output in all 15 images; see
+[checks/release_test_20261117/README.md](checks/release_test_20261117/README.md). A fresh run needs a Linux machine with a
+container engine; see [checks/README.md](checks/README.md).
 
 ## Safety
 
@@ -129,11 +138,12 @@ src/sesstrace/          the package
   trace.py              request recorder with redaction
   outcome.py            typed outcome of an operation and the replay verdict
   lab/                  synthetic laboratory, its metadata and reference output
-  replay/               spec, freeze, driver, evaluate, audit, witness
+  replay/               spec, freeze, driver, merge, evaluate, audit, witness
   cli.py                command line
 checks/                 the eight public targets
-  external_targets/, phase2/, phase3/, phase3b/    frozen specifications, hosts, adapters, set-up scripts
+  external_targets/, phase2/, phase3/, phase3b/, phase3c/    frozen specifications, hosts, adapters, set-up scripts
   records/              set-up records, summaries, traces and evaluations of the published runs
+  release_test_20261117/    the evaluations of a fresh run of every series with this package
   run/                  container runners for a Linux machine
 tests/                  unit tests (standard library unittest)
 docs/                   method, specification format, adding a target, laboratory
@@ -144,7 +154,8 @@ docs/                   method, specification format, adding a target, laborator
 - The driver speaks cookie-carried credentials over one small contract; anything else needs a host application or an adapter.
 - A verdict is about one plan, one configuration and two revisions. It says nothing about other paths of the same software.
 - The laboratory is synthetic. It demonstrates the mechanisms and exercises the recorder; it is not a model of any product.
-- The container runners are written for Linux with Docker; no other system was tested.
+- The container runners are written for Linux with Docker; no other system was tested. They were changed after the
+  release test of 17 November 2026 and have not been run on a container engine since.
 
 ## Citing
 
