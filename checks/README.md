@@ -108,16 +108,22 @@ Things worth knowing before a run:
   release. It is meant for a release whose image could not be fetched before any checkpoint was sent, never for a
   second try of a run that has an outcome. The two output folders are then put together and evaluated as one:
   `bash checks/run/merge.sh first <new out> <out of attempt 1> <out of attempt 2>`. The merge stops when a file is in
-  both attempts.
-- **Distribution images.** The build reuses layers of an earlier build on the same machine. The build record states for
-  every derived image how many steps came from the cache; `REBUILD=1 bash checks/run/distributions.sh build <out>`
-  builds every step again and needs the package mirrors of the distributions.
+  both attempts, and when a frozen file of the series has changed since its freeze block.
+- **Exit status.** `applications.sh` ends with status 3 when a release was skipped because its image could not be
+  fetched. What could be run is still run and evaluated, and the host record names the release.
+- **Distribution images.** The build reuses layers of an earlier build on the same machine, also after the derived
+  images were removed. The build record states for every derived image how many steps came from the cache, of how
+  many; `REBUILD=1 bash checks/run/distributions.sh build <out>` builds every step again and needs the package
+  mirrors of the distributions.
 - **Owner of the output.** Files written by the containers belong to root on the host. They are readable by everyone;
   removing an output folder needs root unless the engine runs without it.
 
 The runners were run from start to end on 17 November 2026; the result is in
 [release_test_20261117/README.md](release_test_20261117/README.md), with the defects that run found. The changes made
-for those defects have not been run on a container engine since.
+for those defects were run on 18 November; the result is in
+[runner_check_20261118/README.md](runner_check_20261118/README.md). Three small changes made after that second run were
+exercised against a stand-in for the container engine only: `bash tools/dry_run_runners.sh <empty folder>` repeats
+that on any machine with bash, tar and Python, without a container engine and without running third-party code.
 
 ## What a deviation means
 

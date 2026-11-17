@@ -120,8 +120,9 @@ the same method. Three things tie the two together, and the test suite checks ea
 
 On 17 November 2026 every series of 14 and 15 November was run again with this package and its own runners. Each cell came
 out with the published verdict, category and counts, and the laboratory gave identical output in all 15 images; see
-[checks/release_test_20261117/README.md](checks/release_test_20261117/README.md). A fresh run needs a Linux machine with a
-container engine; see [checks/README.md](checks/README.md).
+[checks/release_test_20261117/README.md](checks/release_test_20261117/README.md). The changes made after that test were run
+the next day; see [checks/runner_check_20261118/README.md](checks/runner_check_20261118/README.md). A fresh run needs a Linux
+machine with a container engine; see [checks/README.md](checks/README.md).
 
 ## Safety
 
@@ -144,6 +145,7 @@ checks/                 the eight public targets
   external_targets/, phase2/, phase3/, phase3b/, phase3c/    frozen specifications, hosts, adapters, set-up scripts
   records/              set-up records, summaries, traces and evaluations of the published runs
   release_test_20261117/    the evaluations of a fresh run of every series with this package
+  runner_check_20261118/    the results of a second run, of the runner changes made after the first
   run/                  container runners for a Linux machine
 tests/                  unit tests (standard library unittest)
 docs/                   method, specification format, adding a target, laboratory
@@ -154,8 +156,9 @@ docs/                   method, specification format, adding a target, laborator
 - The driver speaks cookie-carried credentials over one small contract; anything else needs a host application or an adapter.
 - A verdict is about one plan, one configuration and two revisions. It says nothing about other paths of the same software.
 - The laboratory is synthetic. It demonstrates the mechanisms and exercises the recorder; it is not a model of any product.
-- The container runners are written for Linux with Docker; no other system was tested. They were changed after the
-  release test of 17 November 2026 and have not been run on a container engine since.
+- The container runners are written for Linux with Docker; no other system was tested. They were run from start to end on
+  17 November 2026 and their later changes on 18 November. Three small changes made after that (an exit status, a freeze
+  check before a merge, one field of the build record) were exercised against a stand-in for the engine only.
 
 ## Citing
 

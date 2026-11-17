@@ -7,4 +7,4 @@ Two parts share one trace recorder and one verdict rule:
   sesstrace.replay   the same contracts driven against software that was not
                      written for them, from a specification fixed before the run
 """
-__version__ = "3.1.0"
+__version__ = "3.1.1"

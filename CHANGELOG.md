@@ -1,6 +1,22 @@
 # Changelog
 
-## 3.1.0 (unreleased)
+## 3.1.1 (unreleased)
+
+Changes after the check of the runners of 18 November 2026 (`checks/runner_check_20261118/README.md`).
+
+Changed
+- `applications.sh` ends with status 3 when a release was skipped because its image could not be fetched.
+- `merge.sh` checks the freeze block of its series before it evaluates.
+- The build record of the distribution images reads `steps_from_cache=1 of 1`.
+- `sesstrace merge` names an attempt by its folder, not by its path on the machine.
+
+Added
+- `tools/dry_run_runners.sh`: exercises the host side of the runners against a stand-in for the container engine.
+- `checks/runner_check_20261118/`: the results of the check, with tests. 145 tests.
+
+## 3.1.0 (18 November 2026)
+
+The state that passed the check of the runners of 18 November 2026 (commit `1f07479`).
 
 Changes after the release test of 17 November 2026 (`checks/release_test_20261117/README.md`), and the records of one
 further series.

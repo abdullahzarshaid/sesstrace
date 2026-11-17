@@ -69,9 +69,8 @@ The test module compares all five evaluations with the published ones, including
 Two further changes came from the same reading: `sesstrace compare --counts` also compares the counts of valid replays,
 and the application runner removes the container, volume and network of a run when it is stopped in the middle of one.
 
-The changes to the package are covered by the unit tests. The changed runner scripts were checked for syntax and, where
-they decide something, against a stand-in for the container engine; they have not been run on a container engine since
-this test.
+The changes to the package are covered by the unit tests. The changed runner scripts were run on a container engine on
+18 November 2026; see `../runner_check_20261118/README.md`.
 
 ## Files
 
