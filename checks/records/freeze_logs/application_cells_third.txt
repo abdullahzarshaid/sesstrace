@@ -1,0 +1,19 @@
+=== FREEZE 3C-T5.grant_withdrawn utc=2026-11-17T16:13:48Z
+reason: phase 3c, further attempt of T5.grant_withdrawn: new specification file whose cell entry is identical to phase 3b (CELL_COMPARISON.txt), with the one set-up change VIKUNJA_RATELIMIT_NOAUTHLIMIT=100; adapter, set-up script, driver and evaluator reused unchanged; run scripts copied with the changes shown in their headers; written before any request reached the application
+86c271b126853fe50b76fe925d87f4392ad2306d4b61ccd898aac380e390d4d0  SPEC_CELLS_3C.json
+028f2bbe4c38374c548ae6cb1a0b6468bce6f894c55509f5c958018b82bcdfed  compare_cell.py
+7e5fec56f362f758b8c3f7090c9f85042219b626b9762ccf9330ceb31b5f26c5  CELL_COMPARISON.txt
+8556d4dde7a89edc23744ee3c3457e04e7219f758b3e633a48eeb83491df9be9  in_container_3C.sh
+ef604f22a4337f1aeb7499183fadd848884f93a61cb124fb52ea7101b0814d3b  run_3C.sh
+311899d08fcb8b3bb5ab58c7d80bd039ef563b49a996360b9b2ed158fd3a8ee6  ../phase3b/adapters/vikunja_share_adapter.py
+bba92b55008971822947574fe454c2e49a150d6c43e1a6c63e064f49ed601b13  ../phase3b/setup/vikunja_share_setup.sh
+715b54a119b9952ca248aa7200929eae3c8cc75bcc7bb863ae736ece522a4cea  ../phase3b/SPEC_CELLS_3B.json
+3787a0da0cac94216706c6b23ed8e670347f5b81af3c6a5bf8351a62309a78d5  ../phase3b/selftest_3B.py
+52231271dfc5625bd0f3de06a7da513d9efec6cebcd0e91b9b58b84ed05bacb4  ../phase3/external_driver_D.py
+b7ffbb6e896b99292906e1a29ddc277eded45074b37dc467bf9c605dd1bd59dc  ../phase3/evaluate_external_phase3.py
+79ef768a4b370f5db08141741d108bc2d0d38fa35ca5a7db19c757c4bbeedda5  ../phase3/freeze_check.py
+6504f51980020279783d7efa83fe5ceda843845b45b32a5c7126bb6ef5daaa2e  ../phase3/setup/make_secrets.sh
+33adeca3ec5c882e25d12df0158009a25effd84868e4e38e42506b0b4df13c89  ../phase3/reference/FROZEN_SESSTRACE.sha256
+c35da8f5f81966ce41aac35e55f426093b46b1e1ecd0d2857e9389509c962464  ../phase3/selftest_D.py
+=== END
+

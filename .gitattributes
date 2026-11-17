@@ -6,6 +6,8 @@ checks/external_targets/** -text
 checks/phase2/**           -text
 checks/phase3/**           -text
 checks/phase3b/**          -text
+checks/phase3c/**          -text
 checks/records/**          -text
+checks/release_test_20261117/** -text
 src/sesstrace/lab/reference/** -text
 src/sesstrace/lab/metadata/**  -text

@@ -40,6 +40,14 @@
       "layout": "cells",
       "run_date": "2026-11-15",
       "content": "T5.grant_withdrawn (new) and the second attempt of T7.credential_change, three runs per revision"
+    },
+    {
+      "name": "application_cells_third",
+      "specification": "phase3c/SPEC_CELLS_3C.json",
+      "specification_sha256": "86c271b126853fe50b76fe925d87f4392ad2306d4b61ccd898aac380e390d4d0",
+      "layout": "cells",
+      "run_date": "2026-11-17",
+      "content": "the further attempt of T5.grant_withdrawn, with the limit of the application on requests without authentication raised, three runs per revision"
     }
   ]
 }

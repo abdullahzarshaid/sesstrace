@@ -1,0 +1,109 @@
+{
+  "specification": "SPEC_CELLS_3C.json",
+  "repeats_per_revision": 3,
+  "reading_rule": "For T5, if grant_withdrawn changes between the two releases, the lifecycle condition that the repair enforces is B, which is compared with the frozen class of the record (B).",
+  "cells": [
+    {
+      "cell": "T5.grant_withdrawn",
+      "target": "T5",
+      "contract": "grant_withdrawn",
+      "cve": "CVE-2026-35594",
+      "package": "Vikunja",
+      "frozen_v2_class": "B",
+      "expected_category": "FLIPS",
+      "replay_checkpoint": "replay_after_grant_withdrawn",
+      "expected_replay": {
+        "vulnerable": "success",
+        "fixed": "denied"
+      },
+      "revisions": {
+        "vulnerable": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "success": 3
+          },
+          "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "success",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        },
+        "fixed": {
+          "runs": 3,
+          "valid_runs": 3,
+          "valid_replay_counts": {
+            "denied": 3
+          },
+          "count_text": "fixed 0 of 3 accepted, 3 of 3 refused",
+          "all_runs": [
+            {
+              "run": 1,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 2,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            },
+            {
+              "run": 3,
+              "valid": true,
+              "replay": "denied",
+              "replay_as_expected": true,
+              "problems": []
+            }
+          ]
+        }
+      },
+      "reasons": [],
+      "observed_category": "FLIPS",
+      "count_text": "vulnerable 3 of 3 accepted, 0 of 3 refused, fixed 0 of 3 accepted, 3 of 3 refused",
+      "verdict": "CONFIRMED"
+    }
+  ],
+  "reading": [
+    {
+      "target": "T5",
+      "package": "Vikunja",
+      "frozen_v2_class": "B",
+      "contracts_whose_outcome_changes": [
+        "grant_withdrawn"
+      ],
+      "lifecycle_condition_of_those_contracts": [
+        "B"
+      ],
+      "agrees_with_frozen_class": true
+    }
+  ],
+  "counts": {
+    "CONFIRMED": 1,
+    "NOT_CONFIRMED": 0,
+    "INCONCLUSIVE": 0
+  },
+  "scope": "Two cells on two complete applications at two releases each, behind adapters written for this check. It is not a benchmark and not a detection rate."
+}

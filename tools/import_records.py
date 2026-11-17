@@ -21,6 +21,7 @@ FIRST = "results_20261114T232903Z"
 SECOND = "results_phase2_20261115T010731Z"
 THIRD = "results_phase3_20261115T095747Z"
 FOURTH = "results_phase3b_20261115T141421Z"
+FIFTH = "results_phase3c_20261117T161409Z"
 
 # series name -> (results folder inside the archive, evaluation file inside the archive)
 SERIES = {
@@ -29,6 +30,7 @@ SERIES = {
     "library_cells": (THIRD + "/B_cells/run/results", THIRD + "/B_cells/CELL_RESULTS.json"),
     "application_cells": (THIRD + "/D_rest_of_list/merged_evaluation/results", THIRD + "/D_rest_of_list/CELL_RESULTS_D.json"),
     "application_cells_second": (FOURTH + "/run/results", FOURTH + "/CELL_RESULTS_3B.json"),
+    "application_cells_third": (FIFTH + "/run/results", FIFTH + "/CELL_RESULTS_3C.json"),
     "line_witness": (THIRD + "/C_line_witness/run/results", THIRD + "/C_line_witness/WITNESS_RESULT.json"),
 }
 # single files and folders copied as they are: (path inside the archive, path inside checks/records)
@@ -39,6 +41,7 @@ EXTRA = [
     (SECOND + "/phase2/FREEZE_LOG.txt", "freeze_logs/libraries_single_run_2.txt"),
     (THIRD + "/phase3/FREEZE_LOG.txt", "freeze_logs/cells_witness_distributions.txt"),
     (FOURTH + "/phase3b/FREEZE_LOG.txt", "freeze_logs/application_cells_second.txt"),
+    (FIFTH + "/phase3c/FREEZE_LOG.txt", "freeze_logs/application_cells_third.txt"),
 ]
 WANTED = ("setup_", "summary_", "trace_")
 
