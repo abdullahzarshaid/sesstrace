@@ -1,0 +1,26 @@
+command=python3 -B -m unittest (in the clone, head 82c7ef6)
+python=Python 3.13.12
+utc=2026-11-17T20:50:14Z
+
+.........................................................................................................................................
+----------------------------------------------------------------------
+Ran 137 tests in 61.355s
+
+OK
+exit=0
+
+The five tests of class ShellHelpers (tests/test_run_helpers.py, shell functions of common.sh against a stand-in engine), run again verbosely:
+command=python3 -B -m unittest -v tests.test_run_helpers.ShellHelpers
+
+test_a_local_image_is_not_taken_for_a_tag (tests.test_run_helpers.ShellHelpers.test_a_local_image_is_not_taken_for_a_tag)
+A tag can point at another image tomorrow; only a digest names the same bytes. ... ok
+test_image_that_can_be_pulled (tests.test_run_helpers.ShellHelpers.test_image_that_can_be_pulled) ... ok
+test_output_folder_is_new_and_starts_empty (tests.test_run_helpers.ShellHelpers.test_output_folder_is_new_and_starts_empty) ... ok
+test_registry_out_of_reach_and_no_such_image_here (tests.test_run_helpers.ShellHelpers.test_registry_out_of_reach_and_no_such_image_here) ... ok
+test_registry_out_of_reach_and_the_pinned_image_already_here (tests.test_run_helpers.ShellHelpers.test_registry_out_of_reach_and_the_pinned_image_already_here) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.036s
+
+OK
+exit=0

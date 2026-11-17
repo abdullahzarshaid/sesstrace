@@ -1,0 +1,5 @@
+NO RECORD  T5.grant_withdrawn fixed run_01
+NO RECORD  T5.grant_withdrawn fixed run_02
+NO RECORD  T5.grant_withdrawn fixed run_03
+3 runs, 30 requests read, 0 problem(s), 3 run(s) without records, 0 request(s) not sent
+audit_exit=1

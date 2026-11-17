@@ -9,5 +9,6 @@ checks/phase3b/**          -text
 checks/phase3c/**          -text
 checks/records/**          -text
 checks/release_test_20261117/** -text
+checks/runner_check_20261118/** -text
 src/sesstrace/lab/reference/** -text
 src/sesstrace/lab/metadata/**  -text

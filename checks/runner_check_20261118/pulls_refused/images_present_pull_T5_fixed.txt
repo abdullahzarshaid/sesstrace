@@ -1,0 +1,2 @@
+simulated: registry not reachable
+pull failed; the image with this digest is already on this machine and is used

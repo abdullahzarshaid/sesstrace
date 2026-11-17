@@ -1,0 +1,24 @@
+== freeze block for the third application series
+freeze_exit=0
+== every pull fails and the application images are not on the machine: expected status 3, two releases skipped
+status=3
+releases reported as not pulled: 2
+A release was skipped because its image could not be fetched; see <work>/out_skip/environment_host.txt
+== every pull fails and the images are on the machine: expected status 0, nothing skipped
+status=0
+pull failed; the image with this digest is already on this machine and is used
+log heads named by run: 2
+engine calls: network create 2, volume create 2, run 6, rm 2, volume rm 2, network rm 2
+calls with --privileged, host network or a published port: 0
+== build record of the distribution images: expected ten lines with steps_from_cache=1 of 1
+status=0
+build lines: 10, pull lines: 15
+no results folder
+== merge with a matching freeze block: the freeze check passes and the attempts are named by their folders
+status=1 (the evaluation needs a real engine, so a status other than 0 is expected here)
+frozen files found unchanged: 56; merge_exit=0
+['a/results', 'b/results'] 2
+== merge after the specification was changed: expected status 5, nothing merged
+status=5
+freeze check of block applications_third failed; nothing was run (see <work>/out_merge2/freeze_check.txt)
+nothing was merged
