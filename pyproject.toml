@@ -23,7 +23,9 @@ dependencies = []
 dynamic = ["version"]
 
 [project.urls]
+Homepage = "https://abdullahzarshaid.github.io/sesstrace/"
 Repository = "https://github.com/abdullahzarshaid/sesstrace"
+Issues = "https://github.com/abdullahzarshaid/sesstrace/issues"
 
 [project.scripts]
 sesstrace = "sesstrace.cli:main"
