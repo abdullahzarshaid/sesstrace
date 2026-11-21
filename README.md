@@ -1,4 +1,15 @@
-# SessTrace
+<h1 align="center">SessTrace</h1>
+
+<p align="center"><b>Evidence-first replay checks for the withdrawal of session authority.</b></p>
+
+<p align="center">
+  <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-2E7D4F.svg"></a>
+  <img alt="Python 3.7+" src="https://img.shields.io/badge/python-3.7%2B-3776AB.svg?logo=python&amp;logoColor=white">
+  <img alt="Dependencies: none" src="https://img.shields.io/badge/dependencies-none-2E7D4F.svg">
+  <img alt="Tests: 145 passing" src="https://img.shields.io/badge/tests-145%20passing-2E7D4F.svg">
+  <img alt="Standard library only" src="https://img.shields.io/badge/standard%20library-only-5A6B6F.svg">
+  <a href="https://github.com/abdullahzarshaid/sesstrace/releases/latest"><img alt="Release: v3.1.1" src="https://img.shields.io/badge/release-v3.1.1-3A5BA0.svg"></a>
+</p>
 
 SessTrace checks one property of software that issues sessions or tokens: **after the authority behind a credential has been
 withdrawn, a copy of that credential must stop working.** The withdrawal can be a logout, the end of a configured lifetime, a
@@ -7,6 +18,10 @@ password change, a disabled account or a deleted grant.
 It does this by replay. A plan logs a user in, copies the credential, lets the event happen, presents the copy again and
 records what came back. The same plan is run against selected pinned affected and repaired revisions. The expected
 outcome of every step is written down and hashed before the first request is sent.
+
+<p align="center">
+  <img src="docs/architecture.svg" alt="SessTrace replay pipeline: specify, freeze, run, evaluate, audit, verdict" width="880">
+</p>
 
 **At a glance (version 3.1.1)**
 

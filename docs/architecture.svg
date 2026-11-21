@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" width="900" height="500" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" role="img" aria-label="SessTrace replay pipeline">
+  <style>
+    .bg   { fill:#ffffff; stroke:#E3E8EA; stroke-width:1; }
+    .title{ fill:#1E3A2A; font-size:23px; font-weight:700; }
+    .sub  { fill:#5A6B6F; font-size:13px; }
+    .lbl  { fill:#6A7A7E; font-size:11.5px; font-weight:700; letter-spacing:.05em; }
+    .green{ fill:#E7F2EA; stroke:#2E7D4F; stroke-width:1.5; }
+    .blue { fill:#E8EEF9; stroke:#3A5BA0; stroke-width:1.5; }
+    .grey { fill:#F1F3F5; stroke:#B4BBC2; stroke-width:1.5; }
+    .cont { fill:#F5FAF6; stroke:#CBD8CF; stroke-width:1.2; }
+    .h    { fill:#17262B; font-size:12.5px; font-weight:700; }
+    .s    { fill:#5A6B6F; font-size:9.5px; }
+    .foot { fill:#8A979B; font-size:11.5px; }
+    .arr  { stroke:#7A8A8F; stroke-width:1.7; fill:none; }
+  </style>
+  <defs>
+    <marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#7A8A8F"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="1" y="1" width="898" height="498" rx="16"/>
+
+  <text class="title" x="40" y="46">SessTrace &#183; replay pipeline</text>
+  <text class="sub"   x="41" y="70">After the authority behind a credential is withdrawn, a copy of it must stop working.</text>
+
+  <!-- input row -->
+  <rect class="grey" x="40" y="98" width="160" height="56" rx="9"/>
+  <text class="h" x="120" y="122" text-anchor="middle">Pinned revisions</text>
+  <text class="s" x="120" y="139" text-anchor="middle">affected &#183; repaired</text>
+
+  <path class="arr" d="M200,126 L246,126" marker-end="url(#a)"/>
+
+  <rect class="green" x="250" y="98" width="200" height="56" rx="9"/>
+  <text class="h" x="350" y="120" text-anchor="middle">1 &#183; Specify</text>
+  <text class="s" x="350" y="138" text-anchor="middle">plan, checkpoints, expected outcomes</text>
+
+  <path class="arr" d="M350,154 L350,190" marker-end="url(#a)"/>
+
+  <!-- pipeline container -->
+  <rect class="cont" x="40" y="198" width="606" height="118" rx="12"/>
+  <text class="lbl" x="56" y="220">THE PIPELINE &#8212; FROZEN &#183; DETERMINISTIC &#183; EXPECTATIONS NEVER CHANGED AFTER A RUN</text>
+
+  <rect class="green" x="54"  y="232" width="108" height="64" rx="9"/>
+  <text class="h" x="108" y="258" text-anchor="middle">2 &#183; Freeze</text>
+  <text class="s" x="108" y="275" text-anchor="middle">spec + scripts hashed</text>
+
+  <path class="arr" d="M162,264 L168,264" marker-end="url(#a)"/>
+  <rect class="green" x="170" y="232" width="108" height="64" rx="9"/>
+  <text class="h" x="224" y="258" text-anchor="middle">3 &#183; Run</text>
+  <text class="s" x="224" y="275" text-anchor="middle">replay the copy</text>
+
+  <path class="arr" d="M278,264 L284,264" marker-end="url(#a)"/>
+  <rect class="green" x="286" y="232" width="108" height="64" rx="9"/>
+  <text class="h" x="340" y="258" text-anchor="middle">4 &#183; Evaluate</text>
+  <text class="s" x="340" y="275" text-anchor="middle">records vs spec</text>
+
+  <path class="arr" d="M394,264 L400,264" marker-end="url(#a)"/>
+  <rect class="green" x="402" y="232" width="108" height="64" rx="9"/>
+  <text class="h" x="456" y="258" text-anchor="middle">5 &#183; Audit</text>
+  <text class="s" x="456" y="275" text-anchor="middle">trace = the plan</text>
+
+  <path class="arr" d="M510,264 L516,264" marker-end="url(#a)"/>
+  <rect class="blue" x="518" y="232" width="110" height="64" rx="9"/>
+  <text class="h" x="573" y="255" text-anchor="middle">Verdict</text>
+  <text class="s" x="573" y="270" text-anchor="middle">CONFIRMED &#183; FLIPS</text>
+  <text class="s" x="573" y="283" text-anchor="middle">ACCEPTED_AT_BOTH</text>
+
+  <!-- three parts -->
+  <text class="lbl" x="40" y="352">THREE PARTS</text>
+
+  <rect class="grey" x="40"  y="364" width="266" height="74" rx="9"/>
+  <text class="h" x="173" y="390" text-anchor="middle">Laboratory</text>
+  <text class="s" x="173" y="409" text-anchor="middle" font-size="10.5">8 synthetic mechanisms (M1&#8211;M8)</text>
+  <text class="s" x="173" y="425" text-anchor="middle" font-size="10.5">16 scenarios &#183; 399 recorded steps</text>
+
+  <rect class="grey" x="317" y="364" width="266" height="74" rx="9"/>
+  <text class="h" x="450" y="390" text-anchor="middle">Replay engine</text>
+  <text class="s" x="450" y="409" text-anchor="middle" font-size="10.5">run &#183; evaluate &#183; audit</text>
+  <text class="s" x="450" y="425" text-anchor="middle" font-size="10.5">compare &#183; merge</text>
+
+  <rect class="grey" x="594" y="364" width="266" height="74" rx="9"/>
+  <text class="h" x="727" y="390" text-anchor="middle">Checks on public software</text>
+  <text class="s" x="727" y="409" text-anchor="middle" font-size="10.5">8 targets &#183; 23 cells</text>
+  <text class="s" x="727" y="425" text-anchor="middle" font-size="10.5">250 valid runs &#183; recomputable</text>
+
+  <text class="foot" x="40" y="470">It reports and identifies; it does not exploit. Every published result recomputes from the archived records without contacting a target.</text>
+</svg>
