@@ -2,6 +2,8 @@
 
 <p align="center"><b>Evidence-first replay checks for the withdrawal of session authority.</b></p>
 
+<p align="center"><a href="https://abdullahzarshaid.github.io/sesstrace/"><b>Open the project page</b></a></p>
+
 <p align="center">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-2E7D4F.svg"></a>
   <img alt="Python 3.7+" src="https://img.shields.io/badge/python-3.7%2B-3776AB.svg?logo=python&amp;logoColor=white">

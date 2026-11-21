@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SessTrace — evidence-first replay checks for the withdrawal of session authority</title>
+<meta name="description" content="SessTrace checks that after the authority behind a credential is withdrawn, a copy of it stops working. Pure Python, standard library only, with a hashed evidence trail.">
+<style>
+  :root{
+    --green:#2E7D4F; --green-d:#1E3A2A; --blue:#3A5BA0;
+    --ink:#17262B; --mut:#5A6B6F; --bg:#ffffff; --alt:#F6FAF7;
+    --line:#E3E8EA; --chipg:#E7F2EA; --chipb:#E8EEF9; --chipk:#F1F3F5;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:var(--blue);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(170deg,#F2F8F4 0%,#ffffff 70%);border-bottom:1px solid var(--line);
+    padding:64px 0 48px;text-align:center}
+  h1{font-size:46px;margin:0 0 6px;color:var(--green-d);letter-spacing:-.01em}
+  .tag{font-size:19px;color:var(--mut);margin:0 auto 22px;max-width:640px}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 26px}
+  .badges img{height:20px}
+  .btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+  .btn{display:inline-block;padding:11px 20px;border-radius:9px;font-weight:600;font-size:15px;border:1.5px solid var(--line)}
+  .btn.p{background:var(--green);color:#fff;border-color:var(--green)}
+  .btn.p:hover{background:#276B44;text-decoration:none}
+  .btn.s{background:#fff;color:var(--ink)}
+  .btn.s:hover{border-color:var(--green);text-decoration:none}
+  section{padding:46px 0;border-bottom:1px solid var(--line)}
+  section.alt{background:var(--alt)}
+  h2{font-size:27px;margin:0 0 14px;color:var(--green-d)}
+  p{margin:0 0 14px}
+  .lead{font-size:17px;color:#2C3B40}
+  .fig{margin:26px auto 4px;text-align:center}
+  .fig img{width:100%;max-width:880px;height:auto;border:1px solid var(--line);border-radius:14px;background:#fff}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:8px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+  .card h3{margin:0 0 6px;font-size:17px;color:var(--ink)}
+  .card p{margin:0;color:var(--mut);font-size:15px}
+  .card .big{font-size:26px;font-weight:700;color:var(--green);display:block;line-height:1.2;margin-bottom:2px}
+  table{width:100%;border-collapse:collapse;margin-top:8px;font-size:14.5px;display:block;overflow-x:auto}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+  th{color:var(--green-d);font-weight:700}
+  td code{font-size:13px}
+  code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;background:var(--chipk);
+    padding:2px 6px;border-radius:5px;font-size:13.5px}
+  pre{background:#0F1C20;color:#E7EEE9;border-radius:12px;padding:18px 20px;overflow-x:auto;font-size:13.5px;line-height:1.55}
+  pre code{background:none;color:inherit;padding:0}
+  .muted{color:var(--mut)}
+  .note{background:var(--chipb);border:1px solid #D4DEF0;border-radius:10px;padding:14px 18px;font-size:15px;margin-top:8px}
+  footer{padding:36px 0 56px;text-align:center;color:var(--mut);font-size:14.5px}
+  footer a{color:var(--blue)}
+  @media(max-width:560px){h1{font-size:34px}.tag{font-size:17px}h2{font-size:23px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>SessTrace</h1>
+    <p class="tag">Evidence-first replay checks for the withdrawal of session authority.</p>
+    <p class="badges">
+      <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-2E7D4F.svg">
+      <img alt="Python 3.7+" src="https://img.shields.io/badge/python-3.7%2B-3776AB.svg?logo=python&amp;logoColor=white">
+      <img alt="Dependencies: none" src="https://img.shields.io/badge/dependencies-none-2E7D4F.svg">
+      <img alt="Tests: 145 passing" src="https://img.shields.io/badge/tests-145%20passing-2E7D4F.svg">
+      <img alt="Release: v3.1.1" src="https://img.shields.io/badge/release-v3.1.1-3A5BA0.svg">
+    </p>
+    <p class="btns">
+      <a class="btn p" href="https://github.com/abdullahzarshaid/sesstrace">View on GitHub</a>
+      <a class="btn s" href="https://github.com/abdullahzarshaid/sesstrace/releases/latest">Download v3.1.1</a>
+      <a class="btn s" href="https://github.com/abdullahzarshaid/sesstrace/blob/main/docs/method.md">Read the method</a>
+    </p>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2>What it checks</h2>
+    <p class="lead">SessTrace checks one property of software that issues sessions or tokens: <strong>after the authority behind a credential has been withdrawn, a copy of that credential must stop working.</strong> The withdrawal can be a logout, the end of a configured lifetime, a password change, a disabled account or a deleted grant.</p>
+    <p>It does this by replay. A plan logs a user in, copies the credential, lets the event happen, presents the copy again and records what came back. The same plan is run against selected pinned affected and repaired revisions. The expected outcome of every step is written down and hashed before the first request is sent.</p>
+    <div class="fig"><img src="architecture.svg" alt="SessTrace replay pipeline: specify, freeze, run, evaluate, audit, verdict"></div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>At a glance</h2>
+    <div class="grid">
+      <div class="card"><span class="big">16</span><h3>synthetic scenarios</h3><p>Eight mechanisms, each in a vulnerable and a fixed variant &#183; 399 recorded HTTP steps, reproduced byte for byte.</p></div>
+      <div class="card"><span class="big">23</span><h3>checks on public software</h3><p>Eight real projects at an affected and a repaired revision &#183; 250 valid runs, 22 as written down before the run.</p></div>
+      <div class="card"><span class="big">0</span><h3>dependencies</h3><p>Pure Python 3.7+, standard library only. 145 tests. No network needed to re-read the archived records.</p></div>
+      <div class="card"><span class="big">7</span><h3>credential flips</h3><p>In seven checks the copied credential still works before the repair and is refused after it &#8212; the behaviour the fix changes.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Three parts</h2>
+    <div class="grid">
+      <div class="card"><h3>Laboratory</h3><p>Eight synthetic mechanisms (M1&#8211;M8) on loopback HTTP, each vulnerable and fixed. <code>sesstrace lab run</code>, <code>sesstrace lab verify</code>.</p></div>
+      <div class="card"><h3>Replay engine</h3><p>Driver, evaluator and audit for plans run against real software. <code>run</code> &#183; <code>evaluate</code> &#183; <code>audit</code> &#183; <code>compare</code> &#183; <code>merge</code>.</p></div>
+      <div class="card"><h3>Checks</h3><p>Eight public targets, their frozen specifications and the records of 262 attempts (250 valid runs). Recompute them without contacting a target.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="wrap">
+    <h2>Checks on public software</h2>
+    <p class="muted">Each target is tested at a pinned affected and repaired revision associated with one published CVE. These are observations on named old releases under one configuration each, not statements about current versions and not a detection rate.</p>
+    <table>
+      <thead><tr><th></th><th>Target</th><th>Language</th><th>Revisions</th><th>CVE</th></tr></thead>
+      <tbody>
+        <tr><td>T1</td><td>@fastify/session</td><td>JavaScript</td><td><code>8b6241c</code>, <code>0495ce5</code></td><td>CVE-2024-35220</td></tr>
+        <tr><td>T2</td><td>@fastify/secure-session</td><td>JavaScript</td><td><code>7b6eebe</code>, <code>56d6664</code></td><td>CVE-2024-31999</td></tr>
+        <tr><td>T3</td><td>aiohttp-session</td><td>Python</td><td><code>faadf10</code>, <code>1b356f0</code></td><td>CVE-2018-1000814</td></tr>
+        <tr><td>T4</td><td>rack-session</td><td>Ruby</td><td><code>c837aff</code>, <code>c28c4a8</code></td><td>CVE-2025-46336</td></tr>
+        <tr><td>T5</td><td>Vikunja</td><td>Go</td><td>2.2.2, 2.3.0</td><td>CVE-2026-35594</td></tr>
+        <tr><td>T6</td><td>FUXA</td><td>JavaScript</td><td>1.3.2, 1.3.3</td><td>CVE-2026-65984</td></tr>
+        <tr><td>T7</td><td>Directus</td><td>TypeScript</td><td>10.10.7, 10.11.0</td><td>CVE-2024-34709</td></tr>
+        <tr><td>T8</td><td>Kanboard</td><td>PHP</td><td>1.2.42, 1.2.43</td><td>CVE-2024-55603</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>Quick start</h2>
+    <p>No installation is needed for the tests, the laboratory or re-reading the archived records.</p>
+    <pre><code>git clone https://github.com/abdullahzarshaid/sesstrace
+cd sesstrace
+
+python -m unittest                        # the whole test suite, no installation
+PYTHONPATH=src python -m sesstrace lab verify   # reproduce the synthetic traces</code></pre>
+    <div class="note">Running the public-software container checks is a separate operation on a Linux machine with a container engine, in a disposable sandbox only. See <a href="https://github.com/abdullahzarshaid/sesstrace/blob/main/checks/README.md">checks/README.md</a> and the <a href="https://github.com/abdullahzarshaid/sesstrace/blob/main/SECURITY.md">safety notes</a>.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Written and maintained by Abdullah Bin Zarshaid &#183; MIT licence &#183; pure Python, standard library only.</p>
+    <p>The method and results are described in a manuscript under review, <em>Lifecycle Conditions in CWE-613 Disclosures: A Reproducible, Evidence-Linked Characterisation</em>. Citation data is in <a href="https://github.com/abdullahzarshaid/sesstrace/blob/main/CITATION.cff">CITATION.cff</a>.</p>
+    <p><a href="https://github.com/abdullahzarshaid/sesstrace">GitHub</a> &#183; <a href="https://github.com/abdullahzarshaid/sesstrace/releases/latest">Releases</a> &#183; <a href="https://orcid.org/0009-0000-8354-5177">ORCID</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
