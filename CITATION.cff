@@ -3,12 +3,12 @@ message: "If you use this software, please cite it as below. The entry will be r
 title: "SessTrace: replay checks for the withdrawal of session authority"
 type: software
 version: 3.1.1
+date-released: 2026-11-21
 license: MIT
+repository-code: "https://github.com/abdullahzarshaid/sesstrace"
 authors:
   - family-names: "Bin Zarshaid"
     given-names: "Abdullah"
-  - family-names: "Siddiqui"
-    given-names: "Shahbaz Akhtar"
 keywords:
   - session management
   - CWE-613
@@ -17,4 +17,17 @@ keywords:
 references:
   - type: unpublished
     title: "Lifecycle Conditions in CWE-613 Disclosures: A Reproducible, Evidence-Linked Characterisation"
+    authors:
+      - family-names: "Bin Zarshaid"
+        given-names: "Abdullah"
+      - family-names: "Siddiqui"
+        given-names: "Shahbaz Akhtar"
+      - family-names: "Khaliq"
+        given-names: "Ayesha"
+      - family-names: "Ahmed"
+        given-names: "Ghufran"
+      - family-names: "Ullah"
+        given-names: "Fasee"
+      - family-names: "Kamal"
+        given-names: "Shahid"
     notes: "Manuscript under review."

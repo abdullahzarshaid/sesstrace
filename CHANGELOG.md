@@ -1,6 +1,14 @@
 # Changelog
 
-## 3.1.1 (unreleased)
+## 3.1.1 (21 November 2026)
+
+Documentation and metadata of the release. The code, the tests and the checks are the files of 18 November 2026,
+unchanged.
+- README: the source can be taken from the repository or from the supplementary archive of the article; one archived
+  check is shown in full; attempts and valid runs are counted separately.
+- SECURITY.md: how to report a problem and how to run the checks safely.
+- The copyright line, `CITATION.cff` and the package metadata name the author of the software; the citation file lists
+  the authors of the article in its reference.
 
 Changes after the check of the runners of 18 November 2026 (`checks/runner_check_20261118/README.md`).
 

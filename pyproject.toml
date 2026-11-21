@@ -10,7 +10,6 @@ requires-python = ">=3.7"
 license = { text = "MIT" }
 authors = [
     { name = "Abdullah Bin Zarshaid" },
-    { name = "Shahbaz Akhtar Siddiqui" },
 ]
 keywords = ["session management", "CWE-613", "logout", "token revocation", "replay", "reproducibility"]
 classifiers = [
@@ -22,6 +21,9 @@ classifiers = [
 ]
 dependencies = []
 dynamic = ["version"]
+
+[project.urls]
+Repository = "https://github.com/abdullahzarshaid/sesstrace"
 
 [project.scripts]
 sesstrace = "sesstrace.cli:main"
